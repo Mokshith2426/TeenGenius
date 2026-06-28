@@ -1,0 +1,154 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+@plugin "@tailwindcss/typography";
+
+@layer base {
+  h1, h2, h3, h4, .font-display {
+    @apply font-display tracking-tighter;
+  }
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --animate-spin-slow: spin 8s linear infinite;
+
+  --color-zinc-150: #ededf0;
+  --color-zinc-250: #dedede;
+  --color-zinc-350: #bcbcbf;
+  --color-zinc-450: #8c8c95;
+  --color-zinc-805: #212124;
+  --color-zinc-850: #1a1a1e;
+  --color-zinc-905: #111115;
+  
+  --color-theme-text-primary: var(--color-text-primary);
+  --color-theme-text-secondary: var(--color-text-secondary);
+  --color-theme-bg-primary: var(--color-bg-primary);
+  --color-theme-bg-card: var(--color-bg-card);
+  --color-theme-border: var(--color-border-primary);
+}
+
+:root {
+  --color-text-primary: #09090b; /* zinc-950 */
+  --color-text-secondary: #3f3f46; /* zinc-700 */
+  --color-bg-primary: #fafafa; /* zinc-50 */
+  --color-bg-card: #ffffff;
+  --color-border-primary: #e4e4e7; /* zinc-200 */
+}
+
+.dark {
+  --color-text-primary: #fafafa; /* zinc-50 */
+  --color-text-secondary: #a1a1aa; /* zinc-400 */
+  --color-bg-primary: #09090b; /* zinc-950 */
+  --color-bg-card: #18181b; /* zinc-900 */
+  --color-border-primary: #27272a; /* zinc-800 */
+}
+
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-overflow-scrolling: touch; /* Highly fluid momentum scrolling */
+    @apply antialiased font-sans transition-colors duration-300;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-attachment: fixed;
+    background-size: 200px 200px;
+    @apply selection:bg-blue-600/30;
+  }
+}
+
+html, body {
+  overscroll-behavior: auto;
+  overscroll-behavior-y: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: auto;
+  min-height: 100dvh;
+}
+
+  /* Reset Android WebView gray outline on click */
+  * {
+    -webkit-tap-highlight-color: transparent !important;
+    outline-color: transparent;
+  }
+
+  /* Safe Area paddings */
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+/* Premium Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-200 dark:bg-zinc-800 rounded-full transition-colors hover:bg-zinc-300 dark:hover:bg-zinc-700;
+}
+
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  .noise-overlay {
+    position: relative;
+  }
+  .noise-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 50;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@layer base {
+  /* Normalize form control element colors globally for absolute dark/light theme consistency */
+  input, select, textarea {
+    @apply text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500;
+  }
+
+  /* Force select options to render beautifully regardless of OS default styling overrides */
+  select option {
+    background-color: var(--color-bg-card);
+    color: var(--color-text-primary);
+  }
+
+  /* Make date picker icon color and interactions readable in dark mode */
+  input[type="date"] {
+    color-scheme: light dark;
+  }
+}
+
