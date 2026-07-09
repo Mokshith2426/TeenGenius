@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- High end smooth radial/linear background representing the cyber cognitive theme -->
+  <defs>
+    <linearGradient id="cyberGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#020617" />
+      <stop offset="100%" stop-color="#090d16" />
+    </linearGradient>
+    <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="50%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Backing squircle canvas -->
+  <rect width="512" height="512" rx="140" fill="url(#cyberGradient)" />
+  
+  <!-- The White Squircle container from the cognitive network logo -->
+  <g transform="translate(96, 96)">
+    <rect width="320" height="320" rx="90" fill="#ffffff" />
+    
+    <!-- Concentric cognitive signal / dynamic target rings inside -->
+    <circle cx="160" cy="160" r="100" fill="none" stroke="#09090b" stroke-width="20" />
+    <circle cx="160" cy="160" r="70" fill="none" stroke="url(#ringGradient)" stroke-width="20" />
+    <circle cx="160" cy="160" r="40" fill="none" stroke="#09090b" stroke-width="20" />
+    <circle cx="160" cy="160" r="16" fill="#09090b" />
+  </g>
+  
+  <!-- Subtle cosmic star spark indicating the Gemini AI aspect -->
+  <path d="M 400 110 L 406 122 L 418 128 L 406 134 L 400 146 L 394 134 L 382 128 L 394 122 Z" fill="#06b6d4" />
+  <path d="M 112 380 L 115 386 L 121 389 L 115 392 L 112 398 L 109 392 L 103 389 L 109 386 Z" fill="#4f46e5" />
+</svg>

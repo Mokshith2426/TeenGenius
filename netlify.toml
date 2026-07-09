@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Route all backend API calls directly to the Netlify Serverless Function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# Route all other routes to React single-page app (index.html) for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

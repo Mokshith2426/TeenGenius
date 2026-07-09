@@ -1,0 +1,8 @@
+{
+  "name": "Teengenius",
+  "description": "A safe, supportive, and friendly learning workspace for students in classes 6 to 12. Connect with classmates in private study rooms, ask homework questions, and track focus habits.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

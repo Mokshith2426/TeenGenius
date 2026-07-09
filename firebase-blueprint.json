@@ -1,0 +1,315 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "bio": { "type": "string" },
+        "friendIds": { "type": "array", "items": { "type": "string" } },
+        "publicKey": { "type": "string", "description": "Base64 encoded RSA public key" },
+        "isOnline": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "xp": { "type": "integer", "description": "Gamification experience points" },
+        "badges": { "type": "array", "items": { "type": "string" }, "description": "Badges earned by user" }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "Private or group chat session",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["private", "group"] },
+        "memberIds": { "type": "array", "items": { "type": "string" } },
+        "lastMessage": { "type": "string" },
+        "lastUpdatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "memberIds", "lastUpdatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Individual message in a chat",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "content": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "image", "video-call-status"] },
+        "isEncrypted": { "type": "boolean" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "reactions": { "type": "object", "description": "Key-value of userId to reacted emoji" }
+      },
+      "required": ["chatId", "senderId", "content", "type", "timestamp"]
+    },
+    "StudyGroup": {
+      "title": "Study Group",
+      "description": "Collaborative study group",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "memberIds": { "type": "array", "items": { "type": "string" } },
+        "scratchpad": { "type": "string" },
+        "whiteboardLines": { "type": "array" },
+        "tasks": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "text": { "type": "string" },
+              "completed": { "type": "boolean" },
+              "assigneeId": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "ownerId", "memberIds", "createdAt"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "Shared note or assignment in a study group",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "authorId": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "image"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["groupId", "authorId", "type", "timestamp"]
+    },
+    "FriendRequest": {
+      "title": "Friend Request",
+      "description": "Friendship request between users",
+      "type": "object",
+      "properties": {
+        "fromId": { "type": "string" },
+        "toId": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "declined"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fromId", "toId", "status", "timestamp"]
+    },
+    "Timetable": {
+      "title": "Timetable",
+      "description": "AI generated study schedule",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "subjects": { "type": "array", "items": { "type": "string" } },
+        "timetableData": { "type": "object" },
+        "hoursPerDay": { "type": "string" },
+        "preferences": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "timetableData", "createdAt"]
+    },
+    "AIChat": {
+      "title": "AIChat",
+      "description": "User session with AI assistant",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "lastMessage": { "type": "string" },
+        "lastUpdatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "lastUpdatedAt"]
+    },
+    "AIMessage": {
+      "title": "AIMessage",
+      "description": "Individual message in an AI session",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["user", "assistant"] },
+        "content": { "type": "string" },
+        "image": { "type": "string" },
+        "status": { "type": "string", "enum": ["sending", "delivered", "read", "processed"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["role", "content", "timestamp"]
+    },
+    "HomeworkSolution": {
+      "title": "Homework Solution",
+      "description": "Solved homework problems with step-by-step guidance",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "subject": { "type": "string" },
+        "question": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "solution": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "subject", "question", "solution", "createdAt"]
+    },
+
+    "Doubt": {
+      "title": "Doubt",
+      "description": "Doubt or question raised in study group",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "isSolved": { "type": "boolean" },
+        "acceptedAnswerId": { "type": "string" },
+        "answers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "content": { "type": "string" },
+              "authorId": { "type": "string" },
+              "authorName": { "type": "string" },
+              "createdAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "required": ["title", "content", "authorId", "authorName", "createdAt", "isSolved", "answers"]
+    },
+    "StudyModule": {
+      "title": "Study Module",
+      "description": "Study module milestone in group",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "completedBy": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["title", "createdBy", "createdAt", "completedBy"]
+    }
+  },
+  "firestore": {
+
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Global user profiles"
+    },
+    "aiChats/{chatId}": {
+      "schema": "AIChat",
+      "description": "AI Assistant sessions"
+    },
+    "aiChats/{chatId}/messages/{messageId}": {
+      "schema": "AIMessage",
+      "description": "Messages within an AI session"
+    },
+    "chats/{chatId}": {
+      "schema": "Chat",
+      "description": "Chat sessions"
+    },
+    "chats/{chatId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages within a chat"
+    },
+    "studyGroups/{groupId}": {
+      "schema": "StudyGroup",
+      "description": "Collaborative study groups"
+    },
+    "studyGroups/{groupId}/notes/{noteId}": {
+      "schema": "Note",
+      "description": "Notes shared within a study group"
+    },
+    "studyGroups/{groupId}/doubts/{doubtId}": {
+      "schema": "Doubt",
+      "description": "Doubts shared within a study group"
+    },
+    "studyGroups/{groupId}/modules/{moduleId}": {
+      "schema": "StudyModule",
+      "description": "Study modules within a study group"
+    },
+    "friendRequests/{requestId}": {
+      "schema": "FriendRequest",
+      "description": "Relationships between users"
+    },
+    "userSettings/{userId}": {
+      "schema": {
+        "title": "UserSettings",
+        "type": "object",
+        "properties": {
+          "callSettings": { "type": "object" }
+        }
+      },
+      "description": "User specific application settings"
+    },
+    "chats/{chatId}/participants/{userId}": {
+      "schema": {
+        "title": "ParticipantStatus",
+        "type": "object",
+        "properties": {
+          "uid": { "type": "string" },
+          "lastReadAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "description": "Per-chat participant read status"
+    },
+    "chats/{chatId}/typing/{userId}": {
+      "schema": {
+        "title": "TypingStatus",
+        "type": "object",
+        "properties": {
+          "userName": { "type": "string" },
+          "isTyping": { "type": "boolean" },
+          "lastUpdatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "description": "Real-time typing indicators"
+    },
+    "studySessions/{sessionId}": {
+      "schema": {
+        "title": "StudySession",
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "startTime": { "type": "string", "format": "date-time" },
+          "duration": { "type": "number", "description": "Duration in minutes" }
+        },
+        "required": ["userId", "startTime", "duration"]
+      },
+      "description": "Logs of study activity for hours tracking"
+    },
+    "timetables/{timetableId}": {
+      "schema": "Timetable",
+      "description": "User specific generated study schedules"
+    },
+    "homeworkSolutions/{solutionId}": {
+      "schema": "HomeworkSolution",
+      "description": "Historical homework solutions solved by AI for user"
+    },
+    "notesLab/{noteId}": {
+      "schema": {
+        "title": "NotesLab",
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "focus": { "type": "string" },
+          "notes": { "type": "string" },
+          "subject": { "type": "string" },
+          "importance": { "type": "string", "enum": ["High", "Medium", "Low"] },
+          "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["userId", "title", "notes", "subject", "importance"]
+      },
+      "description": "AI-generated structured study notes synced across user sessions"
+    }
+  }
+}
