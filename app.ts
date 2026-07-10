@@ -10,6 +10,13 @@ import {
   PRIMARY_MODEL,
   FALLBACK_MODEL,
 } from "./env";
+import {
+  categorizeGeminiError,
+  buildDiagnosticLogPayload,
+  publicMessageFor,
+  type GeminiErrorCode,
+  type GeminiDiagnostics,
+} from "./gemini-diagnostics";
 
 // NOTE: Environment variables are loaded by server.ts (`import "dotenv/config"`)
 // BEFORE this module is dynamically imported, and by the hosting platform in
@@ -116,87 +123,32 @@ function getGoogleGenAI(req?: any): GoogleGenAI {
 }
 
 // Standardized Gemini error carrying an HTTP status + machine-readable code.
+// It also carries the parsed diagnostics + optional Retry-After hint so the
+// route layer can emit a Retry-After header without re-parsing the raw error.
+// Classification itself lives in ./gemini-diagnostics (pure + unit-testable).
 class GeminiError extends Error {
   status: number;
-  code: string;
-  constructor(message: string, status: number, code: string) {
+  code: GeminiErrorCode;
+  retryAfterSeconds?: number;
+  diagnostics?: GeminiDiagnostics;
+  constructor(
+    message: string,
+    status: number,
+    code: GeminiErrorCode,
+    extra?: { retryAfterSeconds?: number; diagnostics?: GeminiDiagnostics }
+  ) {
     super(message);
     this.name = "GeminiError";
     this.status = status;
     this.code = code;
+    this.retryAfterSeconds = extra?.retryAfterSeconds;
+    this.diagnostics = extra?.diagnostics;
   }
 }
 
-// Student-facing messages never mention server configuration or API keys.
-const AI_MESSAGES = {
-  AI_NOT_CONFIGURED: "TeenGenius AI is temporarily unavailable. Please try again later.",
-  AI_AUTH_ERROR: "TeenGenius AI is temporarily unavailable. Please try again later.",
-  AI_MODEL_ERROR: "TeenGenius AI is temporarily unavailable. Please try again later.",
-  AI_TIMEOUT: "TeenGenius AI took too long to respond. Please try again.",
-  AI_RATE_LIMITED: "TeenGenius AI is receiving too many requests right now. Please try again shortly.",
-  AI_SERVICE_UNAVAILABLE: "TeenGenius AI is temporarily unavailable. Please try again.",
-  AI_REQUEST_FAILED: "TeenGenius AI is temporarily unavailable. Please try again.",
-} as const;
-
-// Map a raw SDK/network error into a sanitized status + code + student-facing message.
-// Only rate-limit / timeout / temporary-unavailable are retryable (drive the single fallback).
-function categorizeGeminiError(err: any): { status: number; code: string; message: string; retryable: boolean } {
-  if (err?.code === "AI_NOT_CONFIGURED") {
-    return { status: 500, code: "AI_NOT_CONFIGURED", message: AI_MESSAGES.AI_NOT_CONFIGURED, retryable: false };
-  }
-  const raw = (err?.message || String(err) || "").toLowerCase();
-
-  // Auth / permission: invalid key, expired key, permission denied, API disabled.
-  if (
-    raw.includes("api key not valid") ||
-    raw.includes("api_key_invalid") ||
-    raw.includes("api key expired") ||
-    raw.includes("api_key_expired") ||
-    raw.includes("permission_denied") ||
-    raw.includes("permission denied") ||
-    raw.includes("service_disabled") ||
-    raw.includes("has not been used in project") ||
-    raw.includes("unauthenticated") ||
-    raw.includes("401") ||
-    raw.includes("403")
-  ) {
-    return { status: 502, code: "AI_AUTH_ERROR", message: AI_MESSAGES.AI_AUTH_ERROR, retryable: false };
-  }
-
-  // Rate limit / quota.
-  if (
-    raw.includes("429") ||
-    raw.includes("quota") ||
-    raw.includes("exhausted") ||
-    raw.includes("resource_exhausted") ||
-    raw.includes("rate limit") ||
-    raw.includes("rate-limit")
-  ) {
-    return { status: 429, code: "AI_RATE_LIMITED", message: AI_MESSAGES.AI_RATE_LIMITED, retryable: true };
-  }
-
-  // Timeout.
-  if (raw.includes("timed out") || raw.includes("timeout") || raw.includes("etimedout") || raw.includes("deadline")) {
-    return { status: 504, code: "AI_TIMEOUT", message: AI_MESSAGES.AI_TIMEOUT, retryable: true };
-  }
-
-  // Invalid / unavailable model.
-  if (
-    (raw.includes("model") && (raw.includes("not found") || raw.includes("not supported") || raw.includes("is not found for api version"))) ||
-    raw.includes("unsupported model") ||
-    raw.includes("invalid model") ||
-    raw.includes("404")
-  ) {
-    return { status: 502, code: "AI_MODEL_ERROR", message: AI_MESSAGES.AI_MODEL_ERROR, retryable: false };
-  }
-
-  // Temporary upstream failure.
-  if (raw.includes("503") || raw.includes("unavailable") || raw.includes("overloaded") || raw.includes("high demand")) {
-    return { status: 503, code: "AI_SERVICE_UNAVAILABLE", message: AI_MESSAGES.AI_SERVICE_UNAVAILABLE, retryable: true };
-  }
-
-  return { status: 503, code: "AI_REQUEST_FAILED", message: AI_MESSAGES.AI_REQUEST_FAILED, retryable: false };
-}
+// Student-facing copy for the in-memory burst guard (see requestBurstGuard).
+const AI_CLIENT_THROTTLED_MESSAGE =
+  "You're sending requests too quickly. Please wait a moment and try again.";
 
 const LANGUAGE_MAP: Record<string, string> = {
   en: 'English',
@@ -254,43 +206,45 @@ export function getLanguageInstruction(req: any): string {
   return `\n[Language Instruction: You MUST generate your ENTIRE explanation, response text, and code/formulas strictly in "${langName}" language. This is a strict user-mandated requirement. Preserve all formatting, structures, and markdown.]`;
 }
 
-// --- TEENGENIUS KNOWLEDGE ENGINE & SYSTEM INSTRUCTIONS ---
+// --- TEENGENIUS SYSTEM INSTRUCTIONS ---
+//
+// TOKEN BUDGET NOTE: The system instruction is prepended to EVERY generation
+// request. To conserve free-tier input tokens, academic endpoints (homework,
+// notes, timetable, quiz, etc.) receive only TEEN_GENIUS_CORE_INSTRUCTION.
+// The platform knowledge base (below) is injected ONLY by the chat endpoint,
+// where students actually ask "what is TeenGenius / who made it / what can you
+// do?". This keeps tutor quality intact while removing ~1KB of platform
+// marketing from every homework/notes/quiz call.
+
+// Lean tutor persona used by ALL AI endpoints. No platform marketing.
+export const TEEN_GENIUS_CORE_INSTRUCTION = `You are TeenGenius AI, a rigorous academic tutor for students.
+
+RESPONSE PROTOCOLS:
+1. Directness: Answer directly and comprehensively. Avoid preambles or meta-commentary.
+2. Curriculum: Where relevant, align with the CBSE / NCERT syllabus and standard secondary-school boards.
+3. Formatting: Use clean Markdown for lists and code, and LaTeX ($...$ or $$...$$) for all math and equations.
+4. Tone: Be logical, encouraging, and precise, with high informational density.`;
+
+// Compact platform knowledge base — injected ONLY on the chat endpoint so the
+// tutor can answer "what is TeenGenius / who built it / what can it do?".
 export const TEEN_GEN_KNOWLEDGE = `
-TEENGENIUS PLATFORM KNOWLEDGE BASE:
-- Platform Name: TeenGenius (also recognized as Teengenius)
-- Primary URL/Address: TeenGenius Network Web App (https://ai.studio/build/)
-- Platform Mission & Purpose: TeenGenius is the elite cognitive workstation and performance-driven academic workspace designed specifically for ambitious students. It integrates clinical study planning, end-to-end encrypted collaboration hubs, AI-powered diagnostic tutor tools, immersive deep focus rooms, and procedural memory enhancement systems to help students tackle complex scientific, technical, and mathematical subjects.
-- Platform Creator & Founder: Mokshith Ramavathu (built and launched specifically under Mokshith's domain address as a state-of-the-art student-genius accelerator). Mokshith developed TeenGenius to democratize top-tier cognitive resources and deep focus structures.
-- Core TeenGenius Features and Modules:
-  1. TeenGenius AI Tutor (AIAssistant): Personalized, 24/7 academic guide capable of streaming multi-stage concept explanations, rendering Markdown math expressions, formulating customized recall study plans, triggering diagnostic assessments, and suggesting practice quizzes.
-  2. Study Focus Rooms (FocusRoom): An immersive deep-focus environment integrating customizable timers (such as state-of-the-art Pomodoros) and sound-engineered ambient synthesizers (like Focus Waves, Binaural Alpha Beats, Space Cosmos Echo, and Lofi Chill) to block noise and optimize cerebral blood flow.
-  3. Notes & Outlines Synthesizer (NotesGenerator): Instantly transforms raw copy-pasted lectures, textbooks, code repos, or transcript snippets into high-fidelity markdown outlines, concept-tree diagrams, and retention summaries.
-  4. Loci Memory Palace & Acronym Maker (MemoryPalace): Translates technical facts or sequence lists into immersive spatial paths (using the ancient Method of Loci), combined with automated acronym/acrostic engines and mnemonic revision cards.
-  5. Homework Solver & Equation Analyzer (HomeworkSolver): An OCR-compatible, step-by-step mathematical and conceptual problem-solving engine. It reads uploaded scientific diagrams or equations and returns multi-stage LaTeX-based derivations.
-  6. Intelligent Schedule Builder (TimetableMaker): Optimizes study calendars by dynamically analyzing a student's current subject lists, difficulty preferences, exam timelines, and daily active target hours to output structural timetables.
-  7. Skills & Roadmap Architect (Roadmap): A nodes-based tree roadmap builder that graphs conceptual milestones, learning materials, and checkpoint challenges to systematically master rigorous technical fields (e.g., Quantum Mechanics, Vector Calculus, organic synthesis).
-  8. Secure Study Groups (StudyGroups & StudyGroupDetail): Collaborative peer-led encrypted academic rooms with file exchanges, shared task milestones, and real-time multiplayer concept quizzes.
-  9. Real-time Student Chat Support (ChatList & ChatRoom): Secure direct line communication supporting rich Markdown text, file uploads, peer status alerts, and instant study invites.
-  10. Progression Profiles (Profile): Monitors and displays academic stats, levels, study durations, active focus sessions, streak meters, and custom unlockable achievement badges (such as Polymath, Focus Guru, AI Pioneer, and Syllabus Crusader) driven by XP rewards.
-`;
+TEENGENIUS PLATFORM FACTS (use only when the student asks about the platform, its founder, or its features):
+- TeenGenius is a study platform for students, combining an AI tutor, study planning, focus rooms, notes/memory tools, and secure peer study groups.
+- Founder & creator: Mokshith Ramavathu. Credit him on platform/founder questions.
+- Main features: AI Tutor, Study Focus Rooms, Notes Generator, Memory Palace (mnemonics/flashcards), Homework Solver, Timetable Maker, Skills Roadmap, Study Groups, Student Chat, and gamified progress profiles.
+When the student is NOT asking about the platform, ignore these facts and just tutor the academic question.`;
 
-export const TEEN_GENIUS_SYSTEM_INSTRUCTION = `You are TeenGenius AI, a premier cognitive research and academic intelligence system.
-Your objective is to deliver authoritative, clinical, and high-fidelity academic support.
-
-${TEEN_GEN_KNOWLEDGE}
-
-INTELLIGENT RESPONSE PROTOCOLS:
-1. Prioritize TeenGenius Knowledge: When users ask about TeenGenius, its founder, features, capabilities, or "what can you do?", always refer to the TeenGenius Platform Knowledge Base above. Avoid generic internet definitions or pretending not to know what TeenGenius is. Explicitly credit Mokshith Ramavathu as the founder/creator on platform questions.
-2. Directness: Answer directly and comprehensively. Avoid unnecessary introductions, preambles, metadata, or meta-commentary.
-3. Formatting: Use clean, professional Markdown formatting for all notes, lists, code samples, LaTeX math symbols ($...$ or \$\$...$$\), and equations.
-4. Tone: Be sharply logical, encouraging, clinical, and extremely intelligent. Deliver answers with maximum informational density.
-5. In-character: Never break character as the resident TeenGenius AI companion.
-`;
+// Full instruction (core + platform KB) — used by the chat endpoint only.
+export const TEEN_GENIUS_SYSTEM_INSTRUCTION = `${TEEN_GENIUS_CORE_INSTRUCTION}
+${TEEN_GEN_KNOWLEDGE}`;
 
 interface GenerateParams {
   model?: string;
   contents: any;
   config?: any;
+  // When true, the compact platform knowledge base is injected into the system
+  // instruction (chat only). Academic endpoints leave this false to save tokens.
+  includePlatformKnowledge?: boolean;
 }
 
 function sanitizeErrorLog(errorStr: string): string {
@@ -323,6 +277,20 @@ function logAiEvent(fields: { endpoint: string; model?: string; category: string
   console.log(parts.join(" "));
 }
 
+// SERVER-ONLY structured diagnostic for a Gemini failure. Emits the exact
+// Google quota reason (metric / quotaId / RPM|TPM|RPD|SPEND / retryDelay) so an
+// operator can pinpoint the failing quota — WITHOUT ever logging the API key,
+// Authorization headers, request bodies, user messages, media, or project IDs.
+function logGeminiDiagnostic(
+  endpoint: string,
+  model: string | undefined,
+  durationMs: number,
+  classification: ReturnType<typeof categorizeGeminiError>
+) {
+  const payload = buildDiagnosticLogPayload({ endpoint, model, durationMs, classification });
+  console.log(`[AI_DIAGNOSTIC] ${JSON.stringify(payload)}`);
+}
+
 // Race a promise against a hard timeout so the frontend never hangs on "Synthesizing".
 async function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   let timer: any;
@@ -336,25 +304,41 @@ async function withTimeout<T>(promise: Promise<T>, ms: number, label: string): P
   }
 }
 
-// Deterministic production generation: try the primary model ONCE, then the fallback model
-// ONCE (only when the primary failed for a retryable reason: quota, rate limit, temporary
-// unavailability, or timeout). No recursion, no per-model multi-attempt loops.
+// Deterministic production generation.
+//
+// QUOTA SAFETY (the core of this fix): a 429 / RESOURCE_EXHAUSTED / RPM / TPM /
+// RPD / spend-limit / timeout failure NEVER triggers a second Gemini request.
+// Sending another generation call after a quota error only multiplies load
+// against the shared free-tier project quota and produces misleading failures.
+//
+// The fallback model is attempted at most ONCE, and ONLY for a confirmed model
+// AVAILABILITY problem (model not found / unsupported / deprecated) — never for
+// quota, rate-limit, spend, or timeout. No recursion, no per-model loops.
 async function generateContentWithRetry(aiClient: GoogleGenAI, params: GenerateParams, req?: any) {
   const cleanConfig = params.config ? { ...params.config } : {};
   if (cleanConfig.thinkingConfig) {
     delete cleanConfig.thinkingConfig;
   }
 
-  // Inject the global TeenGenius system instruction + language directive.
+  // Inject the TeenGenius system instruction + language directive. The platform
+  // knowledge base is added ONLY when the caller opts in (chat), to save tokens.
   const requestObj = req || (aiClient as any).req;
   const langInstruct = requestObj ? getLanguageInstruction(requestObj) : "";
+  const basePersona = params.includePlatformKnowledge
+    ? TEEN_GENIUS_SYSTEM_INSTRUCTION
+    : TEEN_GENIUS_CORE_INSTRUCTION;
   if (cleanConfig.systemInstruction) {
-    cleanConfig.systemInstruction = `${cleanConfig.systemInstruction}\n\n${TEEN_GEN_KNOWLEDGE}${langInstruct}`;
+    // A caller-supplied instruction keeps priority; append platform KB only if requested.
+    const kb = params.includePlatformKnowledge ? `\n\n${TEEN_GEN_KNOWLEDGE}` : "";
+    cleanConfig.systemInstruction = `${cleanConfig.systemInstruction}${kb}${langInstruct}`;
   } else {
-    cleanConfig.systemInstruction = TEEN_GENIUS_SYSTEM_INSTRUCTION + langInstruct;
+    cleanConfig.systemInstruction = basePersona + langInstruct;
   }
 
   const endpoint = requestObj?.path || requestObj?.originalUrl || "gemini";
+
+  // Attempt order: PRIMARY_MODEL, then FALLBACK_MODEL — but the fallback is only
+  // reached when the primary fails with a confirmed model-availability error.
   const models = [PRIMARY_MODEL, FALLBACK_MODEL];
   let lastError: any = null;
 
@@ -375,41 +359,77 @@ async function generateContentWithRetry(aiClient: GoogleGenAI, params: GenerateP
       return response;
     } catch (error: any) {
       lastError = error;
-      const cat = categorizeGeminiError(error);
-      logAiEvent({ endpoint, model, category: cat.code, durationMs: Date.now() - startedAt, message: error?.message || String(error) });
-      
-      // Only fall through to the single fallback model for retryable failures.
-      if (!cat.retryable) break;
+      const durationMs = Date.now() - startedAt;
+      const classification = categorizeGeminiError(error);
+      logAiEvent({ endpoint, model, category: classification.code, status: classification.status, durationMs, message: error?.message || String(error) });
+      logGeminiDiagnostic(endpoint, model, durationMs, classification);
+
+      // Fall through to the single fallback model ONLY for a confirmed model
+      // availability problem. Quota / rate-limit / spend / timeout stop here.
+      const canTryFallback = classification.fallbackEligible && i < models.length - 1;
+      if (!canTryFallback) break;
     }
   }
 
-  const cat = categorizeGeminiError(lastError);
-  throw new GeminiError(cat.message, cat.status, cat.code);
+  const classification = categorizeGeminiError(lastError);
+  throw new GeminiError(classification.message, classification.status, classification.code, {
+    retryAfterSeconds: classification.retryAfterSeconds,
+    diagnostics: classification.diagnostics,
+  });
 }
 
 // Convert any thrown error into the standardized JSON error contract: { error, code }.
+// If Google supplied an explicit retry delay, echo it as a Retry-After header.
+// The Netlify Function fails fast — it NEVER sleeps or recursively retries here.
 function sendAiError(req: any, res: any, error: any) {
   const startedAt = req?._aiStartedAt || Date.now();
   const durationMs = Date.now() - startedAt;
   const endpoint = req?.path || req?.originalUrl || "gemini";
 
   let status: number;
-  let code: string;
+  let code: GeminiErrorCode;
   let message: string;
+  let retryAfterSeconds: number | undefined;
 
   if (error instanceof GeminiError) {
     status = error.status;
     code = error.code;
     message = error.message;
+    retryAfterSeconds = error.retryAfterSeconds;
+    // Log a full diagnostic for errors that reached the route layer directly
+    // (e.g. thrown by an endpoint) if one wasn't already emitted upstream.
+    if (error.diagnostics) {
+      console.log(
+        `[AI_DIAGNOSTIC] ${JSON.stringify(
+          buildDiagnosticLogPayload({
+            endpoint,
+            durationMs,
+            classification: {
+              status,
+              code,
+              message,
+              fallbackEligible: false,
+              retryAfterSeconds,
+              diagnostics: error.diagnostics,
+            },
+          })
+        )}`
+      );
+    }
   } else {
     const cat = categorizeGeminiError(error);
     status = cat.status;
     code = cat.code;
     message = cat.message;
+    retryAfterSeconds = cat.retryAfterSeconds;
+    logGeminiDiagnostic(endpoint, undefined, durationMs, cat);
   }
 
   logAiEvent({ endpoint, category: code, status, durationMs, message: error?.message || String(error) });
   if (res.headersSent) return;
+  if (retryAfterSeconds !== undefined) {
+    res.setHeader("Retry-After", String(retryAfterSeconds));
+  }
   return res.status(status).json({ error: message, code });
 }
 
@@ -420,8 +440,67 @@ app.use(express.urlencoded({ limit: '15mb', extended: true }));
 const checkGeminiKey = (req: any, res: any, next: any) => {
   req._aiStartedAt = Date.now();
   if (!resolveGeminiKey()) {
-    return res.status(500).json({ error: AI_MESSAGES.AI_NOT_CONFIGURED, code: "AI_NOT_CONFIGURED" });
+    return res.status(500).json({ error: publicMessageFor("AI_NOT_CONFIGURED"), code: "AI_NOT_CONFIGURED" });
   }
+  next();
+};
+
+// --- LIGHTWEIGHT IN-MEMORY BURST GUARD ---
+//
+// Best-effort protection against accidental rapid DUPLICATE AI submissions from
+// the same client (double-click, StrictMode double-effect, a stuck retry). It is
+// NOT a distributed / production rate limiter and NOT a quota manager.
+//
+// LIMITATION: Netlify Functions are serverless — memory is per-instance and is
+// NOT shared across concurrent instances, and is wiped on cold start. So this
+// only catches bursts that happen to land on the same warm instance. That is
+// acceptable: its sole job is to absorb accidental double-fires, not to enforce
+// a global rate. It stores NO prompts and NO sensitive content — only a hashed
+// client+endpoint key and a timestamp.
+const BURST_WINDOW_MS = 1500; // minimum spacing between AI submits from one client+endpoint
+const burstGuardHits = new Map<string, number>();
+let lastBurstSweep = Date.now();
+
+function clientBurstKey(req: any): string {
+  // Reasonably-identifiable client id, best effort. Never includes credentials.
+  const ip =
+    (req.headers?.["x-nf-client-connection-ip"] as string) ||
+    (typeof req.headers?.["x-forwarded-for"] === "string"
+      ? (req.headers["x-forwarded-for"] as string).split(",")[0].trim()
+      : "") ||
+    req.ip ||
+    req.connection?.remoteAddress ||
+    "unknown";
+  const endpoint = req.path || req.originalUrl || "gemini";
+  return `${ip}::${endpoint}`;
+}
+
+const requestBurstGuard = (req: any, res: any, next: any) => {
+  const now = Date.now();
+
+  // Opportunistic cleanup so the map can't grow unbounded on a warm instance.
+  if (now - lastBurstSweep > 60000) {
+    for (const [k, ts] of burstGuardHits) {
+      if (now - ts > BURST_WINDOW_MS * 4) burstGuardHits.delete(k);
+    }
+    lastBurstSweep = now;
+  }
+
+  const key = clientBurstKey(req);
+  const last = burstGuardHits.get(key);
+  if (last !== undefined && now - last < BURST_WINDOW_MS) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((BURST_WINDOW_MS - (now - last)) / 1000));
+    logAiEvent({
+      endpoint: req.path || req.originalUrl || "gemini",
+      category: "AI_CLIENT_THROTTLED",
+      status: 429,
+      durationMs: 0,
+      message: "duplicate/rapid submit blocked by burst guard",
+    });
+    res.setHeader("Retry-After", String(retryAfterSeconds));
+    return res.status(429).json({ error: AI_CLIENT_THROTTLED_MESSAGE, code: "AI_CLIENT_THROTTLED" });
+  }
+  burstGuardHits.set(key, now);
   next();
 };
 
@@ -518,7 +597,7 @@ app.get("/api/gemini/diagnose", async (req, res) => {
   }
 });
 
-app.post("/api/gemini/transcribe", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/transcribe", checkGeminiKey, requestBurstGuard, async (req, res) => {
   try {
     const { audioData, mimeType } = req.body;
     if (!audioData) {
@@ -548,7 +627,7 @@ app.post("/api/gemini/transcribe", checkGeminiKey, async (req, res) => {
 });
 
 // API Routes
-app.post("/api/gemini/chat", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/chat", checkGeminiKey, requestBurstGuard, async (req, res) => {
   try {
     const { message, history, image } = req.body;
 
@@ -630,6 +709,9 @@ app.post("/api/gemini/chat", checkGeminiKey, async (req, res) => {
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, {
       contents: consolidatedContents,
+      // Chat is the only endpoint where students ask about the platform / founder,
+      // so it's the only one that pays the platform-knowledge token cost.
+      includePlatformKnowledge: true,
     }, req);
 
     const text = (response.text || "").trim();
@@ -642,7 +724,7 @@ app.post("/api/gemini/chat", checkGeminiKey, async (req, res) => {
   }
 });
 
-app.post("/api/gemini/timetable", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/timetable", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { 
     subjects, 
     hoursPerDay, 
@@ -757,7 +839,6 @@ Duration context for selection: Category is "${durationCategoryStr}" (value: "${
 
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, { 
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: { 
         responseMimeType: "application/json",
@@ -785,7 +866,7 @@ Duration context for selection: Category is "${durationCategoryStr}" (value: "${
   }
 });
 
-app.post("/api/gemini/notes", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/notes", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { content, focus, noteStyle, summaryLength, files, subject } = req.body;
   try {
 
@@ -858,7 +939,6 @@ Input Content to process:
 
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, { 
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts }]
     }, req); // Pass req to automatically inject language instructions
 
@@ -869,7 +949,7 @@ Input Content to process:
   }
 });
 
-app.post("/api/gemini/solve-homework", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/solve-homework", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { question, subject, image } = req.body;
   try {
     
@@ -940,7 +1020,6 @@ app.post("/api/gemini/solve-homework", checkGeminiKey, async (req, res) => {
 
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, { 
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts }]
     }, req);
 
@@ -951,7 +1030,7 @@ app.post("/api/gemini/solve-homework", checkGeminiKey, async (req, res) => {
   }
 });
 
-app.post("/api/gemini/mnemonic", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/mnemonic", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { topic } = req.body;
   try {
     const prompt = `Act as a memory expert. Create 3 unique, catchy, and highly effective mnemonics (acronyms or creative sentences) to help a student memorize the following topic: "${topic}". 
@@ -959,7 +1038,6 @@ app.post("/api/gemini/mnemonic", checkGeminiKey, async (req, res) => {
 
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, { 
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt }] }]
     });
 
@@ -971,7 +1049,7 @@ app.post("/api/gemini/mnemonic", checkGeminiKey, async (req, res) => {
   }
 });
 
-app.post("/api/gemini/flashcards", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/flashcards", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { topic, notesContent } = req.body;
   try {
     
@@ -984,7 +1062,6 @@ app.post("/api/gemini/flashcards", checkGeminiKey, async (req, res) => {
 
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, { 
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         responseMimeType: "application/json",
@@ -1017,7 +1094,7 @@ app.post("/api/gemini/flashcards", checkGeminiKey, async (req, res) => {
   }
 });
 
-app.post("/api/gemini/roadmap", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/roadmap", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { topic } = req.body;
   try {
     const prompt = `Act as an expert curriculum designer. Create a structured learning roadmap for a student to master "${topic}". 
@@ -1025,7 +1102,6 @@ app.post("/api/gemini/roadmap", checkGeminiKey, async (req, res) => {
 
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, { 
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         responseMimeType: "application/json",
@@ -1060,7 +1136,7 @@ app.post("/api/gemini/roadmap", checkGeminiKey, async (req, res) => {
   }
 });
 
-app.post("/api/gemini/quiz", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/quiz", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { topic } = req.body;
   try {
     if (!topic || !topic.trim()) {
@@ -1073,7 +1149,6 @@ app.post("/api/gemini/quiz", checkGeminiKey, async (req, res) => {
 
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, { 
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         responseMimeType: "application/json",
@@ -1120,7 +1195,7 @@ app.post("/api/gemini/quiz", checkGeminiKey, async (req, res) => {
   }
 });
 
-app.post("/api/gemini/quick-quiz", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/quick-quiz", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { chatText } = req.body;
   try {
     if (!chatText || !chatText.trim()) {
@@ -1141,7 +1216,6 @@ app.post("/api/gemini/quick-quiz", checkGeminiKey, async (req, res) => {
 
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, { 
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         responseMimeType: "application/json",
@@ -1188,7 +1262,7 @@ app.post("/api/gemini/quick-quiz", checkGeminiKey, async (req, res) => {
   }
 });
 
-app.post("/api/gemini/editor-assist", checkGeminiKey, async (req, res) => {
+app.post("/api/gemini/editor-assist", checkGeminiKey, requestBurstGuard, async (req, res) => {
   const { text, language, action } = req.body;
   try {
     if (!text || !text.trim()) {
@@ -1200,7 +1274,6 @@ app.post("/api/gemini/editor-assist", checkGeminiKey, async (req, res) => {
     
     const aiClient = getGoogleGenAI(req);
     const response = await generateContentWithRetry(aiClient, {
-      model: "gemini-3.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt + `\n\nSnippet:\n${text}` }] }]
     });
     res.json({ result: response.text });
