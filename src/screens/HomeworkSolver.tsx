@@ -314,56 +314,34 @@ An unexpected system error occurred during problem analysis.
       console.log(`[HOMEWORK SOLVER TRACING]: Target Endpoint URL: /api/gemini/solve-homework`);
       console.log(`[HOMEWORK SOLVER TRACING]: Payload Body:`, JSON.stringify(reqPayload, null, 2));
 
-      // Retry mechanism (up to 2 attempts) for transient errors/network spikes
-      let res: Response | null = null;
-      let attempts = 0;
-      const maxAttempts = 2;
-      let lastFetchError: any = null;
+      // SINGLE request — no client-side retry loop. Retrying here would multiply
+      // Gemini requests against the shared free-tier quota (a 429 on one attempt
+      // would immediately fire another). The backend already fails fast with a
+      // standardized { error, code } contract; the in-flight `isLoading` guard +
+      // disabled button prevent duplicate submits.
+      const res = await safeFetch('/api/gemini/solve-homework', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-language-setting': activeLang
+        },
+        body: JSON.stringify(reqPayload),
+        timeout: 120000 // Generous 2-minute timeout for comprehensive step-by-step master class solutions
+      });
 
-      while (attempts < maxAttempts) {
+      console.log(`[HOMEWORK SOLVER TRACING]: Solve Response Status: ${res.status}`);
+
+      if (!res.ok) {
+        // Surface the backend's machine-readable code (e.g. AI_RATE_LIMIT_RPD) for diagnostics.
+        let errBody: any = null;
         try {
-          res = await safeFetch('/api/gemini/solve-homework', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-language-setting': activeLang
-            },
-            body: JSON.stringify(reqPayload),
-            timeout: 120000 // Generous 2-minute timeout for comprehensive step-by-step master class solutions
-          });
-
-          console.log(`[HOMEWORK SOLVER TRACING] [Attempt ${attempts + 1}/${maxAttempts}]: Response Status: ${res.status}`);
-
-          if (res.ok) {
-            break;
-          }
-
-          const errorText = await res.clone().text().catch(() => "Unknown response body");
-          console.warn(`[HOMEWORK SOLVER TRACING] [Attempt ${attempts + 1}/${maxAttempts}]: Received non-ok response. Body:`, errorText);
-
-          if (res.status >= 500 && attempts < maxAttempts - 1) {
-            attempts++;
-            setLoadingState(`Transient node error (Status ${res.status}). Retrying (Attempt ${attempts + 1}/${maxAttempts})...`);
-            await new Promise(resolve => setTimeout(resolve, 1500));
-          } else {
-            throw new Error(errorText || `HTTP Exception ${res.status}`);
-          }
-        } catch (fetchErr: any) {
-          lastFetchError = fetchErr;
-          console.error(`[HOMEWORK SOLVER TRACING] [Attempt ${attempts + 1}/${maxAttempts}]: Thrown Exception caught during fetch:`, fetchErr);
-          
-          attempts++;
-          if (attempts >= maxAttempts) {
-            throw fetchErr;
-          }
-          setLoadingState(`Network latency detected. Reallocating cognitive nodes (Attempt ${attempts + 1}/${maxAttempts})...`);
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          errBody = await res.clone().json();
+        } catch {
+          // non-JSON error body — fall back to status text
         }
-      }
-
-      if (!res || !res.ok) {
-        const fallbackText = lastFetchError?.message || res?.statusText || "Solve sequence interrupted.";
-        throw new Error(fallbackText);
+        const backendError = errBody?.error || res.statusText || `HTTP Exception ${res.status}`;
+        const errorCode = errBody?.code ? ` [${errBody.code}]` : '';
+        throw new Error(`${backendError}${errorCode}`);
       }
 
       const data = await res.json();

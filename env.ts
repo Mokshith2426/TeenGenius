@@ -44,7 +44,16 @@ export function isGeminiConfigured(): boolean {
   return getGeminiApiKey() !== null;
 }
 
-// Deterministic production model strategy: primary once, fallback once.
+// Deterministic single production model. Every AI endpoint uses PRIMARY_MODEL.
+//
+// FALLBACK_MODEL is NOT a quota-relief / model-rotation strategy. A 429,
+// RESOURCE_EXHAUSTED, RPM/TPM/RPD, or spend-limit failure MUST NOT trigger a
+// second Gemini request against a different model — doing so only multiplies
+// requests against the shared free-tier project quota. FALLBACK_MODEL is used
+// ONLY when the primary model itself is confirmed unavailable (model not found
+// / unsupported for the API version / deprecated), which is a deploy-time
+// configuration problem, not a runtime quota condition.
+//
 // Real, currently-supported Gemini Flash model IDs for @google/genai.
 export const PRIMARY_MODEL = "gemini-2.5-flash";
 export const FALLBACK_MODEL = "gemini-2.0-flash";
