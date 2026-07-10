@@ -340,6 +340,7 @@ export default function AIAssistant() {
   // Check for auto-triggered initial prompt from onboarding walkthrough
   const location = useLocation();
   const hasTriggeredInitialPrompt = useRef(false);
+  const hasPrefilledFromHomework = useRef(false);
 
   useEffect(() => {
     if (location.state?.initialPrompt && !hasTriggeredInitialPrompt.current) {
@@ -352,6 +353,20 @@ export default function AIAssistant() {
       setTimeout(() => {
         handleSend(initialText);
       }, 700);
+    }
+  }, [location.state]);
+
+  // Prefill question from Homework Solver quick question routing
+  useEffect(() => {
+    if (location.state?.prefillQuestion && !hasPrefilledFromHomework.current) {
+      hasPrefilledFromHomework.current = true;
+      const question = location.state.prefillQuestion;
+      
+      // Clear navigation state history
+      window.history.replaceState({}, document.title);
+      
+      // Prefill the input but do NOT auto-submit
+      setInput(question);
     }
   }, [location.state]);
 

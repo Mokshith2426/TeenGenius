@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Loader2, Copy, Check, History, BookOpen, Image as ImageIcon, Trash2, X, GraduationCap, Globe } from 'lucide-react';
+import { Sparkles, Loader2, Copy, Check, History, BookOpen, Image as ImageIcon, Trash2, X, GraduationCap, Globe, MessageSquare } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../lib/language';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -25,6 +26,7 @@ interface SolutionHistoryItem {
 
 export default function HomeworkSolver() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [question, setQuestion] = useState('');
   const [subject, setSubject] = useState('Mathematics');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -41,6 +43,7 @@ export default function HomeworkSolver() {
   const [loadingState, setLoadingState] = useState('');
   const [activeLang, setActiveLang] = useState('auto');
   const [initialLangLoaded, setInitialLangLoaded] = useState(false);
+  const [isQuickQuestion, setIsQuickQuestion] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -255,8 +258,42 @@ An unexpected system error occurred during problem analysis.
 **Recommendation**: Please click **Get Step-by-Step Answer** again to trigger safety-fallback solver pipelines.`;
   };
 
+  // Conservative deterministic client-side heuristic to detect quick questions
+  const isQuickQuestionHeuristic = (text: string, hasFile: boolean): boolean => {
+    // If there's a file/image, it's not a quick question
+    if (hasFile) return false;
+    
+    const trimmed = text.trim();
+    
+    // Empty or very short questions (less than 10 words) are likely quick questions
+    const wordCount = trimmed.split(/\s+/).filter(word => word.length > 0).length;
+    if (wordCount < 10) return false;
+    
+    // Check for numbered lists or multipart structures
+    if (/\d+\.\s/.test(trimmed)) return false;
+    
+    // Check for step-by-step indicators
+    if (/\b(step\s*by\s*step|show\s*work|explain\s*how|derive|prove|calculate|solve|find|determine|compute)\b/i.test(trimmed)) return false;
+    
+    // Check for detailed solving indicators
+    if (/\b(detailed|comprehensive|thorough|in\s*depth|explain\s*in\s*detail|complete\s*solution)\b/i.test(trimmed)) return false;
+    
+    // Check for question types that need step-by-step solutions
+    if (/\b(equation|formula|theorem|proof|problem|question\s*\d+|example|exercise)\b/i.test(trimmed)) return false;
+    
+    // If none of the above, it's likely a quick question
+    return true;
+  };
+
   const handleSolve = async () => {
     if (!question.trim() && !selectedFile) return;
+    
+    // Check if this is a quick question that should go to AI Tutor instead
+    if (isQuickQuestionHeuristic(question, !!selectedFile)) {
+      setIsQuickQuestion(true);
+      return;
+    }
+    
     if (!navigator.onLine) {
       setSolution(`### 🔌 Homework Solver Offline\n\nAI step-by-step homework resolution requires an active internet connection to contact Gemini-Flash nodes.\n\nYour current question has been cached in memory. Please recover a stable internet connection to start solving!\n\n**Note**: You can still scroll down and read previously solved historical answers under the **Previously Solved** list!`);
       return;
@@ -441,6 +478,17 @@ An unexpected system error occurred during problem analysis.
     }
   };
 
+  const navigateToAITutor = () => {
+    // Navigate to AI Tutor with the question pre-filled via state
+    navigate('/app/ai-assistant', { 
+      state: { 
+        prefillQuestion: question,
+        source: 'homework-solver'
+      } 
+    });
+    setIsQuickQuestion(false);
+  };
+
   return (
     <div className="p-5 space-y-6 bg-zinc-50 dark:bg-zinc-950 min-h-full transition-colors pb-10">
       <header className="space-y-2">
@@ -594,6 +642,33 @@ An unexpected system error occurred during problem analysis.
                 </>
               )}
             </button>
+
+            {/* Quick Question Suggestion */}
+            {isQuickQuestion && (
+              <div className="mt-4 p-4 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800 rounded-2xl space-y-3">
+                <div className="flex items-start gap-2">
+                  <Sparkles size={16} className="text-indigo-600 dark:text-indigo-400 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-xs font-bold text-indigo-900 dark:text-indigo-100">
+                      This looks like a quick question. AI Tutor can answer it faster and conversationally.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={navigateToAITutor}
+                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+                >
+                  <MessageSquare size={14} />
+                  Ask AI Tutor
+                </button>
+                <button
+                  onClick={() => setIsQuickQuestion(false)}
+                  className="w-full py-2 text-zinc-600 dark:text-zinc-400 text-[10px] font-semibold uppercase tracking-wider hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                >
+                  Continue with Homework Solver
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Quick instructions panel */}

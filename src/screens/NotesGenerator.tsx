@@ -254,6 +254,9 @@ export default function NotesGenerator() {
 
   const [initialLangLoaded, setInitialLangLoaded] = useState(false);
 
+  // In-flight generation lock to prevent duplicate requests
+  const isGeneratingRef = useRef(false);
+
   // Synchronize global language on mounting
   useEffect(() => {
     const systemLang = localStorage.getItem('TEEN_GENIUS_LANGUAGE') || 'auto';
@@ -455,6 +458,12 @@ export default function NotesGenerator() {
   const handleGenerate = async () => {
     if (!content.trim() && uploadedFiles.length === 0) return;
     
+    // Synchronous in-flight guard: prevent duplicate generation requests
+    if (isGeneratingRef.current) {
+      return;
+    }
+    isGeneratingRef.current = true;
+    
     setIsLoading(true);
     setError(null);
     try {
@@ -549,6 +558,7 @@ export default function NotesGenerator() {
       setError(err?.message || "Notes generation failed. Standard diagnostics running.");
     } finally {
       setIsLoading(false);
+      isGeneratingRef.current = false;
     }
   };
 

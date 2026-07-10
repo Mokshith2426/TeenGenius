@@ -181,16 +181,14 @@ export default function App() {
   const [showLaunch, setShowLaunch] = React.useState(true);
 
   React.useEffect(() => {
-    // Initialise theme preference
+    // Initialise theme preference — dark is the unconditional default
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
+    if (savedTheme !== 'light') {
+      // Default to dark for: no saved theme, saved 'dark', or any other value
       document.documentElement.classList.add('dark');
-    } else if (savedTheme === 'light') {
-      document.documentElement.classList.remove('dark');
     } else {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-      }
+      // Only remove dark class if explicitly saved as 'light'
+      document.documentElement.classList.remove('dark');
     }
 
     // Initialize Session Analytics Tracking safely
