@@ -1629,7 +1629,11 @@ export default function AIAssistant() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
+                  handleSend();
+                }
+              }}
               placeholder={speechState === 'listening' ? "Speak to input query..." : "Stream query..."}
               className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl md:rounded-[1.5rem] px-4 md:px-8 py-3.5 md:py-5 pr-14 md:pr-20 font-bold text-zinc-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all shadow-xl placeholder:italic placeholder:text-zinc-400 text-sm md:text-base"
               id="chat-query-input-box"

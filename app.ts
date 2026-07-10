@@ -96,6 +96,42 @@ function resolveGeminiKey(): string | null {
   return getGeminiApiKey();
 }
 
+// In-flight request deduplication map: tracks pending requests by user+endpoint
+// to prevent duplicate concurrent Gemini calls from the same user.
+// Note: In-memory state is NOT shared across Netlify Function instances.
+// This provides basic deduplication within a single instance.
+const inFlightRequests = new Map<string, Promise<any>>();
+const IN_FLIGHT_TTL_MS = 30000; // Auto-cleanup stale entries after 30s
+
+function getRequestKey(req: any, endpoint: string): string {
+  const userId = req?.user?.uid || req?.headers?.['x-user-id'] || 'anonymous';
+  return `${endpoint}:${userId}`;
+}
+
+async function deduplicateRequest<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const existing = inFlightRequests.get(key);
+  if (existing) {
+    // Return the existing promise to deduplicate concurrent identical requests
+    return existing;
+  }
+
+  const promise = fn().finally(() => {
+    // Clean up after completion or failure
+    setTimeout(() => {
+      inFlightRequests.delete(key);
+    }, 1000);
+  });
+
+  inFlightRequests.set(key, promise);
+
+  // Auto-cleanup stale entries
+  setTimeout(() => {
+    inFlightRequests.delete(key);
+  }, IN_FLIGHT_TTL_MS);
+
+  return promise;
+}
+
 // One lazy server-side Gemini client. Cached and reused; rebuilt only if the
 // resolved key changes (e.g. env updated between requests).
 let geminiClient: GoogleGenAI | null = null;
@@ -628,97 +664,101 @@ app.post("/api/gemini/transcribe", checkGeminiKey, requestBurstGuard, async (req
 
 // API Routes
 app.post("/api/gemini/chat", checkGeminiKey, requestBurstGuard, async (req, res) => {
+  const requestKey = getRequestKey(req, "/api/gemini/chat");
+  
   try {
-    const { message, history, image } = req.body;
+    await deduplicateRequest(requestKey, async () => {
+      const { message, history, image } = req.body;
 
-    // Rebuild the conversation history into Gemini's expected content shape,
-    // preserving any multimodal image parts (inlineData / uploaded file URLs).
-    const processedHistory = await Promise.all((history || []).map(async (h: any) => {
-      const parts = await Promise.all((h.parts || []).map(async (p: any) => {
-        if (p.text) return { text: p.text };
-        if (p.inlineData) return { inlineData: p.inlineData };
-        if (p.imageUrl) {
+      // Rebuild the conversation history into Gemini's expected content shape,
+      // preserving any multimodal image parts (inlineData / uploaded file URLs).
+      const processedHistory = await Promise.all((history || []).map(async (h: any) => {
+        const parts = await Promise.all((h.parts || []).map(async (p: any) => {
+          if (p.text) return { text: p.text };
+          if (p.inlineData) return { inlineData: p.inlineData };
+          if (p.imageUrl) {
+            try {
+              if (p.imageUrl.startsWith("data:")) {
+                const matches = p.imageUrl.match(/^data:([^;]+);base64,(.+)$/);
+                if (matches) {
+                  return { inlineData: { mimeType: matches[1], data: matches[2] } };
+                }
+              } else {
+                const fileName = path.basename(p.imageUrl);
+                const filePath = path.join(uploadsDir, fileName);
+                if (fs.existsSync(filePath)) {
+                  const data = fs.readFileSync(filePath).toString("base64");
+                  const mimeType = `image/${path.extname(fileName).slice(1)}`.replace("..", ".") || "image/jpeg";
+                  return { inlineData: { data, mimeType } };
+                }
+              }
+            } catch (err) {
+              console.error("Error reading image for history:", sanitizeErrorLog((err as any)?.message || String(err)));
+            }
+          }
+          return p;
+        }));
+        return {
+          role: h.role === "model" || h.role === "assistant" ? "model" : "user",
+          parts,
+        };
+      }));
+
+      const userParts: any[] = [{ text: message }];
+      if (image) {
+        if (image.data && image.mimeType) {
+          userParts.push({ inlineData: { mimeType: image.mimeType, data: image.data } });
+        } else if (image.url) {
           try {
-            if (p.imageUrl.startsWith("data:")) {
-              const matches = p.imageUrl.match(/^data:([^;]+);base64,(.+)$/);
+            if (image.url.startsWith("data:")) {
+              const matches = image.url.match(/^data:([^;]+);base64,(.+)$/);
               if (matches) {
-                return { inlineData: { mimeType: matches[1], data: matches[2] } };
+                userParts.push({ inlineData: { mimeType: matches[1], data: matches[2] } });
               }
             } else {
-              const fileName = path.basename(p.imageUrl);
+              const fileName = path.basename(image.url);
               const filePath = path.join(uploadsDir, fileName);
               if (fs.existsSync(filePath)) {
                 const data = fs.readFileSync(filePath).toString("base64");
                 const mimeType = `image/${path.extname(fileName).slice(1)}`.replace("..", ".") || "image/jpeg";
-                return { inlineData: { data, mimeType } };
+                userParts.push({ inlineData: { data, mimeType } });
               }
             }
           } catch (err) {
-            console.error("Error reading image for history:", sanitizeErrorLog((err as any)?.message || String(err)));
+            console.error("Error reading current image:", sanitizeErrorLog((err as any)?.message || String(err)));
           }
         }
-        return p;
-      }));
-      return {
-        role: h.role === "model" || h.role === "assistant" ? "model" : "user",
-        parts,
-      };
-    }));
+      }
 
-    const userParts: any[] = [{ text: message }];
-    if (image) {
-      if (image.data && image.mimeType) {
-        userParts.push({ inlineData: { mimeType: image.mimeType, data: image.data } });
-      } else if (image.url) {
-        try {
-          if (image.url.startsWith("data:")) {
-            const matches = image.url.match(/^data:([^;]+);base64,(.+)$/);
-            if (matches) {
-              userParts.push({ inlineData: { mimeType: matches[1], data: matches[2] } });
-            }
-          } else {
-            const fileName = path.basename(image.url);
-            const filePath = path.join(uploadsDir, fileName);
-            if (fs.existsSync(filePath)) {
-              const data = fs.readFileSync(filePath).toString("base64");
-              const mimeType = `image/${path.extname(fileName).slice(1)}`.replace("..", ".") || "image/jpeg";
-              userParts.push({ inlineData: { data, mimeType } });
-            }
-          }
-        } catch (err) {
-          console.error("Error reading current image:", sanitizeErrorLog((err as any)?.message || String(err)));
+      // Combine history + current turn, then consolidate consecutive same-role turns
+      // so the model always receives strictly alternating user/model turns.
+      const rawConversation = [...processedHistory, { role: "user", parts: userParts }];
+      const consolidatedContents: any[] = [];
+      for (const turn of rawConversation) {
+        const last = consolidatedContents[consolidatedContents.length - 1];
+        if (last && last.role === turn.role) {
+          last.parts.push(...turn.parts);
+        } else {
+          consolidatedContents.push({ role: turn.role, parts: [...turn.parts] });
         }
       }
-    }
 
-    // Combine history + current turn, then consolidate consecutive same-role turns
-    // so the model always receives strictly alternating user/model turns.
-    const rawConversation = [...processedHistory, { role: "user", parts: userParts }];
-    const consolidatedContents: any[] = [];
-    for (const turn of rawConversation) {
-      const last = consolidatedContents[consolidatedContents.length - 1];
-      if (last && last.role === turn.role) {
-        last.parts.push(...turn.parts);
-      } else {
-        consolidatedContents.push({ role: turn.role, parts: [...turn.parts] });
+      // Non-streaming JSON transport for maximum reliability across web, AI Studio
+      // preview, and native shells. No SSE / chunked-transfer dependency.
+      const aiClient = getGoogleGenAI(req);
+      const response = await generateContentWithRetry(aiClient, {
+        contents: consolidatedContents,
+        // Chat is the only endpoint where students ask about the platform / founder,
+        // so it's the only one that pays the platform-knowledge token cost.
+        includePlatformKnowledge: true,
+      }, req);
+
+      const text = (response.text || "").trim();
+      if (!text) {
+        throw new GeminiError("The AI returned an empty response. Please try again.", 503, "AI_EMPTY_RESPONSE");
       }
-    }
-
-    // Non-streaming JSON transport for maximum reliability across web, AI Studio
-    // preview, and native shells. No SSE / chunked-transfer dependency.
-    const aiClient = getGoogleGenAI(req);
-    const response = await generateContentWithRetry(aiClient, {
-      contents: consolidatedContents,
-      // Chat is the only endpoint where students ask about the platform / founder,
-      // so it's the only one that pays the platform-knowledge token cost.
-      includePlatformKnowledge: true,
-    }, req);
-
-    const text = (response.text || "").trim();
-    if (!text) {
-      throw new GeminiError("The AI returned an empty response. Please try again.", 503, "AI_EMPTY_RESPONSE");
-    }
-    return res.json({ text });
+      return res.json({ text });
+    });
   } catch (error: any) {
     return sendAiError(req, res, error);
   }
