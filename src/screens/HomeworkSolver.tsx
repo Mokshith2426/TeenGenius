@@ -229,24 +229,24 @@ The request to the TeenGenius solvers timed out.
 **Potential Causes**:
 1. **Complex Problem Derivation**: The homework query is extremely comprehensive and took more than 30 seconds to run.
 2. **Slow Internet Connection**: High latency matches with unstable transfer speeds.
-3. **Gemini Latency**: The Google Generative AI API is experiencing an unusually high load. Please click the **Get Step-by-Step Answer** button to retry!`;
+3. **AI Service Load**: The AI service is experiencing an unusually high load. Please click the **Get Step-by-Step Answer** button to retry!`;
     }
     
     if (msg.includes("auth") || msg.includes("key") || msg.includes("credentials") || msg.includes("unauthorized") || msg.includes("401") || msg.includes("403")) {
       return `### 🔑 Authentication Credentials Issue
-Access to the Gemini-3.5-family cognitive pathways was suspended.
+Access to the AI service was denied.
 
 **Potential Causes**:
-1. **Invalid Gemini Key**: A custom key was entered incorrectly under the Secret Developer module.
+1. **Invalid API Key**: The server-side AI key is missing or was configured incorrectly.
 2. **System Rule Restriction**: The backend rejected the requests due to safety limits or missing service tokens.`;
     }
 
     if (msg.includes("gemini") || msg.includes("api") || msg.includes("quota") || msg.includes("limit")) {
-      return `### 🧠 Gemini Cognitive Node Error
-The Google Generative AI core returned an exception structure.
+      return `### 🧠 AI Service Error
+The AI service returned an unexpected error.
 
 **Potential Causes**:
-1. **API Quota Exceeded**: Google's free/paid tier limits may have been exhausted temporarily.
+1. **API Quota Exceeded**: The AI service usage limits may have been exhausted temporarily.
 2. **Safety Block**: The model has flagged your question context under creative content filters.`;
     }
 
@@ -295,7 +295,7 @@ An unexpected system error occurred during problem analysis.
     }
     
     if (!navigator.onLine) {
-      setSolution(`### 🔌 Homework Solver Offline\n\nAI step-by-step homework resolution requires an active internet connection to contact Gemini-Flash nodes.\n\nYour current question has been cached in memory. Please recover a stable internet connection to start solving!\n\n**Note**: You can still scroll down and read previously solved historical answers under the **Previously Solved** list!`);
+      setSolution(`### 🔌 Homework Solver Offline\n\nAI step-by-step homework resolution requires an active internet connection to contact the AI service.\n\nYour current question has been cached in memory. Please recover a stable internet connection to start solving!\n\n**Note**: You can still scroll down and read previously solved historical answers under the **Previously Solved** list!`);
       return;
     }
     setIsLoading(true);

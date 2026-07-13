@@ -74,7 +74,7 @@ export default function AIAssistant() {
       try {
         const res = await safeFetch('/api/health/ai', { timeout: 8000 });
         const data = await res.json();
-        if (!cancelled) setAiOnline(res.ok && data?.geminiConfigured === true);
+        if (!cancelled) setAiOnline(res.ok && data?.reachable === true);
       } catch {
         if (!cancelled) setAiOnline(false);
       }

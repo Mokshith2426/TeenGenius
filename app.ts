@@ -330,7 +330,7 @@ function sendAiError(req: any, res: any, error: any) {
             durationMs,
             classification: {
               status,
-              code,
+              code: code as GeminiErrorCode,
               message,
               fallbackEligible: false,
               retryAfterSeconds,
@@ -1109,7 +1109,7 @@ async function handleGeminiChat(req: any, res: any, params: { message: string; h
               const filePath = path.join(uploadsDir, fileName);
               if (fs.existsSync(filePath)) {
                 const data = fs.readFileSync(filePath).toString("base64");
-                const mimeType = `image/${path.extname(fileName).slice(1)}.replace("..", ".") || "image/jpeg"`;
+                const mimeType = `image/${path.extname(fileName).slice(1)}`.replace("..", ".") || "image/jpeg";
                 return { inlineData: { data, mimeType } };
               }
             }
@@ -1141,7 +1141,7 @@ async function handleGeminiChat(req: any, res: any, params: { message: string; h
             const filePath = path.join(uploadsDir, fileName);
             if (fs.existsSync(filePath)) {
               const data = fs.readFileSync(filePath).toString("base64");
-              const mimeType = `image/${path.extname(fileName).slice(1)}.replace("..", ".") || "image/jpeg"`;
+              const mimeType = `image/${path.extname(fileName).slice(1)}`.replace("..", ".") || "image/jpeg";
               userParts.push({ inlineData: { data, mimeType } });
             }
           }
