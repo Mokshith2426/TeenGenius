@@ -153,7 +153,7 @@ export default function CommunityHub() {
     localStorage.setItem(`SANDBOX_CLASSROOM_GROUPS_${user.uid}`, JSON.stringify(groups));
     localStorage.setItem(`SANDBOX_DISCOVER_CIRCLES_${user.uid}`, JSON.stringify(discoverCircles));
     localStorage.setItem(`SANDBOX_CHAT_LIST_${user.uid}`, JSON.stringify(chats));
-  }, [friends, pendingReceived, pendingSent, groups, discoverCircles, chats, user, isGuest]);
+  }, [friends, pendingReceived, pendingSent, groups, discoverCircles, chats, user?.uid, isGuest]);
 
   useEffect(() => {
     if (!user) return;
@@ -208,7 +208,7 @@ export default function CommunityHub() {
         { id: 'sb_dis1', name: 'AP Chemistry Study Group', description: 'Exam preparation for organic chains & thermodynamics.', ownerId: 'sb_f4', memberIds: ['sb_f4', 'sb_f5'] },
         { id: 'sb_dis2', name: 'Teen Writers Hub', description: 'Weekly prompts, peer proofreading and formatting critiques.', ownerId: 'sb_f5', memberIds: ['sb_f5'] },
         { id: 'sb_dis3', name: 'Algebra Homework Hackers', description: 'A collective workspace tackling heavy mathematics assignments.', ownerId: 'sb_f4', memberIds: ['sb_f4'] },
-        { id: 'sb_dis4', name: 'AI Creative Tech Guild', description: 'Building fun cool web applications with Gemini AI with other students.', ownerId: 'sb_f6', memberIds: ['sb_f6'] }
+        { id: 'sb_dis4', name: 'AI Creative Tech Guild', description: 'Building fun cool web applications with TeenGenius AI with other students.', ownerId: 'sb_f6', memberIds: ['sb_f6'] }
       ];
       const initialDiscover = storedDiscover ? JSON.parse(storedDiscover) : defaultDiscover;
       setDiscoverCircles(initialDiscover);

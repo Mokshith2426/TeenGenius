@@ -213,7 +213,7 @@ export default function MemoryPalace() {
     setError(null);
     try {
       if (activeTab === 'mnemonics') {
-        const response = await safeFetch('/api/gemini/mnemonic', {
+        const response = await safeFetch('/api/ai/mnemonic', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ topic }),
@@ -231,7 +231,7 @@ export default function MemoryPalace() {
           payload.topic = topic;
         }
 
-        const response = await safeFetch('/api/gemini/flashcards', {
+        const response = await safeFetch('/api/ai/flashcards', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),

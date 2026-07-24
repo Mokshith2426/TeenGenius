@@ -68,7 +68,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
       title: "Ready to Rocket?",
       badge: "Interactive Launchpad",
       tagline: "Get started with interactive suggestions",
-      description: "Select one of the interactive student prompts below to immediately initiate a learning session with our Gemini AI Companion, or complete the walkthrough to head straight to your dashboard.",
+      description: "Select one of the interactive student prompts below to immediately initiate a learning session with our TeenGenius AI Companion, or complete the walkthrough to head straight to your dashboard.",
       icon: BookOpen,
       iconBg: "bg-indigo-505/10 text-indigo-600 dark:text-indigo-400",
       gradient: "from-indigo-600 via-blue-600 to-cyan-500"

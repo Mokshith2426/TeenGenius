@@ -10,7 +10,7 @@ const PORT = Number(process.env.PORT) || 3000;
 
 async function startServer() {
   // Dynamically import the app AFTER dotenv has populated process.env, so the
-  // server-only env module resolves the Gemini key correctly at first evaluation.
+  // server-only env module resolves the AI key correctly at first evaluation.
   const { app, uploadsDir } = await import("./app");
 
   // Serve uploaded files statically

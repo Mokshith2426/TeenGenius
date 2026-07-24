@@ -227,7 +227,7 @@ export default function StudyGroupDetail() {
     setEditorLoading(true);
     setEditorNotes(`AI is processing your ${editorLanguage} workspace...`);
     try {
-      const res = await safeFetch('/api/gemini/editor-assist', {
+      const res = await safeFetch('/api/ai/editor-assist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -550,7 +550,7 @@ export default function StudyGroupDetail() {
     setQuizCompleted(false);
     
     try {
-      const response = await safeFetch("/api/gemini/quiz", {
+      const response = await safeFetch("/api/ai/quiz", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -826,7 +826,7 @@ export default function StudyGroupDetail() {
                 <div className="p-4 bg-violet-500/5 border border-violet-500/10 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs font-medium">
                   <div className="space-y-1">
                     <p className="font-extrabold uppercase text-[9px] tracking-widest text-violet-600">✨ Realtime AI Copilot Assisted actions</p>
-                    <p className="text-zinc-550 dark:text-zinc-400">Optimize scripts, complete notes, or format drafts instantly using our specialized Gemini Core compiler.</p>
+                    <p className="text-zinc-550 dark:text-zinc-400">Optimize scripts, complete notes, or format drafts instantly using our specialized AI compiler.</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button

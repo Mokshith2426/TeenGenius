@@ -2,16 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, Loader2, Copy, Check, History, BookOpen, Image as ImageIcon, Trash2, X, GraduationCap, Globe, MessageSquare } from 'lucide-react';
-import { SUPPORTED_LANGUAGES } from '../lib/language';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import { cn, preprocessLaTeX, compressImage, dataURLtoFile } from '../lib/utils';
+import { cn, compressImage, dataURLtoFile } from '../lib/utils';
 import { safeFetch } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, query, where, orderBy, onSnapshot, doc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { detectSubject } from '../lib/subjectDetection';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 interface SolutionHistoryItem {
   id: string;
@@ -54,45 +51,11 @@ export default function HomeworkSolver() {
     setInitialLangLoaded(true);
   }, []);
 
-  const autoDetectSubject = (text: string): string | null => {
-    const lower = text.toLowerCase();
-    if (/\b(solve|equation|matrix|matrices|integral|integration|derivative|calculus|algebra|theorem|triangle|geometry|fraction|trigonometry|logarithm|sum|probability|ratio|percentage|\+|-|\*|\/|=)\b/.test(lower)) {
-      return 'Mathematics';
-    }
-    if (/\b(force|velocity|acceleration|gravity|photon|quantum|optics|lens|relativity|thermodynamics|energy|power|watt|joule|friction|motion|magnet|electricity|ohm|voltage)\b/.test(lower)) {
-      return 'Physics';
-    }
-    if (/\b(reaction|acid|base|ph|molecule|atom|element|organic|valency|solution|catalyst|chemistry|covalent|ionic|gas|liquid|solid|periodic table)\b/.test(lower)) {
-      return 'Chemistry';
-    }
-    if (/\b(cell|mitosis|meiosis|photosynthesis|dna|rna|gene|genetics|evolution|organism|bacteria|virus|plant|animal|species|human body|anatomy|ecology|respiration)\b/.test(lower)) {
-      return 'Biology';
-    }
-    if (/\b(programming|code|binary|python|javascript|java|compiler|algorithm|loop|array|variable|database|sql|html|css|software|hardware|network|server)\b/.test(lower)) {
-      return 'Computer Science';
-    }
-    if (/\b(telugu|andhra|telangana)\b/.test(lower)) {
-      return 'Telugu';
-    }
-    if (/\b(hindi|bharat|constitution|swaraj)\b/.test(lower)) {
-      return 'Hindi';
-    }
-    if (/\b(essay|poem|grammar|literature|noun|verb|adjective|tense|vocabulary|shakespeare|sonnet|pronoun|paragraph)\b/.test(lower)) {
-      return 'English';
-    }
-    if (/\b(history|social|geography|revolution|civic|economics|democracy|freedom|constitution|continent|ocean|climate|map)\b/.test(lower)) {
-      return 'Social Science';
-    }
-    if (/\b(science|experiment|laboratory|scientific|hypothesis|phenomenon)\b/.test(lower)) {
-      return 'Science';
-    }
-    return null;
-  };
 
   useEffect(() => {
     if (isSubjectManuallySelected) return;
     const textToScan = `${question} ${selectedFile ? selectedFile.name : ''}`;
-    const detected = autoDetectSubject(textToScan);
+    const detected = detectSubject(textToScan);
     if (detected) {
       setSubject(detected);
     }
@@ -211,7 +174,7 @@ export default function HomeworkSolver() {
 
   const getFriendlyErrorMessage = (err: any): string => {
     const msg = (err?.message || String(err)).toLowerCase();
-    
+
     if (msg.includes("failed to fetch") || msg.includes("network error")) {
       return `### 🔌 Connection Blocked or Network Offline
 The application was unable to establish a connection with the backend services.
@@ -221,41 +184,41 @@ The application was unable to establish a connection with the backend services.
 2. **CORS or Sandbox Constraint**: The browser blocked the request because of cross-origin security rules or an iframe sandboxing restriction.
 3. **Backend Service Offline**: The TeenGenius backend server might contain configuration abnormalities. Try reloading the web app or returning to the main dashboard.`;
     }
-    
+
     if (msg.includes("timed out") || msg.includes("timeout") || msg.includes("aborted")) {
-      return `### ⏱️ Cognitive Synchrony Timeout
-The request to the TeenGenius solvers timed out.
+      return `### ⏱️ TeenGenius AI Response Timeout
+The request to the TeenGenius AI solver timed out.
 
 **Potential Causes**:
 1. **Complex Problem Derivation**: The homework query is extremely comprehensive and took more than 30 seconds to run.
 2. **Slow Internet Connection**: High latency matches with unstable transfer speeds.
-3. **Gemini Latency**: The Google Generative AI API is experiencing an unusually high load. Please click the **Get Step-by-Step Answer** button to retry!`;
+3. **AI Service Load**: The AI service is experiencing high demand. Please click the **Get Step-by-Step Answer** button to retry!`;
     }
-    
+
     if (msg.includes("auth") || msg.includes("key") || msg.includes("credentials") || msg.includes("unauthorized") || msg.includes("401") || msg.includes("403")) {
-      return `### 🔑 Authentication Credentials Issue
-Access to the Gemini-3.5-family cognitive pathways was suspended.
+      return `### 🔑 AI Service Authentication Issue
+The AI service authentication encountered a problem.
 
 **Potential Causes**:
-1. **Invalid Gemini Key**: A custom key was entered incorrectly under the Secret Developer module.
-2. **System Rule Restriction**: The backend rejected the requests due to safety limits or missing service tokens.`;
+1. **Invalid API Configuration**: The service credentials may need to be reconfigured.
+2. **System Access Restriction**: The backend rejected the request due to access limits.`;
     }
 
-    if (msg.includes("gemini") || msg.includes("api") || msg.includes("quota") || msg.includes("limit")) {
-      return `### 🧠 Gemini Cognitive Node Error
-The Google Generative AI core returned an exception structure.
+    if (msg.includes("quota") || msg.includes("limit") || msg.includes("rate limit")) {
+      return `### 📊 AI Usage Limit Reached
+The AI service has reached its current usage limit.
 
 **Potential Causes**:
-1. **API Quota Exceeded**: Google's free/paid tier limits may have been exhausted temporarily.
-2. **Safety Block**: The model has flagged your question context under creative content filters.`;
+1. **High Demand**: Too many students are using the service simultaneously.
+2. **Rate Limit**: Please wait a moment before trying again.`;
     }
 
-    return `### ⚠️ Cognitive Synapse Intermission
+    return `### ⚠️ TeenGenius AI Service Intermission
 An unexpected system error occurred during problem analysis.
 
 **Error Signature**: \`${err?.message || err}\`
 
-**Recommendation**: Please click **Get Step-by-Step Answer** again to trigger safety-fallback solver pipelines.`;
+**Recommendation**: Please click **Get Step-by-Step Answer** again to retry.`;
   };
 
   // Conservative deterministic client-side heuristic to detect quick questions
@@ -295,7 +258,7 @@ An unexpected system error occurred during problem analysis.
     }
     
     if (!navigator.onLine) {
-      setSolution(`### 🔌 Homework Solver Offline\n\nAI step-by-step homework resolution requires an active internet connection to contact Gemini-Flash nodes.\n\nYour current question has been cached in memory. Please recover a stable internet connection to start solving!\n\n**Note**: You can still scroll down and read previously solved historical answers under the **Previously Solved** list!`);
+      setSolution(`### 🔌 Homework Solver Offline\n\nAI step-by-step homework resolution requires an active internet connection to contact TeenGenius AI nodes.\n\nYour current question has been cached in memory. Please recover a stable internet connection to start solving!\n\n**Note**: You can still scroll down and read previously solved historical answers under the **Previously Solved** list!`);
       return;
     }
     setIsLoading(true);
@@ -312,29 +275,23 @@ An unexpected system error occurred during problem analysis.
         const formData = new FormData();
         formData.append('file', selectedFile);
 
-        console.log(`[HOMEWORK SOLVER TRACING]: Initiating Image Upload...`);
-        console.log(`[HOMEWORK SOLVER TRACING]: Target Endpoint URL: /api/upload`);
-        console.log(`[HOMEWORK SOLVER TRACING]: Payload Body: FormData with file [${selectedFile.name}, size: ${selectedFile.size} bytes]`);
 
         const uploadRes = await safeFetch('/api/upload', {
           method: 'POST',
           body: formData
         });
 
-        console.log(`[HOMEWORK SOLVER TRACING]: Image Upload Response Status: ${uploadRes.status}`);
 
         if (uploadRes.ok) {
           const uploadData = await uploadRes.clone().json();
-          console.log(`[HOMEWORK SOLVER TRACING]: Image Upload Response Body:`, JSON.stringify(uploadData, null, 2));
           finalImageUrl = uploadData.url;
         } else {
           const rawErr = await uploadRes.clone().text().catch(() => "");
-          console.error(`[HOMEWORK SOLVER TRACING]: Image Upload Failed with status ${uploadRes.status}, body: ${rawErr}`);
         }
       }
 
       // 2. Query Homework Solver AI Core
-      setLoadingState('Processing with Flash-3.5 cognitive pathways...');
+      setLoadingState('Processing with TeenGenius AI...');
       const finalSubject = subject === 'Custom' ? (customSubject.trim() || 'Custom Subject') : subject;
       const reqPayload: any = {
         question: question || 'Please solve the problem in the attached image.',
@@ -347,16 +304,12 @@ An unexpected system error occurred during problem analysis.
         reqPayload.image = { data: imagePreview.split(',')[1], mimeType: selectedFile?.type || 'image/jpeg' };
       }
 
-      console.log("[HOMEWORK SOLVER TRACING]: Initiating Solve Action...");
-      console.log(`[HOMEWORK SOLVER TRACING]: Target Endpoint URL: /api/gemini/solve-homework`);
-      console.log(`[HOMEWORK SOLVER TRACING]: Payload Body:`, JSON.stringify(reqPayload, null, 2));
-
       // SINGLE request — no client-side retry loop. Retrying here would multiply
-      // Gemini requests against the shared free-tier quota (a 429 on one attempt
+      // requests against the shared free-tier quota (a 429 on one attempt
       // would immediately fire another). The backend already fails fast with a
       // standardized { error, code } contract; the in-flight `isLoading` guard +
       // disabled button prevent duplicate submits.
-      const res = await safeFetch('/api/gemini/solve-homework', {
+      const res = await safeFetch('/api/ai/solve-homework', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -366,7 +319,6 @@ An unexpected system error occurred during problem analysis.
         timeout: 120000 // Generous 2-minute timeout for comprehensive step-by-step master class solutions
       });
 
-      console.log(`[HOMEWORK SOLVER TRACING]: Solve Response Status: ${res.status}`);
 
       if (!res.ok) {
         // Surface the backend's machine-readable code (e.g. AI_RATE_LIMIT_RPD) for diagnostics.
@@ -382,7 +334,6 @@ An unexpected system error occurred during problem analysis.
       }
 
       const data = await res.json();
-      console.log(`[HOMEWORK SOLVER TRACING]: Solve Action Succeeded! Highly-dense LaTeX Solution text length: ${data.solution?.length || 0} characters.`);
       setSolution(data.solution);
 
       // 3. Save to Firestore if authenticated
@@ -423,9 +374,8 @@ An unexpected system error occurred during problem analysis.
       // Clean input file
       setSelectedFile(null);
       setImagePreview(null);
-    } catch (err: any) {
-      console.error("[HOMEWORK SOLVER TRACING]: Thrown Exception caught during execution flow:", err);
-      const friendlyDetails = getFriendlyErrorMessage(err);
+  } catch (err: any) {
+    const friendlyDetails = getFriendlyErrorMessage(err);
       setSolution(`### Synapse Connection Fault\n\n${friendlyDetails}`);
     } finally {
       setIsLoading(false);
@@ -618,7 +568,7 @@ An unexpected system error occurred during problem analysis.
                     </div>
                     <div>
                       <span className="text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-200 block">Upload Question Snap</span>
-                      <span className="text-[8px] uppercase font-bold text-zinc-400 block mt-0.5">Drag & drop or Click to capture</span>
+                <span className="text-[8px] uppercase font-bold text-zinc-400 block mt-0.5">Drag & drop or Click to capture</span>
                     </div>
                   </div>
                 )}
@@ -755,14 +705,10 @@ An unexpected system error occurred during problem analysis.
                       />
                     )}
                   </div>
-                  <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{preprocessLaTeX(selectedHistoryItem.solution)}</ReactMarkdown>
-                  </div>
+                  <MarkdownRenderer content={selectedHistoryItem.solution} />
                 </div>
               ) : solution ? (
-                <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap animate-fade-in">
-                  <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{preprocessLaTeX(solution)}</ReactMarkdown>
-                </div>
+                <MarkdownRenderer content={solution} />
               ) : (
                 <div className="h-full py-12 flex flex-col items-center justify-center text-center space-y-3 opacity-30 px-6">
                   <GraduationCap size={44} className="text-zinc-400 dark:text-zinc-700 animate-pulse" />

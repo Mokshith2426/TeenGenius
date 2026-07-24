@@ -1,20 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  FileText, Sparkles, Loader2, Copy, Check, Download, History, List, 
-  Tag, AlertTriangle, Search, Trash2, Calendar, FolderOpen, Info,
-  Upload, X, Image as ImageIcon, Globe, FileUp, Clipboard, Eye, BookOpen, GraduationCap
+  FileText, Sparkles, Loader2, Copy, Check, Download, History, List,
+  Search, Trash2, Calendar, FolderOpen, Info,
+  Upload, X, Image as ImageIcon, Clipboard, Eye, BookOpen, GraduationCap
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import { cn, preprocessLaTeX } from '../lib/utils';
+import { cn } from '../lib/utils';
 import { safeFetch } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, addDoc, query, where, orderBy, onSnapshot, doc, deleteDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { SUPPORTED_LANGUAGES } from '../lib/language';
+import { detectSubject } from '../lib/subjectDetection';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 interface SavedNote {
   id: string;
@@ -264,46 +261,11 @@ export default function NotesGenerator() {
     setInitialLangLoaded(true);
   }, []);
 
-  const autoDetectSubject = (text: string): string | null => {
-    const lower = text.toLowerCase();
-    if (/\b(solve|equation|matrix|matrices|integral|integration|derivative|calculus|algebra|theorem|triangle|geometry|fraction|trigonometry|logarithm|sum|probability|ratio|percentage|\+|-|\*|\/|=)\b/.test(lower)) {
-      return 'Mathematics';
-    }
-    if (/\b(force|velocity|acceleration|gravity|photon|quantum|optics|lens|relativity|thermodynamics|energy|power|watt|joule|friction|motion|magnet|electricity|ohm|voltage)\b/.test(lower)) {
-      return 'Physics';
-    }
-    if (/\b(reaction|acid|base|ph|molecule|atom|element|organic|valency|solution|catalyst|chemistry|covalent|ionic|gas|liquid|solid|periodic table)\b/.test(lower)) {
-      return 'Chemistry';
-    }
-    if (/\b(cell|mitosis|meiosis|photosynthesis|dna|rna|gene|genetics|evolution|organism|bacteria|virus|plant|animal|species|human body|anatomy|ecology|respiration)\b/.test(lower)) {
-      return 'Biology';
-    }
-    if (/\b(programming|code|binary|python|javascript|java|compiler|algorithm|loop|array|variable|database|sql|html|css|software|hardware|network|server)\b/.test(lower)) {
-      return 'Computer Science';
-    }
-    if (/\b(telugu|andhra|telangana)\b/.test(lower)) {
-      return 'Telugu';
-    }
-    if (/\b(hindi|bharat|constitution|swaraj)\b/.test(lower)) {
-      return 'Hindi';
-    }
-    if (/\b(essay|poem|grammar|literature|noun|verb|adjective|tense|vocabulary|shakespeare|sonnet|pronoun|paragraph)\b/.test(lower)) {
-      return 'English';
-    }
-    if (/\b(history|social|geography|revolution|civic|economics|democracy|freedom|constitution|continent|ocean|climate|map)\b/.test(lower)) {
-      return 'Social Science';
-    }
-    if (/\b(science|experiment|laboratory|scientific|hypothesis|phenomenon)\b/.test(lower)) {
-      return 'Science';
-    }
-    return null;
-  };
-
   useEffect(() => {
     if (isSubjectManuallySelected) return;
     const fileNames = uploadedFiles.map(f => f.name).join(' ');
     const textToScan = `${content} ${focus} ${fileNames}`;
-    const detected = autoDetectSubject(textToScan);
+    const detected = detectSubject(textToScan);
     if (detected) {
       setSubject(detected);
     }
@@ -469,7 +431,7 @@ export default function NotesGenerator() {
     try {
       const finalSubject = subject === 'Custom' ? (customSubject.trim() || 'Custom Subject') : subject;
       
-      const response = await safeFetch('/api/gemini/notes', {
+      const response = await safeFetch('/api/ai/notes', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -1119,11 +1081,11 @@ Format: Structured Markdown Note
             {/* Render view of active study sheet */}
             {activeTab === 'active' && (
               <div className="flex-1 flex flex-col min-h-0">
-                {notes && activeNoteId && (
+              {notes && activeNoteId && (
                   <div className="mx-5 my-3 p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-850 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div className="space-y-1">
                       <div className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none flex items-center gap-1">
-                        <Info size={11} /> Classification Badges
+                        <Info size={11} /> Classification
                       </div>
                       <div className="flex flex-wrap gap-1.5 pt-0.5">
                         <span className={cn("px-2.5 py-0.5 text-[9px] font-black rounded-full border uppercase leading-relaxed", getSubjectBadgeStyle(savedNotes.find(n => n.id === activeNoteId)?.subject || ''))}>
@@ -1141,7 +1103,6 @@ Format: Structured Markdown Note
 
                     {/* Metadata editor widget */}
                     <div className="flex items-center gap-2 pt-1 md:pt-0">
-                      <div className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Modify Tags:</div>
                       <div className="flex gap-1.5">
                         <select
                           value={savedNotes.find(n => n.id === activeNoteId)?.subject || ''}
@@ -1186,9 +1147,7 @@ Format: Structured Markdown Note
                     </div>
                   )}
                   {notes ? (
-                    <div className="markdown-body prose dark:prose-invert max-w-none">
-                      <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{preprocessLaTeX(notes)}</ReactMarkdown>
-                    </div>
+                    <MarkdownRenderer content={notes} />
                   ) : (
                     <div className="h-full py-20 flex flex-col items-center justify-center text-center space-y-4 opacity-55 px-6">
                       <div className="w-16 h-16 bg-indigo-50 dark:bg-zinc-850 rounded-3xl flex items-center justify-center text-indigo-500">

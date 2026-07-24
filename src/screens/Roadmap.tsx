@@ -66,7 +66,7 @@ export default function Roadmap() {
     setIsGenerating(true);
     setError(null);
     try {
-      const response = await safeFetch('/api/gemini/roadmap', {
+      const response = await safeFetch('/api/ai/roadmap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic }),

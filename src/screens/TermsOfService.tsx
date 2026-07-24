@@ -79,7 +79,7 @@ export default function TermsOfService() {
               4. Disclaimer of AI Outputs
             </h2>
             <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              TeenGenius utilizes advanced learning models compiled in our Gemini API stack. While highly accurate, study answers, math solutions, and memory palaces should be double-checked against your official textbook guidelines to verify ultimate exactness before exam submissions.
+              TeenGenius utilizes advanced learning models compiled in our AI stack. While highly accurate, study answers, math solutions, and memory palaces should be double-checked against your official textbook guidelines to verify ultimate exactness before exam submissions.
             </p>
           </section>
 

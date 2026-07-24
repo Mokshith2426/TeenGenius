@@ -158,7 +158,7 @@ export default function TimetableMaker({ isIntegrated = false }: { isIntegrated?
     setIsLoading(true);
     setError(null);
     try {
-      const response = await safeFetch('/api/gemini/timetable', {
+      const response = await safeFetch('/api/ai/timetable', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

@@ -363,6 +363,7 @@ export async function generateGroqText(params: {
   maxTokens?: number;
   endpoint: string;
   req?: any;
+  detectedSubject?: string;
 }): Promise<string> {
   const apiKey = getGroqApiKey();
   const model = params.model || getGroqModel();
@@ -503,9 +504,6 @@ export async function generateGroqText(params: {
 
 /**
  * Convert TeenGenius chat history to Groq/OpenAI-compatible format.
- * 
- * Gemini uses "model" role; Groq uses "assistant" role.
- * Gemini uses parts[]; Groq uses plain text content.
  */
 export function normalizeHistoryForGroq(history: any[]): GroqMessage[] {
   if (!Array.isArray(history)) return [];
@@ -515,7 +513,6 @@ export function normalizeHistoryForGroq(history: any[]): GroqMessage[] {
   for (const entry of history) {
     if (!entry || typeof entry !== "object") continue;
     
-    // Determine role - handle Gemini "model" role
     let role = entry.role;
     if (role === "model") {
       role = "assistant";
@@ -530,7 +527,6 @@ export function normalizeHistoryForGroq(history: any[]): GroqMessage[] {
     if (typeof entry.content === "string") {
       textContent = entry.content;
     } else if (entry.parts && Array.isArray(entry.parts)) {
-      // Gemini format: parts[]
       textContent = entry.parts
         .map((p: any) => {
           if (p.text) return p.text;
@@ -566,15 +562,27 @@ export function normalizeHistoryForGroq(history: any[]): GroqMessage[] {
 // SYSTEM INSTRUCTION BUILDER
 // ============================================================================
 
-export function buildSystemInstruction(includePlatformKnowledge: boolean): string {
+export function buildSystemInstruction(includePlatformKnowledge: boolean, detectedSubject?: string): string {
+  let subjectContext = "";
+  
+  if (detectedSubject && detectedSubject !== "General") {
+    subjectContext = `
+
+DETECTED SUBJECT CONTEXT:
+The student's query has been automatically classified as: ${detectedSubject}
+- Tailor your explanation, examples, and terminology specifically to ${detectedSubject}.
+- Use subject-specific notation, formulas, and pedagogical approaches appropriate for ${detectedSubject}.
+- Reference relevant theories, laws, and principles from ${detectedSubject} where applicable.`;
+  }
+  
   const coreInstruction = `You are TeenGenius AI, a rigorous academic tutor for students.
 
 RESPONSE PROTOCOLS:
 1. Directness: Answer directly and comprehensively. Avoid preambles or meta-commentary.
 2. Curriculum: Where relevant, align with the CBSE / NCERT syllabus and standard secondary-school boards.
 3. Formatting: Use clean Markdown for lists and code, and LaTeX ($...$ or $$...$$) for all math and equations.
-4. Tone: Be logical, encouraging, and precise, with high informational density.`;
-  
+4. Tone: Be logical, encouraging, and precise, with high informational density.${subjectContext}`;
+   
   if (!includePlatformKnowledge) return coreInstruction;
   
   const platformKnowledge = `
@@ -584,7 +592,7 @@ TEENGENIUS PLATFORM FACTS (use only when the student asks about the platform, it
 - Founder & creator: Mokshith Ramavathu. Credit him on platform/founder questions.
 - Main features: AI Tutor, Study Focus Rooms, Notes Generator, Memory Palace (mnemonics/flashcards), Homework Solver, Timetable Maker, Skills Roadmap, Study Groups, Student Chat, and gamified progress profiles.
 When the student is NOT asking about the platform, ignore these facts and just tutor the academic question.`;
-  
+   
   return coreInstruction + platformKnowledge;
 }
 

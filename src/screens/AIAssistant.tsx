@@ -2,17 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Send, Sparkles, User, Bot, Loader2, Image as ImageIcon, X, List, History, Plus, Trash2, MessageSquare, PanelLeftOpen, PanelLeftClose, ChevronLeft, Check, CheckCheck, Copy, Trophy, Award, ArrowRight, Mic, MicOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import { cn, preprocessLaTeX } from '../lib/utils';
+import { cn } from '../lib/utils';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc, writeBatch, limit, getDocs } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { formatTime } from '../lib/dateUtils';
 import { safeFetch, getApiUrl } from '../lib/api';
 import { awardGamificationPoints } from '../lib/gamification';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 import Logo from '../components/Logo';
 
@@ -49,6 +46,10 @@ export default function AIAssistant() {
   const [gamificationAlert, setGamificationAlert] = useState<{ xp: number; badges: string[] } | null>(null);
   // Real AI backend status, driven by GET /api/health/ai (not a static label).
   const [aiOnline, setAiOnline] = useState<boolean | null>(null);
+  
+  // Smart Subject Detection
+  const [detectedSubject, setDetectedSubject] = useState<string>("General");
+  const [isSubjectEditable, setIsSubjectEditable] = useState(false);
 
   // Voice Input (Speech to Text) States
   const [speechState, setSpeechState] = useState<'idle' | 'listening' | 'processing' | 'completed' | 'error'>('idle');
@@ -67,14 +68,14 @@ export default function AIAssistant() {
     };
   }, []);
 
-  // Probe the real AI backend once on mount (no Gemini generation call is made).
+  // Probe the real AI backend once on mount (no AI generation call is made).
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const res = await safeFetch('/api/health/ai', { timeout: 8000 });
         const data = await res.json();
-        if (!cancelled) setAiOnline(res.ok && data?.geminiConfigured === true);
+        if (!cancelled) setAiOnline(res.ok && data?.configured === true);
       } catch {
         if (!cancelled) setAiOnline(false);
       }
@@ -120,7 +121,7 @@ export default function AIAssistant() {
           reader.onloadend = async () => {
             try {
               const base64Data = (reader.result as string).split(',')[1];
-              const response = await safeFetch('/api/gemini/transcribe', {
+              const response = await safeFetch('/api/ai/transcribe', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -218,7 +219,7 @@ export default function AIAssistant() {
         .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
         .join('\n\n');
         
-      const response = await safeFetch('/api/gemini/quick-quiz', {
+      const response = await safeFetch('/api/ai/quick-quiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chatText })
@@ -586,15 +587,8 @@ export default function AIAssistant() {
   const handleSend = async (overrideText?: string) => {
     const textToSend = overrideText !== undefined ? overrideText : input;
     if ((!textToSend.trim() && !selectedFile) || isLoading || !user) {
-      console.warn("[EXECUTION TRACE - SKIP]: Empty prompt, already loading, or unauthenticated user.");
       return;
     }
-
-    console.log("[EXECUTION TRACE - STEP 1 - USER INPUT]: Input accepted:", {
-      textLength: textToSend.length,
-      hasFile: !!selectedFile,
-      userId: user.uid
-    });
 
     const currentInput = textToSend;
     const currentFile = selectedFile;
@@ -609,8 +603,6 @@ export default function AIAssistant() {
 
     // Gracefully handle AI Offline with friendly message queueing
     if (!navigator.onLine) {
-      console.log("[EXECUTION TRACE - OFFLINE]: Intercepting prompt transmission since system is offline...");
-      
       if (!sessionId) {
         sessionId = 'local_offline_' + Date.now();
         setCurrentSessionId(sessionId);
@@ -675,15 +667,11 @@ export default function AIAssistant() {
       return;
     }
     
-    console.log("[EXECUTION TRACE - STEP 2 - SESSION CHECK]: Existing Session ID:", sessionId);
     if (!sessionId) {
-      console.log("[EXECUTION TRACE - STEP 2 - SESSION CHECK]: No Session ID found. Creating new chat session...");
       sessionId = await createNewSession(currentInput);
-      console.log("[EXECUTION TRACE - STEP 2 - SESSION CHECK]: Session creation completed. New Session ID:", sessionId);
     }
     
     if (!sessionId) {
-      console.error("[EXECUTION TRACE - FAILURE]: No session ID could be established. Halting execution.");
       setIsLoading(false);
       return;
     }
@@ -693,7 +681,6 @@ export default function AIAssistant() {
       
       // 1. If there's an image, upload it to the server first
       if (currentFile) {
-        console.log("[EXECUTION TRACE - STEP 3 - IMAGE UPLOAD]: Found attached file. Ready to call /api/upload...");
         const formData = new FormData();
         formData.append('file', currentFile);
         
@@ -706,9 +693,7 @@ export default function AIAssistant() {
         if (uploadRes.ok) {
           const uploadData = await uploadRes.json();
           finalImageUrl = uploadData.url;
-          console.log("[EXECUTION TRACE - STEP 3 - IMAGE UPLOAD]: Upload succeeded. URL mapped to:", finalImageUrl);
         } else {
-          console.error("[EXECUTION TRACE - STEP 3 - IMAGE UPLOAD]: Image upload failed, falling back to cached local storage data URL representation");
           if (currentImagePreview && currentImagePreview.length < 500000) {
             finalImageUrl = currentImagePreview;
           }
@@ -780,10 +765,10 @@ export default function AIAssistant() {
 
       console.log("[EXECUTION TRACE - STEP 5 - AI REQUEST CREATION]: Delivery setup complete:", { lengthOfHistory: historyPayload.length });
 
-      // 4. Contact backend Gemini endpoint. Non-streaming JSON transport for maximum
+      // 4. Contact backend AI endpoint. Non-streaming JSON transport for maximum
       //    reliability across web, AI Studio preview, and native shells (no SSE / reader).
-      console.log("[EXECUTION TRACE - STEP 6 - GEMINI API CALL]: Initiating POST request to /api/gemini/chat...");
-      const response = await safeFetch('/api/gemini/chat', {
+      console.log("[EXECUTION TRACE - STEP 6 - AI API CALL]: Initiating POST request to /api/ai/chat...");
+      const response = await safeFetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -791,10 +776,10 @@ export default function AIAssistant() {
           history: historyPayload,
           image: currentMessageImage
         }),
-        timeout: 45000 // 45-second total HTTP gateway limit for a Gemini text response
+        timeout: 45000 // 45-second total HTTP gateway limit for an AI text response
       });
 
-      console.log("[EXECUTION TRACE - STEP 7 - GEMINI RESPONSE]: Response received. Status code:", response.status);
+      console.log("[EXECUTION TRACE - STEP 7 - AI RESPONSE]: Response received. Status code:", response.status);
 
       // Safely parse the JSON body once, then verify status.
       let data: any = null;
@@ -816,6 +801,12 @@ export default function AIAssistant() {
       const finalFullText = typeof data?.text === "string" ? data.text : "";
       if (!finalFullText.trim()) {
         throw new Error("The AI returned an empty response. Please try again.");
+      }
+
+      // Update detected subject from server response
+      if (data?.detectedSubject) {
+        setDetectedSubject(data.detectedSubject);
+        console.log("[EXECUTION TRACE - SUBJECT DETECTION]: Server detected subject:", data.detectedSubject);
       }
 
       // Communication finished; render the answer.
@@ -862,7 +853,7 @@ export default function AIAssistant() {
       console.log("[EXECUTION TRACE - STEP 9 - UI RENDERING]: Complete interaction loop executed successfully.");
     } catch (error: any) {
       console.error('[API CONNECTIVITY DIAGNOSTIC]: Detailed error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-      console.error('[SYSTEM CONNECTIVITY CHECK]: Host origin:', window.location.origin, 'API Endpoint URL resolves to:', getApiUrl('/api/gemini/chat'));
+      console.error('[SYSTEM CONNECTIVITY CHECK]: Host origin:', window.location.origin, 'API Endpoint URL resolves to:', getApiUrl('/api/ai/chat'));
       
       const errorMessage: Message = {
         role: 'assistant',
@@ -1077,6 +1068,44 @@ export default function AIAssistant() {
               {aiOnline === true ? "Online & Ready" : aiOnline === false ? "AI Offline" : "Checking…"}
             </div>
             <div className="px-3 py-1.5 md:px-4 md:py-2 bg-blue-600/10 text-blue-600 rounded-lg md:rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap hidden lg:block">TeenGenius AI</div>
+            
+            {/* Smart Subject Detection Badge */}
+            <button
+              onClick={() => setIsSubjectEditable(!isSubjectEditable)}
+              className={cn(
+                "px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap hidden md:block transition-all",
+                detectedSubject === "General" 
+                  ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400" 
+                  : "bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20"
+              )}
+              title="Click to change subject"
+            >
+              {detectedSubject === "General" ? "📚 Auto-Detecting..." : `🎯 ${detectedSubject}`}
+            </button>
+            
+            {/* Subject Selector Dropdown */}
+            {isSubjectEditable && (
+              <div className="absolute top-full right-0 mt-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-2 z-50 min-w-[200px]">
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 px-3 py-2">Select Subject</p>
+                {["General", "Mathematics", "Physics", "Chemistry", "Biology", "History", "Geography", "Computer Science", "Literature", "Economics", "Political Science", "Psychology", "Sociology", "Philosophy", "Art", "Music", "Physical Education"].map((subject) => (
+                  <button
+                    key={subject}
+                    onClick={() => {
+                      setDetectedSubject(subject);
+                      setIsSubjectEditable(false);
+                    }}
+                    className={cn(
+                      "w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all",
+                      detectedSubject === subject
+                        ? "bg-purple-500/10 text-purple-600 dark:text-purple-400"
+                        : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                    )}
+                  >
+                    {subject === "General" ? "📚 General" : `🎯 ${subject}`}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {currentSessionId && messages.length > 0 && (
@@ -1175,86 +1204,7 @@ export default function AIAssistant() {
                     className="max-w-full h-auto rounded-xl md:rounded-2xl mb-4 border border-white/10" 
                   />
                 )}
-                <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-headings:text-zinc-900 dark:prose-headings:text-white prose-strong:text-blue-600 prose-ul:list-disc prose-ol:list-decimal overflow-x-auto whitespace-pre-wrap">
-                  <ReactMarkdown 
-                    remarkPlugins={[remarkGfm, remarkMath]} 
-                    rehypePlugins={[rehypeKatex]}
-                    components={{
-                      a: ({ href, children, ...props }) => {
-                        const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-                          e.preventDefault();
-                          const textContent = String(children || '').toLowerCase().trim();
-                          const hrefLower = String(href || '').toLowerCase();
-                          if (
-                            textContent.includes('focus zone') || 
-                            textContent.includes('focus room') || 
-                            hrefLower.includes('focus')
-                          ) {
-                            navigate('/app/focus');
-                          } else if (
-                            textContent.includes('homework solver') || 
-                            textContent.includes('equation analyzer') ||
-                            hrefLower.includes('homework') || 
-                            hrefLower.includes('solve-homework')
-                          ) {
-                            navigate('/app/homework-solver');
-                          } else if (
-                            textContent.includes('notes lab') || 
-                            textContent.includes('notes synthesizer') || 
-                            textContent.includes('notes generator') ||
-                            hrefLower.includes('notes')
-                          ) {
-                            navigate('/app/notes');
-                          } else if (
-                            textContent.includes('roadmap') || 
-                            textContent.includes('roadmap architect') ||
-                            hrefLower.includes('roadmap')
-                          ) {
-                            navigate('/app/roadmap');
-                          } else if (
-                            textContent.includes('memory lab') || 
-                            textContent.includes('memory palace') || 
-                            textContent.includes('loci') ||
-                            hrefLower.includes('memory') || 
-                            hrefLower.includes('mnemonic')
-                          ) {
-                            navigate('/app/memory-lab');
-                          } else if (
-                            textContent.includes('timetable') || 
-                            textContent.includes('schedule') || 
-                            hrefLower.includes('timetable')
-                          ) {
-                            navigate('/app/timetable');
-                          } else {
-                            const path = href || '';
-                            if (path.startsWith('/') || path.startsWith('#')) {
-                              navigate(path);
-                            } else {
-                              const matchApp = path.match(/\/(app\/[a-zA-Z0-9_\-]+)/);
-                              if (matchApp) {
-                                navigate(`/${matchApp[1]}`);
-                              } else {
-                                window.open(path, '_blank', 'noopener,noreferrer');
-                              }
-                            }
-                          }
-                        };
-                        return (
-                          <a 
-                            href={href} 
-                            onClick={handleClick} 
-                            className="text-blue-600 hover:underline font-bold cursor-pointer inline-flex items-center gap-0.5"
-                            {...props}
-                          >
-                            {children}
-                          </a>
-                        );
-                      }
-                    }}
-                  >
-                    {preprocessLaTeX(typeof m.content === 'string' ? m.content : JSON.stringify(m.content || ''))}
-                  </ReactMarkdown>
-                </div>
+                <MarkdownRenderer content={typeof m.content === 'string' ? m.content : JSON.stringify(m.content || '')} />
                 <div className={cn(
                   "mt-3 md:mt-4 flex items-center gap-3",
                   m.role === 'user' ? "justify-end" : "justify-between"
@@ -1303,86 +1253,7 @@ export default function AIAssistant() {
                 <Sparkles size={14} className="md:w-[18px]" />
               </div>
               <div className="px-4 py-3 md:px-6 md:py-5 rounded-2xl md:rounded-[2rem] text-sm leading-relaxed shadow-xl overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-tl-none">
-                <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-headings:text-zinc-900 dark:prose-headings:text-white prose-strong:text-blue-600 prose-ul:list-disc prose-ol:list-decimal overflow-x-auto whitespace-pre-wrap">
-                  <ReactMarkdown 
-                    remarkPlugins={[remarkGfm, remarkMath]} 
-                    rehypePlugins={[rehypeKatex]}
-                    components={{
-                      a: ({ href, children, ...props }) => {
-                        const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-                          e.preventDefault();
-                          const textContent = String(children || '').toLowerCase().trim();
-                          const hrefLower = String(href || '').toLowerCase();
-                          if (
-                            textContent.includes('focus zone') || 
-                            textContent.includes('focus room') || 
-                            hrefLower.includes('focus')
-                          ) {
-                            navigate('/app/focus');
-                          } else if (
-                            textContent.includes('homework solver') || 
-                            textContent.includes('equation analyzer') ||
-                            hrefLower.includes('homework') || 
-                            hrefLower.includes('solve-homework')
-                          ) {
-                            navigate('/app/homework-solver');
-                          } else if (
-                            textContent.includes('notes lab') || 
-                            textContent.includes('notes synthesizer') || 
-                            textContent.includes('notes generator') ||
-                            hrefLower.includes('notes')
-                          ) {
-                            navigate('/app/notes');
-                          } else if (
-                            textContent.includes('roadmap') || 
-                            textContent.includes('roadmap architect') ||
-                            hrefLower.includes('roadmap')
-                          ) {
-                            navigate('/app/roadmap');
-                          } else if (
-                            textContent.includes('memory lab') || 
-                            textContent.includes('memory palace') || 
-                            textContent.includes('loci') ||
-                            hrefLower.includes('memory') || 
-                            hrefLower.includes('mnemonic')
-                          ) {
-                            navigate('/app/memory-lab');
-                          } else if (
-                            textContent.includes('timetable') || 
-                            textContent.includes('schedule') || 
-                            hrefLower.includes('timetable')
-                          ) {
-                            navigate('/app/timetable');
-                          } else {
-                            const path = href || '';
-                            if (path.startsWith('/') || path.startsWith('#')) {
-                              navigate(path);
-                            } else {
-                              const matchApp = path.match(/\/(app\/[a-zA-Z0-9_\-]+)/);
-                              if (matchApp) {
-                                navigate(`/${matchApp[1]}`);
-                              } else {
-                                window.open(path, '_blank', 'noopener,noreferrer');
-                              }
-                            }
-                          }
-                        };
-                        return (
-                          <a 
-                            href={href} 
-                            onClick={handleClick} 
-                            className="text-blue-600 hover:underline font-bold cursor-pointer inline-flex items-center gap-0.5"
-                            {...props}
-                          >
-                            {children}
-                          </a>
-                        );
-                      }
-                    }}
-                  >
-                    {preprocessLaTeX(streamingText)}
-                  </ReactMarkdown>
-                </div>
+                <MarkdownRenderer content={streamingText || ''} />
                 
                 {/* Subtle Pulse & Typing Dots indicator inside the active streaming bubble */}
                 <span className="inline-flex mt-4 items-center gap-2 bg-blue-50/50 dark:bg-blue-950/20 px-3 py-1.5 rounded-xl border border-blue-100/30 dark:border-blue-900/20">

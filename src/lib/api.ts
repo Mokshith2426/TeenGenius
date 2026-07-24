@@ -1,5 +1,5 @@
 /**
- * Custom fetch wrapper to secure Gemini requests and allow key/url overrides in preview environments safely.
+ * Custom fetch wrapper to secure AI requests and allow key/url overrides in preview environments safely.
  */
 
 export interface RequestLog {
@@ -78,8 +78,8 @@ export async function safeFetch(input: RequestInfo | URL, init?: RequestInit & {
     finalInit.headers = {};
   }
 
-  // The Gemini API key is SERVER-SIDE ONLY. The browser never sends a Gemini key
-  // (no x-gemini-key header, no VITE_* var, no localStorage key). Only the UI
+  // The AI API key is SERVER-SIDE ONLY. The browser never sends an AI key
+  // (no x-ai-key header, no VITE_* var, no localStorage key). Only the UI
   // language preference is forwarded.
   const activeLang = localStorage.getItem("TEEN_GENIUS_LANGUAGE") || "auto";
   (finalInit.headers as any)["x-language-setting"] = activeLang;

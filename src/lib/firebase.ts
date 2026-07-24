@@ -56,10 +56,6 @@ const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebas
 
 // Development-only diagnostics — never logs the API key or full config.
 if (import.meta.env.DEV) {
-  console.log(
-    `[Firebase] project=${firebaseConfig.projectId} authDomain=${firebaseConfig.authDomain} ` +
-      `databaseURL=${firebaseConfig.databaseURL ? 'present' : 'absent'} firestore=(default)`
-  );
 }
 
 // Cloud Firestore — the (default) database for teengenius-ef7a3.
