@@ -16,12 +16,12 @@ export default function LearnHub() {
       badgeColor: "bg-purple-50 dark:bg-purple-950/40 text-purple-650 dark:text-purple-300"
     },
     {
-      title: "Homework Solver",
-      desc: "Step-by-step breakdown of mathematics, science formulae, and chemistry assignments. Pick a subject and get clear guidelines.",
-      path: "/app/homework-solver",
+      title: "Exam Lab",
+      desc: "AI-powered exam preparation with mock tests, practice questions, study planner, and revision packs.",
+      path: "/app/exam-lab",
       icon: GraduationCap,
       color: "from-blue-550/15 via-blue-500/10 to-indigo-500/5 text-blue-650 dark:text-blue-400 border-blue-500/15 shadow-blue-500/5",
-      badge: "Solver Suite",
+      badge: "Exam Prep",
       badgeColor: "bg-blue-50 dark:bg-blue-950/40 text-blue-650 dark:text-blue-300"
     },
     {
@@ -65,7 +65,7 @@ export default function LearnHub() {
           Active <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">Learning Suite</span>
         </h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-450 font-medium leading-relaxed max-w-xl">
-          Deploy deep-intelligence AI solvers to finish homework, structure chapter summaries, and revise concepts dynamically.
+          Deploy deep-intelligence AI tools to ace exams, structure chapter summaries, and revise concepts dynamically.
         </p>
       </div>
 

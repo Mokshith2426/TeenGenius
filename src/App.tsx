@@ -24,7 +24,15 @@ const MemoryPalace = lazy(() => import('./screens/MemoryPalace'));
 const ExploreHub = lazy(() => import('./screens/ExploreHub'));
 const Login = lazy(() => import('./screens/Login'));
 const Landing = lazy(() => import('./screens/Landing'));
-const HomeworkSolver = lazy(() => import('./screens/HomeworkSolver'));
+const ExamLab = lazy(() => import('./screens/ExamLab'));
+const StudyPlanner = lazy(() => import('./screens/exam-lab/StudyPlanner'));
+const MockTests = lazy(() => import('./screens/exam-lab/MockTests'));
+const PracticeQuestions = lazy(() => import('./screens/exam-lab/PracticeQuestions'));
+const PreviousYearPapers = lazy(() => import('./screens/exam-lab/PreviousYearPapers'));
+const PerformanceDashboard = lazy(() => import('./screens/exam-lab/PerformanceDashboard'));
+const MistakeBook = lazy(() => import('./screens/exam-lab/MistakeBook'));
+const RevisionPack = lazy(() => import('./screens/exam-lab/RevisionPack'));
+const LearnWithVideos = lazy(() => import('./screens/exam-lab/LearnWithVideos'));
 const Feedback = lazy(() => import('./screens/Feedback'));
 const PrivacyPolicy = lazy(() => import('./screens/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./screens/TermsOfService'));
@@ -222,7 +230,15 @@ export default function App() {
                   <Route path="study-groups" element={<StudyGroups />} />
                   <Route path="study-groups/:groupId" element={<StudyGroupDetail />} />
                   <Route path="ai-assistant" element={<AIAssistant />} />
-                  <Route path="homework-solver" element={<HomeworkSolver />} />
+                  <Route path="exam-lab" element={<ExamLab />} />
+                  <Route path="exam-lab/study-planner" element={<StudyPlanner />} />
+                  <Route path="exam-lab/mock-tests" element={<MockTests />} />
+                  <Route path="exam-lab/practice-questions" element={<PracticeQuestions />} />
+                  <Route path="exam-lab/previous-papers" element={<PreviousYearPapers />} />
+                  <Route path="exam-lab/performance" element={<PerformanceDashboard />} />
+                  <Route path="exam-lab/mistakes" element={<MistakeBook />} />
+                  <Route path="exam-lab/revision-pack" element={<RevisionPack />} />
+                  <Route path="exam-lab/videos" element={<LearnWithVideos />} />
                   <Route path="timetable" element={<TimetableMaker />} />
                   <Route path="notes" element={<NotesGenerator />} />
                   <Route path="profile" element={<Profile />} />

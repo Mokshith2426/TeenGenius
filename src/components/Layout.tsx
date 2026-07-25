@@ -27,7 +27,7 @@ const getActiveTab = (pathname: string) => {
   if (
     pathname.startsWith('/app/learn') ||
     pathname.startsWith('/app/ai-assistant') ||
-    pathname.startsWith('/app/homework-solver') ||
+    pathname.startsWith('/app/exam-lab') ||
     pathname.startsWith('/app/notes') ||
     pathname.startsWith('/app/timetable')
   ) return 'Learn';
@@ -43,7 +43,7 @@ const getActiveTab = (pathname: string) => {
 const navItems = [
   { icon: Home, label: 'Dashboard', path: '/app' },
   { icon: Sparkles, label: 'AI Tutor', path: '/app/ai-assistant', badge: 'AI' },
-  { icon: GraduationCap, label: 'Homework Solver', path: '/app/homework-solver' },
+  { icon: GraduationCap, label: 'Exam Lab', path: '/app/exam-lab' },
   { icon: FileText, label: 'Notes Lab', path: '/app/notes' },
   { icon: Calendar, label: 'Timetable Maker', path: '/app/timetable' },
   { icon: Target, label: 'Focus Zone', path: '/app/focus' },
@@ -70,7 +70,7 @@ export default function Layout() {
       title: '📚 Educational Tools',
       items: [
         { icon: Sparkles, label: 'AI Tutor', path: '/app/ai-assistant', badge: 'AI' },
-        { icon: GraduationCap, label: 'Homework Solver', path: '/app/homework-solver' },
+        { icon: GraduationCap, label: 'Exam Lab', path: '/app/exam-lab' },
         { icon: FileText, label: 'Notes Lab', path: '/app/notes' },
         { icon: Calendar, label: 'Timetable Maker', path: '/app/timetable' },
         { icon: Target, label: 'Focus Zone', path: '/app/focus' },

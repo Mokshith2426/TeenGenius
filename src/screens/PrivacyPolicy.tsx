@@ -81,7 +81,7 @@ export default function PrivacyPolicy() {
               4. AI Process and Chat Queries
             </h2>
             <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              All interactions routed through our AI Tutor and Homework Solver are secured using server-side AI endpoints. Chat conversations are not sent to third-party public networks for marketing indexing.
+              All interactions routed through our AI Tutor and Exam Lab are secured using server-side AI endpoints. Chat conversations are not sent to third-party public networks for marketing indexing.
             </p>
           </section>
 

@@ -110,24 +110,6 @@ export class AIController {
   }
 
   /**
-   * Homework Solver
-   */
-  public static async solveHomework(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const { question, subject } = req.body;
-
-      const result = await aiService.solveHomework({
-        question: question || 'Solve the problem.',
-        subject: subject || 'Auto-Detect'
-      }, req);
-
-      res.json(result);
-    } catch (error: any) {
-      next(error);
-    }
-  }
-
-  /**
    * Mnemonic Generator
    */
   public static async mnemonic(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {

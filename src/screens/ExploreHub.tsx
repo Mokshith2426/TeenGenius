@@ -24,12 +24,12 @@ export default function ExploreHub() {
 
   const studyTools = [
     {
-      title: "Homework Solver",
-      desc: "Instant breakdown of complex algebra, science questions, and history worksheets with step-by-step guidance.",
-      path: "/app/homework-solver",
+      title: "Exam Lab",
+      desc: "AI-powered exam preparation with mock tests, practice questions, study planner, and revision packs.",
+      path: "/app/exam-lab",
       icon: GraduationCap,
       color: "from-blue-500/10 to-indigo-500/10 text-blue-600 dark:text-blue-400 border-blue-500/15",
-      badge: "AI Helper"
+      badge: "Exam Prep"
     },
     {
       title: "Notes",

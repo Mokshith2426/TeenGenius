@@ -1,7 +1,7 @@
 {
   "name": "TeenGenius",
   "short_name": "TeenGenius",
-  "description": "Premium AI-powered student study companion, Homework Solver, and Collaborative Focus Room.",
+  "description": "Premium AI-powered student study companion, Exam Lab, and Collaborative Focus Room.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",

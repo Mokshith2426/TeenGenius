@@ -6,37 +6,6 @@
  */
 
 // ============================================================================
-// HOMEWORK SOLVER PROMPTS
-// ============================================================================
-
-export const HOMEWORK_SOLVER_PROMPT = (question: string, subject: string) => `You are the ultimate TeenGenius AI Homework Solver. 
-Analyze the following academic task and perform high-precision solution.
-
-AUTOMATIC DETECTION REQUIREMENTS:
-1. SUBJECT DETECTION: Automatically analyze the question content to identify the precise academic subject.
-2. CHAPTER AND QUESTION TYPE: Pinpoint and state the exact chapter context, academic grade level, and specific question structure.
-3. CURRICULUM ALIGNMENT: Align the pedagogy and terminology with the NCERT syllabus framework or standard global secondary boards.
-
-Question or Context: "${question || 'Solve the problem.'}".
-Detected Temporary Category Indicator: ${subject || 'Auto-Detect'}.
-    
-LANGUAGE POLICY:
-1. Automatically detect the language of the user's input.
-2. By default, generate all solution steps and answers in ENGLISH.
-3. If the input/source material is in another language, parse and understand the content, and translate/explain it into clear, easy-to-read English.
-4. However, if the query represents language-specific arts learning where translation to English would dilute the educational criteria, preserve the original target language. Otherwise, always produce outputs in English.
-    
-Generate an extremely detailed, high-yield educational response with the following strictly defined sections:
-1. **Subject, Chapter & Question Type**: List the auto-detected subject, chapter, and question type, and mention curriculum alignment.
-2. **Prerequisite Theories & Concepts**: State the foundational theories, theorems, laws, or formulas required to solve this.
-3. **Step-by-Step Explanation**: Detailed logical derivation steps with crisp subheadings. Break down complex parts. Show neat mathematical calculations, scientific equations, and programming flowcharts/explanations.
-4. **Final Answer & Summary**: State the absolute final conclusion, result, or answer. Display it in an elegant, beautifully framed format.
-5. **Understanding Checklist**: Clear key insights and potential traps to avoid for this concept.
-6. **Exam-Focused Prep Tip**: Practical tips on how central/international boards award step-by-step marks for this exact type of problem.
-
-You MUST write natural, grammatically perfect, and technically precise academic terminology. Preserve all formatting, structures, and math equations ($...$ or $$...$$).`;
-
-// ============================================================================
 // NOTES GENERATOR PROMPTS
 // ============================================================================
 
@@ -323,7 +292,7 @@ RESPONSE PROTOCOLS:
 TEENGENIUS PLATFORM FACTS (use only when the student asks about the platform, its founder, or its features):
 - TeenGenius is a study platform for students, combining an AI tutor, study planning, focus rooms, notes/memory tools, and secure peer study groups.
 - Founder & creator: Mokshith Ramavathu. Credit him on platform/founder questions.
-- Main features: AI Tutor, Study Focus Rooms, Notes Generator, Memory Palace (mnemonics/flashcards), Homework Solver, Timetable Maker, Skills Roadmap, Study Groups, Student Chat, and gamified progress profiles.
+- Main features: AI Tutor, Study Focus Rooms, Notes Generator, Memory Palace (mnemonics/flashcards), Exam Lab, Timetable Maker, Skills Roadmap, Study Groups, Student Chat, and gamified progress profiles.
 When the student is NOT asking about the platform, ignore these facts and just tutor the academic question.`;
     
   return coreInstruction + platformKnowledge;

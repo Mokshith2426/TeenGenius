@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Send, Sparkles, User, Bot, Loader2, Image as ImageIcon, X, List, History, Plus, Trash2, MessageSquare, PanelLeftOpen, PanelLeftClose, ChevronLeft, Check, CheckCheck, Copy, Trophy, Award, ArrowRight, Mic, MicOff } from 'lucide-react';
+import { Send, Sparkles, User, Bot, Loader2, Image as ImageIcon, X, List, History, Plus, Trash2, MessageSquare, PanelLeftOpen, PanelLeftClose, ChevronLeft, Check, CheckCheck, Copy, Trophy, Award, ArrowRight, Mic, MicOff, GraduationCap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
@@ -44,8 +44,6 @@ export default function AIAssistant() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [streamingText, setStreamingText] = useState<string | null>(null);
   const [gamificationAlert, setGamificationAlert] = useState<{ xp: number; badges: string[] } | null>(null);
-  // Real AI backend status, driven by GET /api/health/ai (not a static label).
-  const [aiOnline, setAiOnline] = useState<boolean | null>(null);
   
   // Smart Subject Detection
   const [detectedSubject, setDetectedSubject] = useState<string>("General");
@@ -66,21 +64,6 @@ export default function AIAssistant() {
         } catch (err) {}
       }
     };
-  }, []);
-
-  // Probe the real AI backend once on mount (no AI generation call is made).
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await safeFetch('/api/health/ai', { timeout: 8000 });
-        const data = await res.json();
-        if (!cancelled) setAiOnline(res.ok && data?.configured === true);
-      } catch {
-        if (!cancelled) setAiOnline(false);
-      }
-    })();
-    return () => { cancelled = true; };
   }, []);
 
   const startSpeechRecognition = async () => {
@@ -357,7 +340,7 @@ export default function AIAssistant() {
     }
   }, [location.state]);
 
-  // Prefill question from Homework Solver quick question routing
+  // Prefill question from quick question routing
   useEffect(() => {
     if (location.state?.prefillQuestion && !hasPrefilledFromHomework.current) {
       hasPrefilledFromHomework.current = true;
@@ -1059,14 +1042,6 @@ export default function AIAssistant() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className={cn(
-              "px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap hidden lg:block",
-              aiOnline === true && "bg-emerald-500/10 text-emerald-600",
-              aiOnline === false && "bg-rose-500/10 text-rose-600",
-              aiOnline === null && "bg-zinc-100 dark:bg-zinc-800 text-zinc-400"
-            )}>
-              {aiOnline === true ? "Online & Ready" : aiOnline === false ? "AI Offline" : "Checking…"}
-            </div>
             <div className="px-3 py-1.5 md:px-4 md:py-2 bg-blue-600/10 text-blue-600 rounded-lg md:rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap hidden lg:block">TeenGenius AI</div>
             
             {/* Smart Subject Detection Badge */}
@@ -1109,14 +1084,14 @@ export default function AIAssistant() {
           </div>
           <div className="flex items-center gap-2">
             {currentSessionId && messages.length > 0 && (
-              <button
-                onClick={handleOpenQuickQuiz}
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl md:rounded-2xl hover:bg-blue-700 transition-all font-black text-[10px] md:text-xs uppercase tracking-wider scale-100 hover:scale-[1.02] active:scale-95 shadow-md flex-shrink-0"
-                title="Generate Chat History Quiz"
-              >
-                <Award size={13} className="shrink-0 animate-pulse" />
-                <span>Quick Quiz</span>
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/app/exam-lab')}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 dark:bg-zinc-800 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-zinc-800 transition-all cursor-pointer"
+                  >
+                    <GraduationCap size={14} />
+                    <span>Exam Lab</span>
+                  </button>
             )}
             {currentSessionId && (
               <button 

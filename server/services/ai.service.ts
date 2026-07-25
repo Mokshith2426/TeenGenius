@@ -21,7 +21,6 @@ import {
 } from '../../ai-provider';
 import { detectSubject, type Subject } from '../../src/lib/subjectDetection';
 import {
-  HOMEWORK_SOLVER_PROMPT,
   NOTES_GENERATOR_PROMPT,
   QUIZ_GENERATOR_PROMPT,
   QUICK_QUIZ_PROMPT,
@@ -75,11 +74,6 @@ export interface NotesParams {
   focus: string;
   noteStyle: string;
   summaryLength: string;
-  subject: string;
-}
-
-export interface HomeworkParams {
-  question: string;
   subject: string;
 }
 
@@ -313,25 +307,6 @@ export class AIService {
     );
 
     return { notes: notesText };
-  }
-
-  /**
-   * Homework Solver
-   */
-  public async solveHomework(params: HomeworkParams, req?: any): Promise<{ solution: string }> {
-    const prompt = HOMEWORK_SOLVER_PROMPT(params.question || 'Solve the problem.', params.subject || 'Auto-Detect');
-
-    const solutionText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 4096,
-      },
-      "/api/ai/solve-homework",
-      req
-    );
-
-    return { solution: solutionText };
   }
 
   /**

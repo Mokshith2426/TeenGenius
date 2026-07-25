@@ -478,7 +478,7 @@ export default function Home() {
 
   const CONTINUE_LEARNING_TOOLS = [
     { name: "AI Tutor", desc: "No-judgment assistant for asking difficult questions and clarifying concepts", path: "/app/ai-assistant", icon: Sparkles, color: "text-purple-600 bg-purple-100 dark:bg-purple-950/40" },
-    { name: "Homework Solver", desc: "Instant step-by-step guidance to solve tough academic questions", path: "/app/homework-solver", icon: GraduationCap, color: "text-blue-600 bg-blue-100 dark:bg-blue-950/40" },
+    { name: "Exam Lab", desc: "AI-powered exam preparation with mock tests, practice questions, and study planner", path: "/app/exam-lab", icon: GraduationCap, color: "text-blue-600 bg-blue-100 dark:bg-blue-950/40" },
     { name: "Notes Lab", desc: "Upload study materials to instantly generate quick revision notes", path: "/app/notes", icon: FileText, color: "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/40" },
     { name: "Timetable Maker", desc: "Personal weekly class agenda planner", path: "/app/timetable", icon: Calendar, color: "text-amber-600 bg-amber-100 dark:bg-amber-950/40" },
     { name: "Focus Zone", desc: "Procedural soundscapes and focus clocks to keep your study sessions distraction-free", path: "/app/focus", icon: Target, color: "text-rose-600 bg-rose-100 dark:bg-rose-955/40" },
@@ -527,7 +527,7 @@ export default function Home() {
                   <span className="text-4xl">📚</span>
                   <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Five Study Tools</h2>
                   <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-300 font-medium leading-relaxed">
-                    Access our AI Tutor, Homework Solver, Notes Lab, Timetable Maker, and Focus Zone from the brand-new <b>Educational Tools</b> segment. Everything you need grouped in one clean panel.
+                    Access our AI Tutor, Exam Lab, Notes Lab, Timetable Maker, and Focus Zone from the brand-new <b>Educational Tools</b> segment. Everything you need grouped in one clean panel.
                   </p>
                 </div>
               )}
@@ -624,9 +624,9 @@ export default function Home() {
             <span>Interactive Custom Planner & Active Assignments</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">What should I do today?</h2>
-          <p className="text-xs text-zinc-500 font-medium">
-            Review your custom objectives and make sure your homework targets are completed before the day ends.
-          </p>
+                  <p className="text-xs text-zinc-500 font-medium">
+                    Review your custom objectives and make sure your study targets are completed before the day ends.
+                  </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -774,9 +774,9 @@ export default function Home() {
               <span>Core Academic Workspace Portals</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">Where can I continue studying?</h2>
-            <p className="text-xs text-zinc-500 font-medium">
-              Boot up secure, no-judgment AI tools to solve formulas, draft notes, or practice deep concentration rituals.
-            </p>
+                  <p className="text-xs text-zinc-500 font-medium">
+                    Boot up secure, no-judgment AI tools to solve formulas, draft notes, or practice deep concentration rituals.
+                  </p>
           </div>
           <Link 
             to="/app/learn" 
@@ -845,11 +845,11 @@ export default function Home() {
                   type="button"
                   onClick={() => {
                     setIsQuickOpen(false);
-                    navigate('/app/homework-solver');
+                    navigate('/app/exam-lab');
                   }}
                   className="flex items-center gap-2.5 bg-zinc-900 dark:bg-zinc-950 border border-zinc-850 text-white pl-4 pr-3.5 py-2.5 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-xs font-black uppercase tracking-widest cursor-pointer hover:bg-zinc-805"
                 >
-                  <span className="text-[9.5px] tracking-wider">Solve Homework</span>
+                  <span className="text-[9.5px] tracking-wider">Exam Lab</span>
                   <div className="w-7 h-7 bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0">
                     <GraduationCap size={13} />
                   </div>

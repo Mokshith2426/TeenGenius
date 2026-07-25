@@ -56,17 +56,6 @@ router.post('/notes',
 );
 
 /**
- * @route   POST /api/ai/solve-homework
- * @desc    Solve homework problems
- * @access  Public (with API key check)
- */
-router.post('/solve-homework', 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.solveHomework
-);
-
-/**
  * @route   POST /api/ai/mnemonic
  * @desc    Generate mnemonics
  * @access  Public (with API key check)
