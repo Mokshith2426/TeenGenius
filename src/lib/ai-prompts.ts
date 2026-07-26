@@ -137,6 +137,151 @@ ${chatText}
 """`;
 
 // ============================================================================
+// EXAM LAB PROMPTS
+// ============================================================================
+
+export const MOCK_TEST_PROMPT = (params: {
+  numQuestions: number;
+  subject: string;
+}) => `Generate exactly ${params.numQuestions} multiple choice questions for a mock test on ${params.subject}. 
+
+Make it a comprehensive test covering various topics within ${params.subject}.
+Ensure questions are of mixed difficulty (easy, medium, hard).
+
+OUTPUT FORMAT (JSON):
+{
+  "questions": [
+    {
+      "question": "Question text here",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswerIndex": 0,
+      "explanation": "Detailed explanation of why this answer is correct"
+    }
+  ]
+}`;
+
+export const PRACTICE_QUESTIONS_PROMPT = (params: {
+  subject: string;
+  chapter?: string;
+  difficulty: string;
+  questionType: string;
+}) => `Generate exactly 5 ${params.difficulty} difficulty ${params.questionType} questions on ${params.subject}${params.chapter ? ` - Chapter: ${params.chapter}` : ''}. 
+
+For MCQ: Provide 4 options with one correct answer.
+For short answer: Provide brief answer prompts.
+For long answer: Provide detailed question prompts.
+
+OUTPUT FORMAT (JSON):
+{
+  "questions": [
+    {
+      "question": "Question text here",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswerIndex": 0,
+      "explanation": "Detailed explanation of why this answer is correct"
+    }
+  ]
+}`;
+
+export const REVISION_PACK_PROMPT = (params: {
+  subject: string;
+  topic?: string;
+}) => `Create a comprehensive revision pack for ${params.subject}${params.topic ? ` - Topic: ${params.topic}` : ''}.
+
+Include the following sections:
+ 
+1. FORMULA SHEET: List all important formulas with variable definitions
+2. KEY CONCEPTS: Brief explanations of critical concepts
+3. QUICK TIPS: Exam tips and common mistakes to avoid
+4. SUMMARY: Ultra-concise summary for last-minute revision
+ 
+Also create 5 flashcards (question-answer pairs) for quick revision.
+ 
+OUTPUT FORMAT (JSON):
+{
+  "subject": "${params.subject}",
+  "materials": [
+    {
+      "title": "Important Formulas",
+      "content": "Formula 1: ...\\nFormula 2: ...",
+      "type": "formula"
+    },
+    {
+      "title": "Key Concepts",
+      "content": "Concept 1: ...\\nConcept 2: ...",
+      "type": "concept"
+    },
+    {
+      "title": "Quick Tips",
+      "content": "Tip 1: ...\\nTip 2: ...",
+      "type": "tip"
+    },
+    {
+      "title": "Summary",
+      "content": "Ultra-concise summary...",
+      "type": "summary"
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "What is...?",
+      "answer": "It is..."
+    }
+  ]
+}`;
+
+export const LEARN_WITH_VIDEOS_PROMPT = (params: {
+  subject: string;
+  topic?: string;
+}) => `Recommend 6 educational YouTube videos for learning ${params.subject}${params.topic ? ` - Topic: ${params.topic}` : ''}.
+
+For each video, provide:
+- Title (clear and descriptive)
+- Channel name (real educational channels like Khan Academy, CrashCourse, etc.)
+- Duration (e.g., "10:25")
+- Brief description of what the video covers
+- Search query that would find this video
+ 
+Focus on high-quality, popular educational content creators.
+ 
+OUTPUT FORMAT (JSON):
+{
+  "videos": [
+    {
+      "id": "1",
+      "title": "Video Title",
+      "channel": "Channel Name",
+      "duration": "10:25",
+      "thumbnail": "https://i.ytimg.com/vi/VIDEO_ID/mqdefault.jpg",
+      "url": "https://www.youtube.com/results?search_query=SEARCH_QUERY",
+      "description": "Brief description of the video content"
+    }
+  ]
+}`;
+
+export const MISTAKE_REVISION_TIPS_PROMPT = (params: {
+  subject: string;
+  topic: string;
+  question: string;
+  userAnswer: string;
+  correctAnswer: string;
+}) => `A student made a mistake on this question:
+ 
+Subject: ${params.subject}
+Topic: ${params.topic}
+Question: ${params.question}
+Student's Answer: ${params.userAnswer}
+Correct Answer: ${params.correctAnswer}
+ 
+Provide:
+1. Why the student's answer was wrong
+2. The correct concept/formula to remember
+3. A mnemonic or tip to avoid this mistake in the future
+4. Similar types of questions to practice
+ 
+Keep it concise and actionable.`;
+
+// ============================================================================
 // TIMETABLE GENERATOR PROMPT
 // ============================================================================
 

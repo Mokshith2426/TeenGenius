@@ -27,36 +27,13 @@ export default function LearnWithVideos() {
     setVideos([]);
 
     try {
-      const prompt = `Recommend 6 educational YouTube videos for learning ${subject}${topic ? ` - Topic: ${topic}` : ''}.
-
-      For each video, provide:
-      - Title (clear and descriptive)
-      - Channel name (real educational channels like Khan Academy, CrashCourse, etc.)
-      - Duration (e.g., "10:25")
-      - Brief description of what the video covers
-      - Search query that would find this video
-      
-      Focus on high-quality, popular educational content creators.
-      
-      OUTPUT FORMAT (JSON):
-      {
-        "videos": [
-          {
-            "id": "1",
-            "title": "Video Title",
-            "channel": "Channel Name",
-            "duration": "10:25",
-            "thumbnail": "https://i.ytimg.com/vi/VIDEO_ID/mqdefault.jpg",
-            "url": "https://www.youtube.com/results?search_query=SEARCH_QUERY",
-            "description": "Brief description of the video content"
-          }
-        ]
-      }`;
-
-      const response = await safeFetch('/api/ai/quiz', {
+      const response = await safeFetch('/api/ai/learn-with-videos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: prompt })
+        body: JSON.stringify({ 
+          subject: subject,
+          topic: topic || ''
+        })
       });
 
       if (!response.ok) {

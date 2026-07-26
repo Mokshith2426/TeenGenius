@@ -95,26 +95,16 @@ export default function MistakeBook() {
     setError('');
 
     try {
-      const prompt = `A student made a mistake on this question:
-      
-      Subject: ${mistake.subject}
-      Topic: ${mistake.topic}
-      Question: ${mistake.question}
-      Student's Answer: ${mistake.userAnswer}
-      Correct Answer: ${mistake.correctAnswer}
-      
-      Provide:
-      1. Why the student's answer was wrong
-      2. The correct concept/formula to remember
-      3. A mnemonic or tip to avoid this mistake in the future
-      4. Similar types of questions to practice
-      
-      Keep it concise and actionable.`;
-
-      const response = await safeFetch('/api/ai/chat', {
+      const response = await safeFetch('/api/ai/mistake-revision-tips', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: prompt })
+        body: JSON.stringify({ 
+          subject: mistake.subject,
+          topic: mistake.topic,
+          question: mistake.question,
+          userAnswer: mistake.userAnswer,
+          correctAnswer: mistake.correctAnswer
+        })
       });
 
       if (!response.ok) {
@@ -122,7 +112,7 @@ export default function MistakeBook() {
       }
 
       const data = await response.json();
-      return data.text;
+      return data.tips;
     } catch (err: any) {
       setError(err.message || 'Failed to generate tips');
       return null;

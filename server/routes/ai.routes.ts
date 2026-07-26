@@ -128,6 +128,66 @@ router.post('/editor-assist',
 );
 
 /**
+ * @route   POST /api/ai/mock-test
+ * @desc    Generate mock test questions
+ * @access  Public (with API key check)
+ */
+router.post('/mock-test', 
+  validateInput, 
+  checkAiKey, 
+  requestBurstGuard, 
+  AIController.mockTest
+);
+
+/**
+ * @route   POST /api/ai/practice-questions
+ * @desc    Generate practice questions
+ * @access  Public (with API key check)
+ */
+router.post('/practice-questions', 
+  validateInput, 
+  checkAiKey, 
+  requestBurstGuard, 
+  AIController.practiceQuestions
+);
+
+/**
+ * @route   POST /api/ai/revision-pack
+ * @desc    Generate revision pack
+ * @access  Public (with API key check)
+ */
+router.post('/revision-pack', 
+  validateInput, 
+  checkAiKey, 
+  requestBurstGuard, 
+  AIController.revisionPack
+);
+
+/**
+ * @route   POST /api/ai/learn-with-videos
+ * @desc    Get video recommendations
+ * @access  Public (with API key check)
+ */
+router.post('/learn-with-videos', 
+  validateInput, 
+  checkAiKey, 
+  requestBurstGuard, 
+  AIController.learnWithVideos
+);
+
+/**
+ * @route   POST /api/ai/mistake-revision-tips
+ * @desc    Generate revision tips for mistakes
+ * @access  Public (with API key check)
+ */
+router.post('/mistake-revision-tips', 
+  validateInput, 
+  checkAiKey, 
+  requestBurstGuard, 
+  AIController.mistakeRevisionTips
+);
+
+/**
  * @route   GET /api/health/ai
  * @desc    AI service health check
  * @access  Public

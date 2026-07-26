@@ -52,27 +52,13 @@ export default function MockTests() {
     setTest(null);
 
     try {
-      const prompt = `Generate exactly ${numQuestions} multiple choice questions for a mock test on ${subject}. 
-      
-      Make it a comprehensive test covering various topics within ${subject}.
-      Ensure questions are of mixed difficulty (easy, medium, hard).
-      
-      OUTPUT FORMAT (JSON):
-      {
-        "questions": [
-          {
-            "question": "Question text here",
-            "options": ["Option A", "Option B", "Option C", "Option D"],
-            "correctAnswerIndex": 0,
-            "explanation": "Detailed explanation of why this answer is correct"
-          }
-        ]
-      }`;
-
-      const response = await safeFetch('/api/ai/quiz', {
+      const response = await safeFetch('/api/ai/mock-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: prompt })
+        body: JSON.stringify({ 
+          numQuestions: parseInt(numQuestions),
+          subject: subject 
+        })
       });
 
       if (!response.ok) {

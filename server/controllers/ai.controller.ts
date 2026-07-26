@@ -222,6 +222,126 @@ export class AIController {
   }
 
   /**
+   * Mock Test Generator
+   */
+  public static async mockTest(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { numQuestions, subject } = req.body;
+
+      if (!subject || !subject.trim()) {
+        res.status(400).json({ error: "Subject is required", code: "INVALID_INPUT" });
+        return;
+      }
+
+      const result = await aiService.generateMockTest({
+        numQuestions: numQuestions || 10,
+        subject: subject.trim()
+      }, req);
+
+      res.json(result);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  /**
+   * Practice Questions Generator
+   */
+  public static async practiceQuestions(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { subject, chapter, difficulty, questionType } = req.body;
+
+      if (!subject || !subject.trim()) {
+        res.status(400).json({ error: "Subject is required", code: "INVALID_INPUT" });
+        return;
+      }
+
+      const result = await aiService.generatePracticeQuestions({
+        subject: subject.trim(),
+        chapter: chapter || '',
+        difficulty: difficulty || 'medium',
+        questionType: questionType || 'mcq'
+      }, req);
+
+      res.json(result);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  /**
+   * Revision Pack Generator
+   */
+  public static async revisionPack(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { subject, topic } = req.body;
+
+      if (!subject || !subject.trim()) {
+        res.status(400).json({ error: "Subject is required", code: "INVALID_INPUT" });
+        return;
+      }
+
+      const result = await aiService.generateRevisionPack({
+        subject: subject.trim(),
+        topic: topic || ''
+      }, req);
+
+      res.json(result);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  /**
+   * Learn With Videos Generator
+   */
+  public static async learnWithVideos(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { subject, topic } = req.body;
+
+      if (!subject || !subject.trim()) {
+        res.status(400).json({ error: "Subject is required", code: "INVALID_INPUT" });
+        return;
+      }
+
+      const result = await aiService.generateVideoRecommendations({
+        subject: subject.trim(),
+        topic: topic || ''
+      }, req);
+
+      res.json(result);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  /**
+   * Mistake Revision Tips Generator
+   */
+  public static async mistakeRevisionTips(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { subject, topic, question, userAnswer, correctAnswer } = req.body;
+
+      if (!subject || !subject.trim() || !question || !question.trim()) {
+        res.status(400).json({ error: "Subject and question are required", code: "INVALID_INPUT" });
+        return;
+      }
+
+      const result = await aiService.generateMistakeRevisionTips({
+        subject: subject.trim(),
+        topic: topic || '',
+        question: question.trim(),
+        userAnswer: userAnswer || '',
+        correctAnswer: correctAnswer || ''
+      }, req);
+
+      res.json(result);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  /**
    * Health Check
    */
   public static async health(req: Request, res: Response): Promise<void> {

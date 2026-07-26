@@ -35,28 +35,15 @@ export default function PracticeQuestions() {
     setShowResults(false);
 
     try {
-      const prompt = `Generate exactly 5 ${difficulty} difficulty ${questionType} questions on ${subject}${chapter ? ` - Chapter: ${chapter}` : ''}. 
-      
-      For MCQ: Provide 4 options with one correct answer.
-      For short answer: Provide brief answer prompts.
-      For long answer: Provide detailed question prompts.
-      
-      OUTPUT FORMAT (JSON):
-      {
-        "questions": [
-          {
-            "question": "Question text here",
-            "options": ["Option A", "Option B", "Option C", "Option D"],
-            "correctAnswerIndex": 0,
-            "explanation": "Detailed explanation of why this answer is correct"
-          }
-        ]
-      }`;
-
-      const response = await safeFetch('/api/ai/quiz', {
+      const response = await safeFetch('/api/ai/practice-questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: prompt })
+        body: JSON.stringify({ 
+          subject: subject,
+          chapter: chapter || '',
+          difficulty: difficulty,
+          questionType: questionType
+        })
       });
 
       if (!response.ok) {

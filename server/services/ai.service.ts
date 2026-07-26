@@ -29,6 +29,11 @@ import {
   FLASHCARDS_PROMPT,
   ROADMAP_PROMPT,
   EDITOR_ASSIST_PROMPT,
+  MOCK_TEST_PROMPT,
+  PRACTICE_QUESTIONS_PROMPT,
+  REVISION_PACK_PROMPT,
+  LEARN_WITH_VIDEOS_PROMPT,
+  MISTAKE_REVISION_TIPS_PROMPT,
 } from '../../src/lib/ai-prompts';
 
 // ============================================================================
@@ -102,6 +107,36 @@ export interface EditorAssistParams {
   text: string;
   language: string;
   action: 'refactor' | 'complete';
+}
+
+export interface MockTestParams {
+  numQuestions: number;
+  subject: string;
+}
+
+export interface PracticeQuestionsParams {
+  subject: string;
+  chapter?: string;
+  difficulty: string;
+  questionType: string;
+}
+
+export interface RevisionPackParams {
+  subject: string;
+  topic?: string;
+}
+
+export interface LearnWithVideosParams {
+  subject: string;
+  topic?: string;
+}
+
+export interface MistakeRevisionTipsParams {
+  subject: string;
+  topic: string;
+  question: string;
+  userAnswer: string;
+  correctAnswer: string;
 }
 
 // ============================================================================
@@ -466,6 +501,169 @@ export class AIService {
     );
 
     return { result };
+  }
+
+  /**
+   * Mock Test Generator
+   */
+  public async generateMockTest(params: MockTestParams, req?: any): Promise<{ questions: any[] }> {
+    if (!params.subject || !params.subject.trim()) {
+      throw new Error("Subject is required");
+    }
+
+    const prompt = MOCK_TEST_PROMPT({
+      numQuestions: params.numQuestions || 10,
+      subject: params.subject
+    });
+
+    const mockTestText = await this.generateText(
+      {
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        maxOutputTokens: 4096,
+      },
+      "/api/ai/mock-test",
+      req
+    );
+
+    try {
+      let cleanedText = mockTestText || "{}";
+      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
+      const questions = JSON.parse(cleanedText);
+      return { questions };
+    } catch (e) {
+      console.error("Mock Test JSON Parse Error:", e, mockTestText);
+      throw e;
+    }
+  }
+
+  /**
+   * Practice Questions Generator
+   */
+  public async generatePracticeQuestions(params: PracticeQuestionsParams, req?: any): Promise<{ questions: any[] }> {
+    if (!params.subject || !params.subject.trim()) {
+      throw new Error("Subject is required");
+    }
+
+    const prompt = PRACTICE_QUESTIONS_PROMPT({
+      subject: params.subject,
+      chapter: params.chapter,
+      difficulty: params.difficulty || 'medium',
+      questionType: params.questionType || 'mcq'
+    });
+
+    const questionsText = await this.generateText(
+      {
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        maxOutputTokens: 4096,
+      },
+      "/api/ai/practice-questions",
+      req
+    );
+
+    try {
+      let cleanedText = questionsText || "{}";
+      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
+      const questions = JSON.parse(cleanedText);
+      return { questions };
+    } catch (e) {
+      console.error("Practice Questions JSON Parse Error:", e, questionsText);
+      throw e;
+    }
+  }
+
+  /**
+   * Revision Pack Generator
+   */
+  public async generateRevisionPack(params: RevisionPackParams, req?: any): Promise<any> {
+    if (!params.subject || !params.subject.trim()) {
+      throw new Error("Subject is required");
+    }
+
+    const prompt = REVISION_PACK_PROMPT({
+      subject: params.subject,
+      topic: params.topic
+    });
+
+    const revisionPackText = await this.generateText(
+      {
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        maxOutputTokens: 4096,
+      },
+      "/api/ai/revision-pack",
+      req
+    );
+
+    try {
+      let cleanedText = revisionPackText || "{}";
+      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
+      const revisionPack = JSON.parse(cleanedText);
+      return revisionPack;
+    } catch (e) {
+      console.error("Revision Pack JSON Parse Error:", e, revisionPackText);
+      throw e;
+    }
+  }
+
+  /**
+   * Learn With Videos Generator
+   */
+  public async generateVideoRecommendations(params: LearnWithVideosParams, req?: any): Promise<{ videos: any[] }> {
+    if (!params.subject || !params.subject.trim()) {
+      throw new Error("Subject is required");
+    }
+
+    const prompt = LEARN_WITH_VIDEOS_PROMPT({
+      subject: params.subject,
+      topic: params.topic
+    });
+
+    const videosText = await this.generateText(
+      {
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        maxOutputTokens: 2048,
+      },
+      "/api/ai/learn-with-videos",
+      req
+    );
+
+    try {
+      let cleanedText = videosText || "{}";
+      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
+      const videos = JSON.parse(cleanedText);
+      return { videos: videos.videos || [] };
+    } catch (e) {
+      console.error("Videos JSON Parse Error:", e, videosText);
+      throw e;
+    }
+  }
+
+  /**
+   * Mistake Revision Tips Generator
+   */
+  public async generateMistakeRevisionTips(params: MistakeRevisionTipsParams, req?: any): Promise<{ tips: string }> {
+    const prompt = MISTAKE_REVISION_TIPS_PROMPT({
+      subject: params.subject,
+      topic: params.topic,
+      question: params.question,
+      userAnswer: params.userAnswer,
+      correctAnswer: params.correctAnswer
+    });
+
+    const tipsText = await this.generateText(
+      {
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        maxOutputTokens: 1024,
+      },
+      "/api/ai/mistake-revision-tips",
+      req
+    );
+
+    return { tips: tipsText };
   }
 }
 

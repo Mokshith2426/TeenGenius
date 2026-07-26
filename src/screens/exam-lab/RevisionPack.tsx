@@ -29,54 +29,13 @@ export default function RevisionPack() {
     setRevisionPack(null);
 
     try {
-      const prompt = `Create a comprehensive revision pack for ${subject}${topic ? ` - Topic: ${topic}` : ''}.
-
-      Include the following sections:
-      
-      1. FORMULA SHEET: List all important formulas with variable definitions
-      2. KEY CONCEPTS: Brief explanations of critical concepts
-      3. QUICK TIPS: Exam tips and common mistakes to avoid
-      4. SUMMARY: Ultra-concise summary for last-minute revision
-      
-      Also create 5 flashcards (question-answer pairs) for quick revision.
-      
-      OUTPUT FORMAT (JSON):
-      {
-        "subject": "${subject}",
-        "materials": [
-          {
-            "title": "Important Formulas",
-            "content": "Formula 1: ...\\nFormula 2: ...",
-            "type": "formula"
-          },
-          {
-            "title": "Key Concepts",
-            "content": "Concept 1: ...\\nConcept 2: ...",
-            "type": "concept"
-          },
-          {
-            "title": "Quick Tips",
-            "content": "Tip 1: ...\\nTip 2: ...",
-            "type": "tip"
-          },
-          {
-            "title": "Summary",
-            "content": "Ultra-concise summary...",
-            "type": "summary"
-          }
-        ],
-        "flashcards": [
-          {
-            "question": "What is...?",
-            "answer": "It is..."
-          }
-        ]
-      }`;
-
-      const response = await safeFetch('/api/ai/quiz', {
+      const response = await safeFetch('/api/ai/revision-pack', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: prompt })
+        body: JSON.stringify({ 
+          subject: subject,
+          topic: topic || ''
+        })
       });
 
       if (!response.ok) {
