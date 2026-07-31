@@ -17,10 +17,11 @@ const StudyGroupDetail = lazy(() => import('./screens/StudyGroupDetail'));
 const AIAssistant = lazy(() => import('./screens/AIAssistant'));
 const Profile = lazy(() => import('./screens/Profile'));
 const TimetableMaker = lazy(() => import('./screens/TimetableMaker'));
-const NotesGenerator = lazy(() => import('./screens/NotesGenerator'));
-const Friends = lazy(() => import('./screens/Friends'));
-const FocusRoom = lazy(() => import('./screens/FocusRoom'));
-const MemoryPalace = lazy(() => import('./screens/MemoryPalace'));
+  const NotesGenerator = lazy(() => import('./screens/NotesGenerator'));
+  const HomeworkSolver = lazy(() => import('./screens/HomeworkSolver'));
+  const Friends = lazy(() => import('./screens/Friends'));
+  const FocusRoom = lazy(() => import('./screens/FocusRoom'));
+  const MemoryPalace = lazy(() => import('./screens/MemoryPalace'));
 const ExploreHub = lazy(() => import('./screens/ExploreHub'));
 const Login = lazy(() => import('./screens/Login'));
 const Landing = lazy(() => import('./screens/Landing'));
@@ -70,7 +71,7 @@ function DeploymentVersionChecker() {
           setLatestVersion(data.version);
         } else if (latestVersion && data.version !== latestVersion) {
           setIsNewVersionAvailable(true);
-        }
+        } 
       }
     } catch (err) {
       console.warn('[Version check bypassed for offline compatibility]:', err);
@@ -225,6 +226,7 @@ export default function App() {
                   <Route path="exam-lab" element={<ExamLab />} />
                   <Route path="timetable" element={<TimetableMaker />} />
                   <Route path="notes" element={<NotesGenerator />} />
+                  <Route path="homework-solver" element={<HomeworkSolver />} />
                   <Route path="profile" element={<Profile />} />
                   <Route path="learn" element={<LearnHub />} />
                   <Route path="explore" element={<Navigate to="/app/learn" replace />} />
