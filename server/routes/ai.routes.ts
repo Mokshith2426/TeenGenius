@@ -7,6 +7,7 @@
 
 import { Router } from 'express';
 import { AIController } from '../controllers/ai.controller';
+import { upload } from '../middleware/upload.middleware';
 import { 
   validateInput, 
   checkAiKey, 
@@ -49,6 +50,7 @@ router.post('/timetable',
  * @access  Public (with API key check)
  */
 router.post('/notes', 
+  upload.array('files', 5),
   validateInput, 
   checkAiKey, 
   requestBurstGuard, 

@@ -80,6 +80,7 @@ export interface NotesParams {
   noteStyle: string;
   summaryLength: string;
   subject: string;
+  files?: Array<{ name: string; data: string; mimeType: string }>;
 }
 
 export interface MnemonicParams {
@@ -312,10 +313,16 @@ export class AIService {
     try {
       let cleanedText = generatedText || "{}";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      return JSON.parse(cleanedText);
-    } catch (parseError) {
+      const parsed = JSON.parse(cleanedText);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new Error('Invalid timetable format: expected an object');
+      }
+      return parsed;
+    } catch (parseError: any) {
       console.error("Timetable JSON Parse Error:", parseError, generatedText);
-      throw parseError;
+      const error = new Error(`Failed to parse timetable: ${parseError.message}. The AI response was malformed. Please try again.`);
+      (error as any).code = 'AI_PARSE_ERROR';
+      throw error;
     }
   }
 

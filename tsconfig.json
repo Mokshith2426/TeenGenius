@@ -22,5 +22,13 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "src",
+    "server.ts",
+    "app.ts",
+    "ai-provider.ts",
+    "env.ts",
+    "server/types/**/*.d.ts"
+  ]
 }

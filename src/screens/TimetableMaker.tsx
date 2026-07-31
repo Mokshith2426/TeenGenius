@@ -180,6 +180,12 @@ export default function TimetableMaker({ isIntegrated = false }: { isIntegrated?
       if (!response.ok || data.error) {
         throw new Error(data?.error || "We could not generate your timetable right now. Please try again.");
       }
+      
+      // Validate response structure
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        throw new Error('Invalid timetable format received from AI. Please try again.');
+      }
+      
       setTimetable(data);
     } catch (err: any) {
       console.error(err);

@@ -57,36 +57,56 @@ export default function StudyPlanner() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate study plan');
+        const errorData = await response.json().catch(() => ({ error: 'Failed to generate study plan' }));
+        throw new Error(errorData.error || 'Failed to generate study plan');
       }
 
       const data = await response.json();
+      
+      // Validate response structure
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid response format from AI service');
+      }
       
       // Parse the timetable response into our format
       const schedule: StudyDay[] = [];
       const milestones: string[] = [];
       const tips: string[] = [];
 
-      if (data.Monday) {
-        schedule.push({ day: 'Monday', tasks: data.Monday, hours: formData.dailyHours, focus: 'Core Concepts' });
+      // Check for day-based structure
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      let hasDays = false;
+      
+      for (const day of days) {
+        if (data[day] && Array.isArray(data[day])) {
+          hasDays = true;
+          const focusMap: Record<string, string> = {
+            Monday: 'Core Concepts',
+            Tuesday: 'Practice Problems',
+            Wednesday: 'Revision',
+            Thursday: 'Mock Tests',
+            Friday: 'Weak Areas',
+            Saturday: 'Full Revision',
+            Sunday: 'Assessment'
+          };
+          schedule.push({ day, tasks: data[day], hours: formData.dailyHours, focus: focusMap[day] || 'General Study' });
+        }
       }
-      if (data.Tuesday) {
-        schedule.push({ day: 'Tuesday', tasks: data.Tuesday, hours: formData.dailyHours, focus: 'Practice Problems' });
-      }
-      if (data.Wednesday) {
-        schedule.push({ day: 'Wednesday', tasks: data.Wednesday, hours: formData.dailyHours, focus: 'Revision' });
-      }
-      if (data.Thursday) {
-        schedule.push({ day: 'Thursday', tasks: data.Thursday, hours: formData.dailyHours, focus: 'Mock Tests' });
-      }
-      if (data.Friday) {
-        schedule.push({ day: 'Friday', tasks: data.Friday, hours: formData.dailyHours, focus: 'Weak Areas' });
-      }
-      if (data.Saturday) {
-        schedule.push({ day: 'Saturday', tasks: data.Saturday, hours: formData.dailyHours, focus: 'Full Revision' });
-      }
-      if (data.Sunday) {
-        schedule.push({ day: 'Sunday', tasks: data.Sunday, hours: formData.dailyHours, focus: 'Assessment' });
+      
+      if (!hasDays) {
+        // If no day structure, check for alternative formats
+        if (data.schedule && Array.isArray(data.schedule)) {
+          data.schedule.forEach((item: any, idx: number) => {
+            schedule.push({
+              day: item.day || `Day ${idx + 1}`,
+              tasks: Array.isArray(item.tasks) ? item.tasks : [item.task || 'Study session'],
+              hours: item.hours || formData.dailyHours,
+              focus: item.focus || 'General Study'
+            });
+          });
+        } else {
+          throw new Error('AI response does not contain a valid timetable structure. Please try again.');
+        }
       }
 
       milestones.push('Complete all daily tasks for Week 1');

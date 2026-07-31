@@ -6,6 +6,7 @@ export interface Track {
   genre: string;
   desc: string;
   url: string;
+  fallbackUrl?: string;
   durationLabel: string;
 }
 
@@ -16,6 +17,7 @@ export const FOCUS_TRACKS: Track[] = [
     genre: 'Classical Piano',
     desc: 'Deeply comforting, slow and meditative classical piano keys to dissolve local focus noise and help you study.',
     url: 'https://ccrma.stanford.edu/~jos/mp3/pno-cs.mp3',
+    fallbackUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     durationLabel: '1:30'
   },
   {
@@ -24,6 +26,7 @@ export const FOCUS_TRACKS: Track[] = [
     genre: 'Classical Piano',
     desc: 'The iconic, calm, and soothing Moonlight Sonata (Adagio sostenuto) to ground your thoughts during long focus sessions.',
     url: 'https://ccrma.stanford.edu/~jos/mp3/rhodes.mp3',
+    fallbackUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     durationLabel: '0:34'
   },
   {
@@ -32,6 +35,7 @@ export const FOCUS_TRACKS: Track[] = [
     genre: 'Classical Cello',
     desc: 'Therapeutic rolling cello waves mixed with deep, steady resonance for standard background rhythmic breathing and coordination.',
     url: 'https://ccrma.stanford.edu/~jos/mp3/vln-cs.mp3',
+    fallbackUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
     durationLabel: '0:56'
   },
   {
@@ -40,6 +44,7 @@ export const FOCUS_TRACKS: Track[] = [
     genre: 'Classical Piano',
     desc: 'Bright, structured classical piano composition designed to stimulate concentration and boost cognitive performance.',
     url: 'https://ccrma.stanford.edu/~jos/mp3/gtr-jazz.mp3',
+    fallbackUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
     durationLabel: '1:12'
   }
 ];
@@ -218,16 +223,34 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     setTrackDuration(0);
     setError(null);
 
-    audio.src = currentTrack.url;
+    // Use fallback URL if primary fails
+    const trackUrl = currentTrack.url;
+    audio.src = trackUrl;
     audio.load();
 
     if (wasPlayingState) {
       setStatus('loading');
       audio.play().catch(err => {
         if (err.name !== 'AbortError') {
-          console.warn('[MusicPlayer] Play request rejected:', err);
-          setIsPlaying(false);
-          setStatus('paused');
+          console.warn('[MusicPlayer] Primary source failed, trying fallback:', err);
+          // Try fallback URL if primary fails
+          if (currentTrack.fallbackUrl && audio.src !== currentTrack.fallbackUrl) {
+            audio.src = currentTrack.fallbackUrl;
+            audio.load();
+            audio.play().catch(fallbackErr => {
+              if (fallbackErr.name !== 'AbortError') {
+                console.warn('[MusicPlayer] Playback was interrupted or blocked:', fallbackErr);
+                setIsPlaying(false);
+                setStatus('paused');
+                setError('Browser blocked autoplay. Tap Play to unleash music.');
+              }
+            });
+          } else {
+            console.warn('[MusicPlayer] Playback was interrupted or blocked:', err);
+            setIsPlaying(false);
+            setStatus('paused');
+            setError('Browser blocked autoplay. Tap Play to unleash music.');
+          }
         }
       });
     } else {

@@ -419,32 +419,43 @@ export default function NotesGenerator() {
   // Central Notes Generator Handler
   const handleGenerate = async () => {
     if (!content.trim() && uploadedFiles.length === 0) return;
-    
+
     // Synchronous in-flight guard: prevent duplicate generation requests
     if (isGeneratingRef.current) {
       return;
     }
     isGeneratingRef.current = true;
-    
+
     setIsLoading(true);
     setError(null);
     try {
       const finalSubject = subject === 'Custom' ? (customSubject.trim() || 'Custom Subject') : subject;
-      
+
+      // Use FormData for mixed content + file uploads to avoid JSON payload size limits
+      const formData = new FormData();
+      formData.append('content', content);
+      formData.append('focus', focus);
+      formData.append('noteStyle', noteStyle);
+      formData.append('summaryLength', summaryLength);
+      formData.append('subject', finalSubject);
+      formData.append('x-language-setting', activeLang);
+
+      // Append files directly as multipart/form-data
+      uploadedFiles.forEach((file, idx) => {
+        // Convert base64 back to Blob for proper multipart upload
+        const byteCharacters = atob(file.data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: file.mimeType });
+        formData.append(`file_${idx}`, blob, file.name);
+      });
+
       const response = await safeFetch('/api/ai/notes', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-language-setting': activeLang
-        },
-        body: JSON.stringify({ 
-          content, 
-          focus, 
-          noteStyle, 
-          summaryLength,
-          subject: finalSubject,
-          files: uploadedFiles.map(f => ({ name: f.name, data: f.data, mimeType: f.mimeType }))
-        }),
+        body: formData,
       });
 
       const data = await response.json();

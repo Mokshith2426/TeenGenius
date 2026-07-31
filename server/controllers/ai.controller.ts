@@ -15,8 +15,20 @@ const aiService = AIService.getInstance();
 // TYPES
 // ============================================================================
 
+// Local File interface to avoid multer type dependency
+interface LocalFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  buffer?: Buffer;
+  path?: string;
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: any;
+  files?: LocalFile[];
 }
 
 // ============================================================================
@@ -93,14 +105,60 @@ export class AIController {
    */
   public static async notes(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { content, focus, noteStyle, summaryLength, subject } = req.body;
+      // Support both multipart/form-data (with files) and JSON
+      let content = '';
+      let focus = '';
+      let noteStyle = 'Short Notes';
+      let summaryLength = 'Standard';
+      let subject = 'Auto-Detect';
+      const files: Array<{ name: string; data: string; mimeType: string }> = [];
+
+      if (req.is('multipart/form-data')) {
+        // Multipart form data
+        content = (req.body.content as string) || '';
+        focus = (req.body.focus as string) || '';
+        noteStyle = (req.body.noteStyle as string) || 'Short Notes';
+        summaryLength = (req.body.summaryLength as string) || 'Standard';
+        subject = (req.body.subject as string) || 'Auto-Detect';
+
+        // Extract files from multer
+        if (req.files && Array.isArray(req.files)) {
+          for (const file of req.files) {
+            let buffer: Buffer;
+            if (file.buffer) {
+              buffer = file.buffer;
+            } else if (file.path) {
+              buffer = Buffer.from(file.path);
+            } else {
+              continue; // Skip files without data
+            }
+            files.push({
+              name: file.originalname,
+              data: buffer.toString('base64'),
+              mimeType: file.mimetype
+            });
+          }
+        }
+      } else {
+        // JSON payload
+        content = (req.body.content as string) || '';
+        focus = (req.body.focus as string) || '';
+        noteStyle = (req.body.noteStyle as string) || 'Short Notes';
+        summaryLength = (req.body.summaryLength as string) || 'Standard';
+        subject = (req.body.subject as string) || 'Auto-Detect';
+        
+        if (req.body.files && Array.isArray(req.body.files)) {
+          files.push(...req.body.files);
+        }
+      }
 
       const result = await aiService.generateNotes({
         content: content || '',
         focus: focus || '',
         noteStyle: noteStyle || 'Short Notes',
         summaryLength: summaryLength || 'Standard',
-        subject: subject || 'Auto-Detect'
+        subject: subject || 'Auto-Detect',
+        files
       }, req);
 
       res.json(result);

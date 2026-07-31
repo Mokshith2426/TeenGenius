@@ -26,9 +26,10 @@ export const validateInput = (req: AuthenticatedRequest, res: Response, next: Ne
   const { body } = req;
   
   // Check for excessively large inputs (prevent DoS)
+  // Increased to 5MB to support file uploads with proper multipart handling
   const bodyString = JSON.stringify(body);
-  if (bodyString.length > 50000) { // 50KB limit
-    res.status(413).json({ error: "Request payload too large", code: "PAYLOAD_TOO_LARGE" });
+  if (bodyString.length > 5 * 1024 * 1024) { // 5MB limit
+    res.status(413).json({ error: "Request payload too large. Maximum size is 5MB.", code: "PAYLOAD_TOO_LARGE" });
     return;
   }
   
