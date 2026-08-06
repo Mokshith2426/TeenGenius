@@ -9,6 +9,9 @@ declare module 'multer' {
     size: number;
     buffer?: Buffer;
     path?: string;
+    stream?: any;
+    destination?: string;
+    filename?: string;
   }
 
   export interface Multer {
@@ -18,6 +21,11 @@ declare module 'multer' {
     fields(fields: Array<{ name: string; maxCount?: number }>): any;
     none(): any;
     any(): any;
+    memoryStorage(): any;
+    diskStorage(opts: {
+      destination?: string | ((req: Request, file: File, cb: (err: Error | null, destination: string) => void) => void);
+      filename?: string | ((req: Request, file: File, cb: (err: Error | null, filename: string) => void) => void);
+    }): any;
   }
 
   const multer: Multer;

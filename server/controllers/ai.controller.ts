@@ -15,8 +15,8 @@ const aiService = AIService.getInstance();
 // TYPES
 // ============================================================================
 
-// Local File interface to avoid multer type dependency
-interface LocalFile {
+// Local File interface matching Express/Multer File type
+export interface LocalFile {
   fieldname: string;
   originalname: string;
   encoding: string;
@@ -24,11 +24,13 @@ interface LocalFile {
   size: number;
   buffer?: Buffer;
   path?: string;
+  stream?: any;
+  destination?: string;
+  filename?: string;
 }
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
-  files?: LocalFile[];
 }
 
 // ============================================================================

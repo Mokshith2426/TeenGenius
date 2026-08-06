@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes from indexing
+Disallow: /api/
+Disallow: /uploads/
+
+# Sitemap location
+Sitemap: https://teengenius.site/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

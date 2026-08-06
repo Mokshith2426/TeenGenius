@@ -684,7 +684,6 @@ export default function AIAssistant() {
       }
 
       // 2. Save User Message to Firestore
-      console.log("[EXECUTION TRACE - STEP 4 - FIRESTORE WRITE]: Formulating user message payload for Firestore...");
       const userMessageContent = currentInput || (finalImageUrl ? "Image Transmission" : "");
       
       const userMessage: any = { 
@@ -695,33 +694,27 @@ export default function AIAssistant() {
       
       if (finalImageUrl) userMessage.image = finalImageUrl;
 
-      console.log("[EXECUTION TRACE - STEP 4.1 - UI OPTIMISTIC RENDER]: Rendering user message to the UI screen immediately...");
       setMessages(prev => [...prev, { ...userMessage, id: 'temp_' + Date.now(), timestamp: new Date() }]);
 
       if (sessionId && !sessionId.startsWith('local_')) {
-        console.log("[EXECUTION TRACE - STEP 4.2 - FIRESTORE DISPATCH]: Executing concurrently to Firestore...");
         addDoc(collection(db, 'aiChats', sessionId, 'messages'), {
           ...userMessage,
           timestamp: serverTimestamp()
         }).then((docRef) => {
           if (docRef) {
-            console.log("[EXECUTION TRACE - STEP 4.2 - FIRESTORE DISPATCH]: Successfully persisted message. Mapped ID:", docRef.id);
             updateDoc(doc(db, 'aiChats', sessionId), {
               lastMessage: userMessageContent,
               lastUpdatedAt: serverTimestamp()
             }).then(() => {
-              console.log("[EXECUTION TRACE - STEP 4.2 - FIRESTORE DISPATCH]: Metadate of chat session doc updated successfully.");
             }).catch((err) => {
               console.warn("Session update doc warning:", err);
             });
           }
         }).catch((fsErr) => {
-          console.warn("[EXECUTION TRACE - STEP 4.2 - FIRESTORE DISPATCH WARNING]: Firestore write deferred/operating offline:", fsErr);
         });
       }
 
       // 3. Prepare AI Request
-      console.log("[EXECUTION TRACE - STEP 5 - AI REQUEST CREATION]: Assembling memory context history and image structures...");
       const historyPayload = messages.map(m => {
         const parts: any[] = [{ text: m.content }];
         if (m.image) {
@@ -746,11 +739,9 @@ export default function AIAssistant() {
         ? { url: finalImageUrl }
         : (currentImagePreview ? { data: currentImagePreview.split(',')[1], mimeType: currentFile?.type || 'image/jpeg' } : null);
 
-      console.log("[EXECUTION TRACE - STEP 5 - AI REQUEST CREATION]: Delivery setup complete:", { lengthOfHistory: historyPayload.length });
 
       // 4. Contact backend AI endpoint. Non-streaming JSON transport for maximum
       //    reliability across web, AI Studio preview, and native shells (no SSE / reader).
-      console.log("[EXECUTION TRACE - STEP 6 - AI API CALL]: Initiating POST request to /api/ai/chat...");
       const response = await safeFetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -762,19 +753,16 @@ export default function AIAssistant() {
         timeout: 45000 // 45-second total HTTP gateway limit for an AI text response
       });
 
-      console.log("[EXECUTION TRACE - STEP 7 - AI RESPONSE]: Response received. Status code:", response.status);
 
       // Safely parse the JSON body once, then verify status.
       let data: any = null;
       try {
         data = await response.json();
       } catch (parseErr: any) {
-        console.error("[EXECUTION TRACE - EXCEPTION]: Failed to parse AI response as JSON:", parseErr);
         throw new Error(`The AI service returned an unreadable response (HTTP ${response.status}).`);
       }
 
       if (!response.ok) {
-        console.error("[EXECUTION TRACE - EXCEPTION]: API request failed. Status:", response.status, "Body:", data);
         // Show the actual backend error code and message for debugging
         const backendError = data?.error || `TeenGenius AI is temporarily unavailable. Please try again later.`;
         const errorCode = data?.code ? ` [${data.code}]` : '';
@@ -789,13 +777,11 @@ export default function AIAssistant() {
       // Update detected subject from server response
       if (data?.detectedSubject) {
         setDetectedSubject(data.detectedSubject);
-        console.log("[EXECUTION TRACE - SUBJECT DETECTION]: Server detected subject:", data.detectedSubject);
       }
 
       // Communication finished; render the answer.
       setIsLoading(false);
       setStreamingText(finalFullText);
-      console.log("[EXECUTION TRACE - STEP 7.1 - JSON EXTRACTION]: Content length:", finalFullText.length);
 
       const assistantMessage: Message = { 
         role: 'assistant', 
@@ -803,7 +789,6 @@ export default function AIAssistant() {
         status: 'processed'
       };
       
-      console.log("[EXECUTION TRACE - STEP 8 - FIRESTORE UPDATE]: Appending generated assistant bubble to state...");
       setMessages(prev => [...prev, { ...assistantMessage, id: 'assistant_' + Date.now(), timestamp: new Date() }]);
 
       // Award points for using AI Tutor node
@@ -817,23 +802,19 @@ export default function AIAssistant() {
       
       // Persist to Firestore in the background
       if (sessionId && !sessionId.startsWith('local_')) {
-        console.log("[EXECUTION TRACE - STEP 8.1 - FIRESTORE ASSISTANT DISPATCH]: Persisting AI Response write back...");
         addDoc(collection(db, 'aiChats', sessionId, 'messages'), {
           ...assistantMessage,
           timestamp: serverTimestamp()
         }).then((docRef) => {
           if (docRef) {
-            console.log("[EXECUTION TRACE - STEP 8.1 - FIRESTORE ASSISTANT DISPATCH]: Success. Doc reference mapped ID:", docRef.id);
             updateDoc(doc(db, 'aiChats', sessionId), {
               lastUpdatedAt: serverTimestamp()
             }).catch(() => {});
           }
         }).catch((fsErr) => {
-          console.warn("[EXECUTION TRACE - STEP 8.1 - FIRESTORE WRITING DEFERRED]: Assistant write failed online, saved in offline Firestore cache:", fsErr);
         });
       }
       
-      console.log("[EXECUTION TRACE - STEP 9 - UI RENDERING]: Complete interaction loop executed successfully.");
     } catch (error: any) {
       console.error('[API CONNECTIVITY DIAGNOSTIC]: Detailed error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
       console.error('[SYSTEM CONNECTIVITY CHECK]: Host origin:', window.location.origin, 'API Endpoint URL resolves to:', getApiUrl('/api/ai/chat'));
@@ -844,7 +825,6 @@ export default function AIAssistant() {
         status: 'processed'
       };
       
-      console.log("[EXECUTION TRACE - FAILURE BLOCK]: Displaying error warning message into chat list...");
       setMessages(prev => [...prev, { ...errorMessage, id: 'err_' + Date.now(), timestamp: new Date() }]);
 
       if (sessionId && !sessionId.startsWith('local_')) {
@@ -856,7 +836,6 @@ export default function AIAssistant() {
         });
       }
     } finally {
-      console.log("[EXECUTION TRACE - FINALLY]: Clearing all state loads. setIsLoading to false.");
       setIsLoading(false);
       setStreamingText(null);
     }
@@ -1766,3 +1745,4 @@ export default function AIAssistant() {
   </div>
 );
 }
+
