@@ -147,9 +147,11 @@ export interface MistakeRevisionTipsParams {
 export class AIService {
   private static instance: AIService;
   private readonly timeout: number;
+  private readonly maxRetries: number;
 
   private constructor() {
     this.timeout = 30000; // 30 seconds
+    this.maxRetries = 2; // Retry up to 2 times
   }
 
   public static getInstance(): AIService {
