@@ -16,6 +16,7 @@ import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
 import { cn } from '../lib/utils';
 import { formatDate } from '../lib/dateUtils';
 import { getLocalStats, trackEvent, fetchRealtimeStats } from '../lib/analytics';
+import AcademicProfileCard from '../components/AcademicProfileCard';
 
 interface TimetableRecord {
   id: string;
@@ -738,6 +739,9 @@ export default function Profile() {
           {/* ==================== 1. OVERVIEW TAB ==================== */}
           {activeSubTab === 'profile' && (
             <div className="space-y-6">
+              {/* Academic Profile Smart Defaults */}
+              <AcademicProfileCard user={user} isGuest={isGuest} triggerGuestPrompt={triggerGuestPrompt} />
+
               {/* Saved timetable plans */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between px-2">

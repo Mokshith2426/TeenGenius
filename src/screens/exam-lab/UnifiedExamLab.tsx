@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Calendar,
@@ -13,10 +13,13 @@ import {
   TrendingUp,
   Clock,
   Award,
-  Sparkles
+  Sparkles,
+  Zap
 } from 'lucide-react';
 import { safeFetch } from '../../lib/api';
 import { addMistakeToBook } from './MistakeBook';
+import { SkeletonCard, SkeletonGrid } from '../../components/ui/SkeletonCard';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 interface StudyPlanData {
   overview: string;
@@ -77,6 +80,56 @@ export default function UnifiedExamLab() {
   });
 
   const [activeQuiz, setActiveQuiz] = useState<{ type: 'practice' | 'mock'; answers: number[]; submitted: boolean } | null>(null);
+
+  // Smart defaults from localStorage profile
+  const getDefaultProfile = () => {
+    try {
+      const stored = localStorage.getItem('TEEN_GENIUS_USER_PROFILE');
+      if (stored) {
+        const profile = JSON.parse(stored);
+        const twoWeeksOut = new Date();
+        twoWeeksOut.setDate(twoWeeksOut.getDate() + 14);
+        return {
+          board: profile.board || '',
+          class: profile.class || '',
+          stream: profile.stream || '',
+          studyHoursPerDay: profile.studyHoursPerDay || '4',
+          examGoal: profile.examGoal || '85',
+          defaultDate: twoWeeksOut.toISOString().split('T')[0]
+        };
+      }
+    } catch (e) { /* ignore */ }
+    const twoWeeksOut = new Date();
+    twoWeeksOut.setDate(twoWeeksOut.getDate() + 14);
+    return {
+      board: '',
+      class: '',
+      stream: '',
+      studyHoursPerDay: '4',
+      examGoal: '85',
+      defaultDate: twoWeeksOut.toISOString().split('T')[0]
+    };
+  };
+
+  const defaults = getDefaultProfile();
+
+  const applyDefaults = () => {
+    setFormData({
+      board: defaults.board,
+      class: defaults.class,
+      subject: '',
+      examDate: defaults.defaultDate,
+      dailyHours: defaults.studyHoursPerDay,
+      goal: defaults.examGoal
+    });
+  };
+
+  // Auto-apply defaults on mount if profile exists
+  useEffect(() => {
+    if (defaults.board || defaults.class) {
+      applyDefaults();
+    }
+  }, []);
 
   const handleGeneratePlan = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -353,7 +406,6 @@ export default function UnifiedExamLab() {
                 </label>
                 <input
                   type="date"
-                  required
                   value={formData.examDate}
                   onChange={(e) => setFormData({ ...formData, examDate: e.target.value })}
                   className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -447,7 +499,7 @@ export default function UnifiedExamLab() {
                           {day.day}
                         </h3>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">
-                          Focus: {day.focus} • {day.hours} hours
+                          Focus: {day.focus} â€¢ {day.hours} hours
                         </p>
                         <ul className="space-y-1">
                           {day.tasks.slice(0, 3).map((task, taskIndex) => (

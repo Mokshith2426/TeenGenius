@@ -22,7 +22,8 @@ import {
   Award,
   ChevronRight,
   TrendingUp,
-  ArrowLeft
+  ArrowLeft,
+  Zap
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { safeFetch } from '../lib/api';
@@ -70,16 +71,48 @@ export default function TimetableMaker({ isIntegrated = false }: { isIntegrated?
     }
   }, [timetable]);
 
+  // Smart defaults from profile
+  const getProfileDefaults = () => {
+    try {
+      const stored = localStorage.getItem('TEEN_GENIUS_USER_PROFILE');
+      if (stored) {
+        const p = JSON.parse(stored);
+        return {
+          studentClass: p.class || '',
+          board: p.board || '',
+          stream: p.stream || '',
+          hours: p.studyHoursPerDay || '4',
+          weakSubjects: (p.weakSubjects || []).join(', '),
+          strongSubjects: (p.strongSubjects || []).join(', '),
+          goals: p.examGoal ? `Target: ${p.examGoal}%` : '',
+        };
+      }
+    } catch (e) { /* ignore */ }
+    return { studentClass: '', board: '', stream: '', hours: '4', weakSubjects: '', strongSubjects: '', goals: '' };
+  };
+
+  const profileDefaults = getProfileDefaults();
+
+  const applyProfileDefaults = () => {
+    setStudentClass(profileDefaults.studentClass);
+    setBoard(profileDefaults.board);
+    setStream(profileDefaults.stream);
+    setHours(profileDefaults.hours);
+    setWeakSubjects(profileDefaults.weakSubjects);
+    setStrongSubjects(profileDefaults.strongSubjects);
+    setGoals(profileDefaults.goals);
+  };
+
+  // Auto-apply on mount if profile exists
+  useEffect(() => {
+    if (profileDefaults.board || profileDefaults.studentClass) {
+      applyProfileDefaults();
+    }
+  }, []);
+
   // New Personalization States
   const [durationCategory, setDurationCategory] = useState<'quick' | 'daily' | 'multiday' | 'weekly' | 'longterm'>('weekly');
   const [durationValue, setDurationValue] = useState<string>('1_week');
-  const [studentClass, setStudentClass] = useState('');
-  const [board, setBoard] = useState('');
-  const [stream, setStream] = useState('');
-  const [weakSubjects, setWeakSubjects] = useState('');
-  const [strongSubjects, setStrongSubjects] = useState('');
-  const [examDates, setExamDates] = useState('');
-  const [goals, setGoals] = useState('');
 
   const durationOptions = {
     quick: {
@@ -244,10 +277,23 @@ export default function TimetableMaker({ isIntegrated = false }: { isIntegrated?
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider">
             <Sparkles size={12} /> AI Intelligent Scheduler
           </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-zinc-900 dark:text-white uppercase">AI Timetable Maker</h1>
-          <p className="text-zinc-600 dark:text-zinc-450 max-w-2xl text-xs md:text-sm leading-relaxed">
-            Configure flexible study durations, target milestones, strong/weak areas, and syllabus topics to auto-compile a balanced schedule.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-zinc-900 dark:text-white uppercase">AI Timetable Maker</h1>
+              <p className="text-zinc-600 dark:text-zinc-450 max-w-2xl text-xs md:text-sm leading-relaxed">
+                Configure flexible study durations, target milestones, strong/weak areas, and syllabus topics to auto-compile a balanced schedule.
+              </p>
+            </div>
+            {(profileDefaults.board || profileDefaults.studentClass) && (
+              <button
+                onClick={applyProfileDefaults}
+                className="shrink-0 px-4 py-2.5 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/30 rounded-2xl text-blue-700 dark:text-blue-400 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all active:scale-95"
+              >
+                <Zap size={14} />
+                Quick Start
+              </button>
+            )}
+          </div>
         </header>
       )}
 
