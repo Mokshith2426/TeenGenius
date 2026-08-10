@@ -41,10 +41,3 @@ fun SplashScreen(
             Text(
                 text = "TeenGenius",
                 fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}

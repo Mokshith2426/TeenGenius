@@ -334,6 +334,19 @@ Duration context for selection: Category is "${durationCategoryStr}" (value: "${
     prompt += ` Generate an ambitious, highly strategic long-term study calendar for ${durationValueStr.replace('_', ' ')}. To keep it realistic, actionable, and visually balanced, divide this long journey into 4 strategic phases as keys: "Phase 1: Foundation (Conceptual Review)", "Phase 2: Practice (Problem Solving & Retrieval)", "Phase 3: Integration (Full Mock Tests & Weak Areas)", and "Phase 4: Revision (Deep Mindmap & High Speed Recall)". Describe exactly what they should study in each phase.`;
   }
 
+  prompt += `
+
+OUTPUT FORMAT (STRICT - RETURN ONLY VALID JSON, NO MARKDOWN, NO EXTRA TEXT):
+{
+  "<key>": [
+    { "time": "HH:MM AM/PM - HH:MM AM/PM", "subject": "Subject Name", "activity": "What to study/practice" }
+  ]
+}
+- Keys are the schedule identifiers (day names, time blocks, phases, etc.) as instructed above.
+- Each value is an array of study blocks.
+- Each study block MUST have exactly these three fields: time, subject, activity.
+- Return ONLY the JSON object. No markdown fences, no explanations, no preamble.`;
+
   return prompt;
 };
 

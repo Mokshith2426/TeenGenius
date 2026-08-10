@@ -78,8 +78,9 @@ export default function StudyPlanner() {
       let hasDays = false;
       
       for (const day of days) {
-        if (data[day] && Array.isArray(data[day])) {
+        if (data[day]) {
           hasDays = true;
+          const dayItems = Array.isArray(data[day]) ? data[day] : [];
           const focusMap: Record<string, string> = {
             Monday: 'Core Concepts',
             Tuesday: 'Practice Problems',
@@ -89,7 +90,12 @@ export default function StudyPlanner() {
             Saturday: 'Full Revision',
             Sunday: 'Assessment'
           };
-          schedule.push({ day, tasks: data[day], hours: formData.dailyHours, focus: focusMap[day] || 'General Study' });
+          const tasks = dayItems.map((item: any) => {
+            if (typeof item === 'string') return item;
+            if (item && typeof item === 'object') return item.activity || item.task || item.time || 'Study session';
+            return 'Study session';
+          });
+          schedule.push({ day, tasks, hours: formData.dailyHours, focus: focusMap[day] || 'General Study' });
         }
       }
       
@@ -97,9 +103,12 @@ export default function StudyPlanner() {
         // If no day structure, check for alternative formats
         if (data.schedule && Array.isArray(data.schedule)) {
           data.schedule.forEach((item: any, idx: number) => {
+            const tasks = Array.isArray(item.tasks)
+              ? item.tasks.map((t: any) => typeof t === 'string' ? t : (t?.activity || t?.task || 'Study session'))
+              : [item.task || 'Study session'];
             schedule.push({
               day: item.day || `Day ${idx + 1}`,
-              tasks: Array.isArray(item.tasks) ? item.tasks : [item.task || 'Study session'],
+              tasks,
               hours: item.hours || formData.dailyHours,
               focus: item.focus || 'General Study'
             });

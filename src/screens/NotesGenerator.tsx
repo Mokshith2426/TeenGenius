@@ -442,7 +442,6 @@ export default function NotesGenerator() {
 
       // Append files directly as multipart/form-data
       uploadedFiles.forEach((file, idx) => {
-        // Convert base64 back to Blob for proper multipart upload
         const byteCharacters = atob(file.data);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
@@ -450,7 +449,7 @@ export default function NotesGenerator() {
         }
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: file.mimeType });
-        formData.append(`file_${idx}`, blob, file.name);
+        formData.append('files', blob, file.name);
       });
 
       const response = await safeFetch('/api/ai/notes', {

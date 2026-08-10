@@ -170,12 +170,23 @@ export default function UnifiedExamLab() {
 
       const schedule = Object.entries(planData)
         .filter(([key]) => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(key))
-        .map(([day, tasks]) => ({
-          day,
-          tasks: tasks as string[],
-          hours: formData.dailyHours,
-          focus: day === 'Monday' ? 'Core Concepts' : day === 'Tuesday' ? 'Practice Problems' : day === 'Wednesday' ? 'Revision' : day === 'Thursday' ? 'Mock Tests' : day === 'Friday' ? 'Weak Areas' : day === 'Saturday' ? 'Full Revision' : 'Assessment'
-        }));
+        .map(([day, tasks]) => {
+          const dayTasks = Array.isArray(tasks) ? tasks : [];
+          const taskStrings = dayTasks.map((t: any) => {
+            if (typeof t === 'string') return t;
+            if (t && typeof t === 'object') {
+              const parts = [t.time, t.subject, t.activity].filter(Boolean);
+              return parts.join(' • ') || 'Study session';
+            }
+            return 'Study session';
+          });
+          return {
+            day,
+            tasks: taskStrings,
+            hours: formData.dailyHours,
+            focus: day === 'Monday' ? 'Core Concepts' : day === 'Tuesday' ? 'Practice Problems' : day === 'Wednesday' ? 'Revision' : day === 'Thursday' ? 'Mock Tests' : day === 'Friday' ? 'Weak Areas' : day === 'Saturday' ? 'Full Revision' : 'Assessment'
+          };
+        });
 
       setData(prev => ({
         ...prev,

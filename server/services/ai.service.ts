@@ -315,7 +315,20 @@ export class AIService {
     try {
       let cleanedText = generatedText || "{}";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(cleanedText);
+      
+      let parsed = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('{');
+        const lastBrace = cleanedText.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          throw new Error('No JSON object found in response');
+        }
+      }
+      
       if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
         throw new Error('Invalid timetable format: expected an object');
       }
@@ -332,13 +345,17 @@ export class AIService {
    * Notes Generator
    */
   public async generateNotes(params: NotesParams, req?: any): Promise<{ notes: string }> {
+    const fileInfo = params.files && params.files.length > 0
+      ? `\n\nAttached files (${params.files.length}): ${params.files.map(f => `${f.name} (${f.mimeType})`).join(', ')}. Use these file names and types as context for the notes.`
+      : '';
+    
     const formattedPrompt = NOTES_GENERATOR_PROMPT({
       content: params.content || '',
       focus: params.focus || '',
       noteStyle: params.noteStyle || 'Short Notes',
       summaryLength: params.summaryLength || 'Standard',
       subject: params.subject || 'Auto-Detect'
-    });
+    }) + fileInfo;
 
     const notesText = await this.generateText(
       {
