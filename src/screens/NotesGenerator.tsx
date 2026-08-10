@@ -721,31 +721,6 @@ Format: Structured Markdown Note
     }
   };
 
-  // Tags quick tuning
-  const handleUpdateActiveNoteTags = async (newSub: string, newImp: 'High' | 'Medium' | 'Low') => {
-    if (!activeNoteId) return;
-
-    const updatedState = savedNotes.map(n => {
-      if (n.id === activeNoteId) {
-        return { ...n, subject: newSub, importance: newImp };
-      }
-      return n;
-    });
-    setSavedNotes(updatedState);
-    localStorage.setItem('STUDENT_SAVED_NOTES_TAGGED', JSON.stringify(updatedState));
-
-    if (user && !activeNoteId.startsWith('note_')) {
-      try {
-        await updateDoc(doc(db, 'notesLab', activeNoteId), {
-          subject: newSub,
-          importance: newImp
-        });
-      } catch (err) {
-        console.error("Failed to update cloud note metadata tags:", err);
-      }
-    }
-  };
-
   // Auto-scrolling on replies
   useEffect(() => {
     if (notes && activeTab === 'active') {
@@ -1088,66 +1063,10 @@ Format: Structured Markdown Note
               )}
             </div>
 
-            {/* Render view of active study sheet */}
-            {activeTab === 'active' && (
-              <div className="flex-1 flex flex-col min-h-0">
-              {notes && activeNoteId && (
-                  <div className="mx-5 my-3 p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-850 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none flex items-center gap-1">
-                        <Info size={11} /> Classification
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 pt-0.5">
-                        <span className={cn("px-2.5 py-0.5 text-[9px] font-black rounded-full border uppercase leading-relaxed", getSubjectBadgeStyle(savedNotes.find(n => n.id === activeNoteId)?.subject || ''))}>
-                          {savedNotes.find(n => n.id === activeNoteId)?.subject}
-                        </span>
-                        <span className={cn("px-2.5 py-0.5 text-[9px] font-black rounded-full border uppercase flex items-center gap-1", IMPORTANCE_CLASSES[savedNotes.find(n => n.id === activeNoteId)?.importance || 'Medium'])}>
-                          <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", 
-                            savedNotes.find(n => n.id === activeNoteId)?.importance === 'High' ? 'bg-red-500' :
-                            savedNotes.find(n => n.id === activeNoteId)?.importance === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'
-                          )} />
-                          {savedNotes.find(n => n.id === activeNoteId)?.importance} Priority
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Metadata editor widget */}
-                    <div className="flex items-center gap-2 pt-1 md:pt-0">
-                      <div className="flex gap-1.5">
-                        <select
-                          value={savedNotes.find(n => n.id === activeNoteId)?.subject || ''}
-                          onChange={(e) => {
-                            const active = savedNotes.find(n => n.id === activeNoteId);
-                            if (active) handleUpdateActiveNoteTags(e.target.value, active.importance);
-                          }}
-                          className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-705 outline-none rounded-xl px-2 py-1 text-[9px] font-bold uppercase text-zinc-700 dark:text-zinc-300 transition-all focus:ring-2 focus:ring-indigo-500"
-                        >
-                          {PRESET_SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
-                          {!PRESET_SUBJECTS.includes(savedNotes.find(n => n.id === activeNoteId)?.subject || '') && (
-                            <option value={savedNotes.find(n => n.id === activeNoteId)?.subject}>
-                              {savedNotes.find(n => n.id === activeNoteId)?.subject} (Custom)
-                            </option>
-                          )}
-                        </select>
-
-                        <select
-                          value={savedNotes.find(n => n.id === activeNoteId)?.importance || 'Medium'}
-                          onChange={(e) => {
-                            const active = savedNotes.find(n => n.id === activeNoteId);
-                            if (active) handleUpdateActiveNoteTags(active.subject, e.target.value as any);
-                          }}
-                          className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-705 outline-none rounded-xl px-2 py-1 text-[9px] font-bold uppercase text-zinc-700 dark:text-zinc-300 transition-all focus:ring-2 focus:ring-indigo-500"
-                        >
-                          <option value="High">🔴 High</option>
-                          <option value="Medium">🟡 Medium</option>
-                          <option value="Low">🟢 Low</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                 <div className="flex-1 overflow-auto p-6 text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed markdown-container animate-fade-in">
+             {/* Render view of active study sheet */}
+             {activeTab === 'active' && (
+               <div className="flex-1 flex flex-col min-h-0">
+                  <div className="flex-1 overflow-auto p-6 text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed markdown-container animate-fade-in">
                   {notes && (
                     <div className="mb-4 pb-3 border-b border-zinc-150 dark:border-zinc-805 flex items-center justify-between">
                       <span className="text-[10px] font-black uppercase text-zinc-450 tracking-wider">Generated Study Guide</span>

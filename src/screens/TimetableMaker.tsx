@@ -5,24 +5,18 @@ import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { 
-  Calendar, 
   Clock, 
   BookOpen, 
   Plus, 
   X, 
   Sparkles, 
   Loader2, 
-  Download, 
   Printer, 
   Save, 
   CheckCircle2, 
   GraduationCap, 
   Target, 
-  HelpCircle,
-  Award,
   ChevronRight,
-  TrendingUp,
-  ArrowLeft,
   Zap
 } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -40,7 +34,6 @@ interface TimetableData {
 
 export default function TimetableMaker({ isIntegrated = false }: { isIntegrated?: boolean }) {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [newSubject, setNewSubject] = useState('');
   const [hours, setHours] = useState('4');
@@ -117,7 +110,7 @@ export default function TimetableMaker({ isIntegrated = false }: { isIntegrated?
     }
   }, []);
 
-  // New Personalization States
+  // Personalization States
   const [durationCategory, setDurationCategory] = useState<'quick' | 'daily' | 'multiday' | 'weekly' | 'longterm'>('weekly');
   const [durationValue, setDurationValue] = useState<string>('1_week');
 
@@ -311,432 +304,313 @@ export default function TimetableMaker({ isIntegrated = false }: { isIntegrated?
           className="grid grid-cols-1 lg:grid-cols-12 gap-6"
         >
           {/* Main config Form Column */}
-          <div className="lg:col-span-8 space-y-6">
-            {/* Step Progress Indicator Header */}
-            <div className="bg-white dark:bg-zinc-900 p-4 sm:p-6 rounded-3xl border border-zinc-200/50 dark:border-zinc-800 shadow-xs">
-              <div className="flex items-center justify-between gap-2">
-                {[
-                  { num: 1, label: "Scope & Subjects", desc: "Duration & topics" },
-                  { num: 2, label: "Academic Profile", desc: "Class, Stream & Board" },
-                  { num: 3, label: "Priorities", desc: "Strengths & Weaknesses" },
-                  { num: 4, label: "Daily Workload", desc: "Hours & style" }
-                ].map((s) => (
-                  <button
-                    key={s.num}
-                    onClick={() => subjects.length > 0 && s.num < step && setStep(s.num)}
-                    disabled={subjects.length === 0}
-                    className="flex-1 flex flex-col items-center sm:items-start text-center sm:text-left group relative focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <div className="flex items-center gap-2 w-full">
-                      <div className={cn(
-                        "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-black transition-all duration-300",
-                        step === s.num
-                          ? "bg-amber-500 text-white shadow-md shadow-amber-500/20 ring-4 ring-amber-500/10 scale-105"
-                          : step > s.num
-                            ? "bg-green-500 text-white"
-                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500"
-                      )}>
-                        {step > s.num ? (
-                          <CheckCircle2 size={16} />
-                        ) : (
-                          s.num
-                        )}
-                      </div>
-                      {/* Connector Line for Desktop */}
-                      {s.num < 4 && (
-                        <div className="hidden sm:block flex-1 h-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-full mx-2 overflow-hidden">
-                          <div className={cn(
-                            "h-full transition-all duration-500",
-                            step > s.num ? "bg-green-500 w-full" : step === s.num ? "bg-amber-500/50 w-1/2" : "w-0"
-                          )}></div>
-                        </div>
-                      )}
-                    </div>
-                    <span className={cn(
-                      "hidden sm:block text-[11px] font-black uppercase tracking-wider mt-2.5 transition-colors",
-                      step === s.num ? "text-amber-600 dark:text-amber-400" : "text-zinc-500 dark:text-zinc-400"
-                    )}>
-                      {s.label}
-                    </span>
-                    <span className="hidden md:block text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-                      {s.desc}
-                    </span>
-                  </button>
-                ))}
+          <div className="lg:col-span-8">
+            <div className="bg-white dark:bg-zinc-900 p-5 sm:p-6 md:p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-800 shadow-xs space-y-8">
+              <div className="pb-1">
+                <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <Clock className="text-amber-500" size={20} /> Timetable Configuration
+                </h2>
+                <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Set your scope, subjects, academic profile, priorities, and workload in one place.</p>
               </div>
-            </div>
 
-            {/* Form Content Wrapper */}
-            <div className="bg-white dark:bg-zinc-900 p-5 sm:p-6 md:p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-800 shadow-xs space-y-6">
-              <AnimatePresence mode="wait">
-                {step === 1 && (
-                  <motion.div
-                    key="step1"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    className="space-y-6"
+              {/* Section 1: Duration Selector */}
+              <div className="space-y-3">
+                <label htmlFor="duration-category-select" className="text-[11px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block">
+                  Schedule Format
+                </label>
+                <div className="relative">
+                  <select
+                    id="duration-category-select"
+                    value={durationCategory}
+                    onChange={(e) => handleCategoryChange(e.target.value as any)}
+                    className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3.5 text-xs md:text-sm font-bold outline-none focus:ring-2 focus:ring-amber-500/20 appearance-none transition-all cursor-pointer"
                   >
-                    <div>
-                      <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                        <Clock className="text-amber-500" size={20} /> Choose Study Duration
-                      </h2>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Select the duration scope for this specific revision schedule.</p>
-                    </div>
+                    <option value="quick">⚡ Quick Session (30 Mins - 3 Hours)</option>
+                    <option value="daily">📅 Daily Timetable (Today / Tomorrow)</option>
+                    <option value="multiday">🗓️ Multi-Day Timetable (3 - 7 Days)</option>
+                    <option value="weekly">🔄 Weekly Timetable (1 - 2 Weeks)</option>
+                    <option value="longterm">🚀 Long-Term Timetable (30 - 90 Days)</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-zinc-400 dark:text-zinc-500">
+                    <ChevronRight size={16} className="rotate-90" />
+                  </div>
+                </div>
 
-                    {/* Section 1: Duration Selector */}
-                    <div className="space-y-3">
-                      <label htmlFor="duration-category-select" className="text-[11px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block">
-                        Schedule Format
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="duration-category-select"
-                          value={durationCategory}
-                          onChange={(e) => handleCategoryChange(e.target.value as any)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3.5 text-xs md:text-sm font-bold outline-none focus:ring-2 focus:ring-amber-500/20 appearance-none transition-all cursor-pointer"
-                        >
-                          <option value="quick">⚡ Quick Session (30 Mins - 3 Hours)</option>
-                          <option value="daily">📅 Daily Timetable (Today / Tomorrow)</option>
-                          <option value="multiday">🗓️ Multi-Day Timetable (3 - 7 Days)</option>
-                          <option value="weekly">🔄 Weekly Timetable (1 - 2 Weeks)</option>
-                          <option value="longterm">🚀 Long-Term Timetable (30 - 90 Days)</option>
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-zinc-400 dark:text-zinc-500">
-                          <ChevronRight size={16} className="rotate-90" />
-                        </div>
-                      </div>
+                <label className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block pt-2">
+                  Adjust Specific Scope Value
+                </label>
 
-                      <label className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block pt-2">
-                        Adjust Specific Scope Value
-                      </label>
+                {/* Sub-values Segmented Selector */}
+                <div className="bg-zinc-50 dark:bg-zinc-850/80 p-1.5 rounded-2xl border border-zinc-150 dark:border-zinc-800/60 flex flex-wrap gap-1">
+                  {durationOptions[durationCategory].values.map((v) => (
+                    <button
+                      key={v.id}
+                      onClick={() => setDurationValue(v.id)}
+                      type="button"
+                      className={cn(
+                        "flex-1 min-w-[80px] py-2 px-3 rounded-xl text-xs font-bold transition-all uppercase tracking-wide cursor-pointer text-center",
+                        durationValue === v.id
+                          ? "bg-white dark:bg-zinc-900 text-amber-600 dark:text-amber-400 shadow-xs border border-zinc-200 dark:border-zinc-800"
+                          : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                    )}
+                    >
+                      {v.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                      {/* Sub-values Segmented Selector */}
-                      <div className="bg-zinc-50 dark:bg-zinc-850/80 p-1.5 rounded-2xl border border-zinc-150 dark:border-zinc-800/60 flex flex-wrap gap-1">
-                        {durationOptions[durationCategory].values.map((v) => (
-                          <button
-                            key={v.id}
-                            onClick={() => setDurationValue(v.id)}
-                            type="button"
-                            className={cn(
-                              "flex-1 min-w-[80px] py-2 px-3 rounded-xl text-xs font-bold transition-all uppercase tracking-wide cursor-pointer text-center",
-                              durationValue === v.id
-                                ? "bg-white dark:bg-zinc-900 text-amber-600 dark:text-amber-400 shadow-xs border border-zinc-200 dark:border-zinc-800"
-                                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-                            )}
-                          >
-                            {v.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+              {/* Section 2: Syllabus Subjects */}
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                    <BookOpen className="text-amber-500" size={18} /> Syllabus / Subjects to Cover
+                  </h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Specify which topics or classes we should map out in your timetable.</p>
+                </div>
 
-                    <hr className="border-zinc-100 dark:border-zinc-800" />
+                <div className="flex gap-2">
+                  <input 
+                    type="text"
+                    value={newSubject}
+                    onChange={(e) => setNewSubject(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addSubject()}
+                    placeholder="e.g. Chemistry, Advanced Calculus, History..."
+                    className="flex-1 bg-zinc-50 dark:bg-zinc-850/50 text-zinc-900 dark:text-white border border-zinc-250 dark:border-zinc-800/80 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all placeholder:text-zinc-400 text-xs md:text-sm font-bold"
+                  />
+                  <button 
+                    onClick={addSubject}
+                    className="p-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-2xl hover:bg-zinc-800 dark:hover:bg-zinc-205 transition-all active:scale-95 cursor-pointer shrink-0"
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
 
-                    {/* Section 2: Syllabus Subjects */}
-                    <div className="space-y-3">
-                      <div>
-                        <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                          <BookOpen className="text-amber-500" size={20} /> Syllabus / Subjects to Cover
-                        </h2>
-                        <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Specify which topics or classes we should map out in your timetable.</p>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <input 
-                          type="text"
-                          value={newSubject}
-                          onChange={(e) => setNewSubject(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && addSubject()}
-                          placeholder="e.g. Chemistry, Advanced Calculus, History..."
-                          className="flex-1 bg-zinc-50 dark:bg-zinc-850/50 text-zinc-900 dark:text-white border border-zinc-250 dark:border-zinc-800/80 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all placeholder:text-zinc-400 text-xs md:text-sm font-bold"
-                        />
-                        <button 
-                          onClick={addSubject}
-                          className="p-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-2xl hover:bg-zinc-800 dark:hover:bg-zinc-205 transition-all active:scale-95 cursor-pointer shrink-0"
-                        >
-                          <Plus size={18} />
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <AnimatePresence>
+                    {subjects.map(sub => (
+                      <motion.span 
+                        key={sub}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-xl text-xs font-bold border border-amber-500/20 dark:border-amber-500/15"
+                      >
+                        {sub}
+                        <button onClick={() => removeSubject(sub)} className="p-0.5 hover:bg-amber-500/25 rounded-full cursor-pointer">
+                          <X size={12} className="text-amber-600 hover:text-amber-900 transition-colors" />
                         </button>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        <AnimatePresence>
-                          {subjects.map(sub => (
-                            <motion.span 
-                              key={sub}
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.8 }}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-xl text-xs font-bold border border-amber-500/20 dark:border-amber-500/15"
-                            >
-                              {sub}
-                              <button onClick={() => removeSubject(sub)} className="p-0.5 hover:bg-amber-500/25 rounded-full cursor-pointer">
-                                <X size={12} className="text-amber-600 hover:text-amber-900 transition-colors" />
-                              </button>
-                            </motion.span>
-                          ))}
-                        </AnimatePresence>
-                        {subjects.length === 0 && (
-                          <div className="w-full py-4 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl text-xs text-zinc-400 dark:text-zinc-500 italic">
-                            No subjects added yet. Add at least one to move to Step 2.
-                          </div>
-                        )}
-                      </div>
+                      </motion.span>
+                    ))}
+                  </AnimatePresence>
+                  {subjects.length === 0 && (
+                    <div className="w-full py-4 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl text-xs text-zinc-400 dark:text-zinc-500 italic">
+                      No subjects added yet. Add at least one to proceed.
                     </div>
-                  </motion.div>
-                )}
+                  )}
+                </div>
+              </div>
 
-                {step === 2 && (
-                  <motion.div
-                    key="step2"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    className="space-y-6"
-                  >
-                    <div>
-                      <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                        <GraduationCap className="text-amber-500" size={20} /> Academic Profile
-                      </h2>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Provide your school system info to auto-calibrate appropriate study intervals.</p>
+              {/* Section 3: Academic Profile */}
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                    <GraduationCap className="text-amber-500" size={18} /> Academic Profile
+                  </h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Provide your school system info to auto-calibrate appropriate study intervals.</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Student Class</label>
+                    <select
+                      value={studentClass}
+                      onChange={(e) => setStudentClass(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
+                    >
+                      <option value="">Select Class</option>
+                      <option value="Class 9">Class 9</option>
+                      <option value="Class 10">Class 10 (High School)</option>
+                      <option value="Class 11">Class 11</option>
+                      <option value="Class 12">Class 12 (Board Prep)</option>
+                      <option value="College Undergraduate">College / University</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Board / Curriculum</label>
+                    <select
+                      value={board}
+                      onChange={(e) => setBoard(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
+                    >
+                      <option value="">Select Board</option>
+                      <option value="CBSE">CBSE (Central Board)</option>
+                      <option value="ICSE">ICSE / ISC</option>
+                      <option value="State Board">State Board</option>
+                      <option value="SSC">SSC (Secondary School)</option>
+                      <option value="IB">IB Diploma</option>
+                      <option value="CIE">Cambridge IGCSE</option>
+                      <option value="AP/CollegeBoard">AP / SAT Curriculum</option>
+                      <option value="Other">Other Curriculum</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Academic Stream</label>
+                    <select
+                      value={stream}
+                      onChange={(e) => setStream(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
+                    >
+                      <option value="">Select Academic Stream</option>
+                      <option value="Science (PCM)">Science (Physics, Chemistry, Math)</option>
+                      <option value="Science (PCB)">Science (Physics, Chemistry, Biology)</option>
+                      <option value="Commerce">Commerce / Business Studies</option>
+                      <option value="Humanities / Arts">Humanities & Creative Arts</option>
+                      <option value="General academic">General Academy/Mixed</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Priorities & Milestones */}
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                    <Target className="text-amber-500" size={18} /> Priorities & Milestones
+                  </h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Specify focus parameters so the algorithm gives extra coverage to priority topics.</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+                      Weak Subjects <span className="text-[10px] text-zinc-400 font-normal">(Needs Extra Focus)</span>
+                    </label>
+                    <input 
+                      type="text"
+                      value={weakSubjects}
+                      onChange={(e) => setWeakSubjects(e.target.value)}
+                      placeholder="e.g. Physics Equations, Integration"
+                      className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 placeholder:text-zinc-400 font-semibold"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+                      Strong Subjects <span className="text-[10px] text-zinc-400 font-normal">(Speed Revision)</span>
+                    </label>
+                    <input 
+                      type="text"
+                      value={strongSubjects}
+                      onChange={(e) => setStrongSubjects(e.target.value)}
+                      placeholder="e.g. Organic Chemistry, English Literature"
+                      className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 placeholder:text-zinc-400 font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Exam Milestone or Target Date</label>
+                    <input 
+                      type="date"
+                      value={examDates}
+                      onChange={(e) => setExamDates(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-850 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Primary Academic Goal</label>
+                    <select
+                      value={goals}
+                      onChange={(e) => setGoals(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
+                    >
+                      <option value="">Select Primary Goal</option>
+                      <option value="Improve Weak Subject understanding">Improve Core concepts &amp; understanding</option>
+                      <option value="Exam score maximization & retrieval practice">Maximize Exam scores (Spaced retrieval)</option>
+                      <option value="Syllabus coverage & time management">Complete syllabus backlog &amp; manage time</option>
+                      <option value="Regular revision & daily habit completion">Establish study habits &amp; daily routines</option>
+                      <option value="Stress reduction and mental stability">Reduce stress &amp; balance study blocks</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 5: Workload & Style */}
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                    <Clock className="text-amber-500" size={18} /> Workload &amp; Style
+                  </h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Configure study volume limits and your custom learning profile rules.</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-xs md:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                      Daily Available Study Hours
+                    </label>
+                    <input 
+                      type="range"
+                      min="1"
+                      max="12"
+                      step="0.5"
+                      value={hours}
+                      onChange={(e) => setHours(e.target.value)}
+                      className="w-full accent-amber-500 cursor-pointer h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg appearance-none"
+                    />
+                    <div className="flex justify-between text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider">
+                      <span>1 Hour</span>
+                      <span className="text-amber-600 dark:text-amber-400 font-extrabold">{hours} Hours</span>
+                      <span>12 Hours</span>
                     </div>
+                  </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                      {/* Class Field */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Student Class</label>
-                        <select
-                          value={studentClass}
-                          onChange={(e) => setStudentClass(e.target.value)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
-                        >
-                          <option value="">Select Class</option>
-                          <option value="Class 9">Class 9</option>
-                          <option value="Class 10">Class 10 (High School)</option>
-                          <option value="Class 11">Class 11</option>
-                          <option value="Class 12">Class 12 (Board Prep)</option>
-                          <option value="College Undergraduate">College / University</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
+                  <div className="space-y-2">
+                    <label className="text-xs md:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                      Learning Style/Preferences
+                    </label>
+                    <textarea 
+                      value={preferences}
+                      onChange={(e) => setPreferences(e.target.value)}
+                      placeholder="e.g. Spaced revision, deep focus blocks, morning learner, pomodoro breaks..."
+                      className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 h-24 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all resize-none placeholder:text-zinc-400 text-xs md:text-sm font-semibold"
+                    />
+                  </div>
+                </div>
+              </div>
 
-                      {/* Board Field */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Board / Curriculum</label>
-                        <select
-                          value={board}
-                          onChange={(e) => setBoard(e.target.value)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
-                        >
-                          <option value="">Select Board</option>
-                          <option value="CBSE">CBSE (Central Board)</option>
-                          <option value="ICSE">ICSE / ISC</option>
-                          <option value="State Board">State Board</option>
-                          <option value="SSC">SSC (Secondary School)</option>
-                          <option value="IB">IB Diploma</option>
-                          <option value="CIE">Cambridge IGCSE</option>
-                          <option value="AP/CollegeBoard">AP / SAT Curriculum</option>
-                          <option value="Other">Other Curriculum</option>
-                        </select>
-                      </div>
-
-                      {/* Academic Stream */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Academic Stream</label>
-                        <select
-                          value={stream}
-                          onChange={(e) => setStream(e.target.value)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
-                        >
-                          <option value="">Select Academic Stream</option>
-                          <option value="Science (PCM)">Science (Physics, Chemistry, Math)</option>
-                          <option value="Science (PCB)">Science (Physics, Chemistry, Biology)</option>
-                          <option value="Commerce">Commerce / Business Studies</option>
-                          <option value="Humanities / Arts">Humanities & Creative Arts</option>
-                          <option value="General academic">General Academy/Mixed</option>
-                        </select>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {step === 3 && (
-                  <motion.div
-                    key="step3"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    className="space-y-6"
-                  >
-                    <div>
-                      <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                        <Target className="text-amber-500" size={20} /> Priorities & Milestones
-                      </h2>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Specify focus parameters so the algorithm gives extra coverage to priority topics.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Weak Subjects */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                          Weak Subjects <span className="text-[10px] text-zinc-400 font-normal">(Needs Extra Focus)</span>
-                        </label>
-                        <input 
-                          type="text"
-                          value={weakSubjects}
-                          onChange={(e) => setWeakSubjects(e.target.value)}
-                          placeholder="e.g. Physics Equations, Integration"
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 placeholder:text-zinc-400 font-semibold"
-                        />
-                      </div>
-
-                      {/* Strong Subjects */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                          Strong Subjects <span className="text-[10px] text-zinc-400 font-normal">(Speed Revision)</span>
-                        </label>
-                        <input 
-                          type="text"
-                          value={strongSubjects}
-                          onChange={(e) => setStrongSubjects(e.target.value)}
-                          placeholder="e.g. Organic Chemistry, English Literature"
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 placeholder:text-zinc-400 font-semibold"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Exam Milestone Dates */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Exam Milestone or Target Date</label>
-                        <input 
-                          type="date"
-                          value={examDates}
-                          onChange={(e) => setExamDates(e.target.value)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-850 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
-                        />
-                      </div>
-
-                      {/* Target Goal Selector */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Primary Academic Goal</label>
-                        <select
-                          value={goals}
-                          onChange={(e) => setGoals(e.target.value)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-amber-500/10 font-bold"
-                        >
-                          <option value="">Select Primary Goal</option>
-                          <option value="Improve Weak Subject understanding">Improve Core concepts & understanding</option>
-                          <option value="Exam score maximization & retrieval practice">Maximize Exam scores (Spaced retrieval)</option>
-                          <option value="Syllabus coverage & time management">Complete syllabus backlog & manage time</option>
-                          <option value="Regular revision & daily habit completion">Establish study habits & daily routines</option>
-                          <option value="Stress reduction and mental stability">Reduce stress & balance study blocks</option>
-                        </select>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {step === 4 && (
-                  <motion.div
-                    key="step4"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    className="space-y-6"
-                  >
-                    <div>
-                      <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                        <Clock className="text-amber-500" size={20} /> Workload & Style
-                      </h2>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Configure study volume limits and your custom learning profile rules.</p>
-                    </div>
-
-                    <div className="space-y-6">
-                      {/* Slider option */}
-                      <div className="space-y-2">
-                        <label className="text-xs md:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                          Daily Available Study Hours
-                        </label>
-                        <input 
-                          type="range"
-                          min="1"
-                          max="12"
-                          step="0.5"
-                          value={hours}
-                          onChange={(e) => setHours(e.target.value)}
-                          className="w-full accent-amber-500 cursor-pointer h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg appearance-none"
-                        />
-                        <div className="flex justify-between text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider">
-                          <span>1 Hour</span>
-                          <span className="text-amber-600 dark:text-amber-400 font-extrabold">{hours} Hours</span>
-                          <span>12 Hours</span>
-                        </div>
-                      </div>
-
-                      {/* Preferences textarea */}
-                      <div className="space-y-2">
-                        <label className="text-xs md:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                          Learning Style/Preferences
-                        </label>
-                        <textarea 
-                          value={preferences}
-                          onChange={(e) => setPreferences(e.target.value)}
-                          placeholder="e.g. Spaced revision, deep focus blocks, morning learner, pomodoro breaks..."
-                          className="w-full bg-zinc-50 dark:bg-zinc-850/50 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 h-24 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all resize-none placeholder:text-zinc-400 text-xs md:text-sm font-semibold"
-                        />
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Step Navigation Controls */}
-              <div className="flex items-center justify-between pt-6 border-t border-zinc-100 dark:border-zinc-800 gap-4 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setStep(prev => Math.max(1, prev - 1))}
-                  disabled={step === 1}
-                  className="px-6 py-3 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-extrabold uppercase tracking-widest text-zinc-650 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+              {/* Generate Action */}
+              <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <button 
+                  onClick={generateTimetable}
+                  disabled={subjects.length === 0 || isLoading}
+                  className="w-full py-3.5 bg-amber-500 dark:bg-amber-600 hover:bg-amber-600 dark:hover:bg-amber-700 disabled:bg-zinc-100 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-650 text-white font-extrabold uppercase text-xs tracking-widest rounded-xl shadow-lg shadow-amber-500/10 flex items-center justify-center gap-3 transition-all active:scale-95 cursor-pointer disabled:cursor-not-allowed"
                 >
-                  <ArrowLeft size={14} /> Back
+                  {isLoading ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Creating Your Timetable...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={16} />
+                      Generate {durationOptions[durationCategory].label}
+                    </>
+                  )}
                 </button>
 
-                {step < 4 ? (
-                  <button
-                    type="button"
-                    onClick={() => subjects.length > 0 && setStep(prev => Math.min(4, prev + 1))}
-                    disabled={subjects.length === 0}
-                    className="px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next Step <ChevronRight size={14} />
-                  </button>
-                ) : (
-                  <button 
-                    onClick={generateTimetable}
-                    disabled={subjects.length === 0 || isLoading}
-                    className="flex-1 sm:flex-initial px-8 py-3.5 bg-amber-500 dark:bg-amber-600 hover:bg-amber-600 dark:hover:bg-amber-700 disabled:bg-zinc-100 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-650 text-white font-extrabold uppercase text-xs tracking-widest rounded-xl shadow-lg shadow-amber-500/10 flex items-center justify-center gap-3 transition-all active:scale-95 cursor-pointer disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        Creating Your Timetable...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles size={16} />
-                        Generate {durationOptions[durationCategory].label}
-                      </>
-                    )}
-                  </button>
+                {error && (
+                  <div className="mt-4 p-4 bg-red-500/10 dark:bg-red-950/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-2xl border border-red-500/20">
+                    {error}
+                  </div>
                 )}
               </div>
-
-              {error && (
-                <div className="p-4 bg-red-500/10 dark:bg-red-950/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-2xl border border-red-500/20 mt-4">
-                  {error}
-                </div>
-              )}
             </div>
           </div>
 

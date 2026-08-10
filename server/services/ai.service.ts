@@ -409,11 +409,33 @@ export class AIService {
     try {
       let cleanedText = flashcardsText || "[]";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const flashcards = JSON.parse(cleanedText);
+      
+      let parsed: any = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('[');
+        const lastBrace = cleanedText.lastIndexOf(']');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          const firstObj = cleanedText.indexOf('{');
+          const lastObj = cleanedText.lastIndexOf('}');
+          if (firstObj !== -1 && lastObj > firstObj) {
+            parsed = JSON.parse(cleanedText.substring(firstObj, lastObj + 1));
+          } else {
+            throw new Error("No JSON object found in response");
+          }
+        }
+      }
+      
+      const flashcards = (parsed && Array.isArray(parsed.flashcards)) ? parsed.flashcards : (Array.isArray(parsed) ? parsed : []);
       return { flashcards };
-    } catch (e) {
+    } catch (e: any) {
       console.error("Flashcards JSON Parse Error:", e, flashcardsText);
-      throw e;
+      const err = new Error(`Failed to parse flashcards response: ${e.message}`);
+      (err as any).code = "AI_PARSE_ERROR";
+      throw err;
     }
   }
 
@@ -436,11 +458,33 @@ export class AIService {
     try {
       let cleanedText = roadmapText || "[]";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const roadmap = JSON.parse(cleanedText);
+      
+      let parsed: any = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('[');
+        const lastBrace = cleanedText.lastIndexOf(']');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          const firstObj = cleanedText.indexOf('{');
+          const lastObj = cleanedText.lastIndexOf('}');
+          if (firstObj !== -1 && lastObj > firstObj) {
+            parsed = JSON.parse(cleanedText.substring(firstObj, lastObj + 1));
+          } else {
+            throw new Error("No JSON object found in response");
+          }
+        }
+      }
+      
+      const roadmap = (parsed && Array.isArray(parsed.roadmap)) ? parsed.roadmap : (Array.isArray(parsed) ? parsed : []);
       return { roadmap };
-    } catch (e) {
+    } catch (e: any) {
       console.error("Roadmap Parse Error:", e, roadmapText);
-      throw e;
+      const err = new Error(`Failed to parse roadmap response: ${e.message}`);
+      (err as any).code = "AI_PARSE_ERROR";
+      throw err;
     }
   }
 
@@ -467,11 +511,27 @@ export class AIService {
     try {
       let cleanedText = quizText || "{}";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const quiz = JSON.parse(cleanedText);
+      
+      let parsed: any = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('{');
+        const lastBrace = cleanedText.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          throw new Error("No JSON object found in response");
+        }
+      }
+      
+      const quiz = (parsed && parsed.questions) ? parsed : parsed;
       return { quiz };
-    } catch (e) {
+    } catch (e: any) {
       console.error("Quiz Parse Error:", e, quizText);
-      throw e;
+      const err = new Error(`Failed to parse quiz response: ${e.message}`);
+      (err as any).code = "AI_PARSE_ERROR";
+      throw err;
     }
   }
 
@@ -498,11 +558,27 @@ export class AIService {
     try {
       let cleanedText = quickQuizText || "{}";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const quiz = JSON.parse(cleanedText);
+      
+      let parsed: any = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('{');
+        const lastBrace = cleanedText.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          throw new Error("No JSON object found in response");
+        }
+      }
+      
+      const quiz = (parsed && parsed.questions) ? parsed : parsed;
       return { quiz };
-    } catch (e) {
+    } catch (e: any) {
       console.error("Quick quiz json parse error:", e, quickQuizText);
-      throw e;
+      const err = new Error(`Failed to parse quick quiz response: ${e.message}`);
+      (err as any).code = "AI_PARSE_ERROR";
+      throw err;
     }
   }
 
@@ -555,11 +631,27 @@ export class AIService {
     try {
       let cleanedText = mockTestText || "{}";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const questions = JSON.parse(cleanedText);
+      
+      let parsed: any = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('{');
+        const lastBrace = cleanedText.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          throw new Error("No JSON object found in response");
+        }
+      }
+      
+      const questions = (parsed && Array.isArray(parsed.questions)) ? parsed.questions : (Array.isArray(parsed) ? parsed : []);
       return { questions };
-    } catch (e) {
+    } catch (e: any) {
       console.error("Mock Test JSON Parse Error:", e, mockTestText);
-      throw e;
+      const err = new Error(`Failed to parse mock test response: ${e.message}`);
+      (err as any).code = "AI_PARSE_ERROR";
+      throw err;
     }
   }
 
@@ -591,11 +683,27 @@ export class AIService {
     try {
       let cleanedText = questionsText || "{}";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const questions = JSON.parse(cleanedText);
+      
+      let parsed: any = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('{');
+        const lastBrace = cleanedText.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          throw new Error("No JSON object found in response");
+        }
+      }
+      
+      const questions = (parsed && Array.isArray(parsed.questions)) ? parsed.questions : (Array.isArray(parsed) ? parsed : []);
       return { questions };
-    } catch (e) {
+    } catch (e: any) {
       console.error("Practice Questions JSON Parse Error:", e, questionsText);
-      throw e;
+      const err = new Error(`Failed to parse practice questions response: ${e.message}`);
+      (err as any).code = "AI_PARSE_ERROR";
+      throw err;
     }
   }
 
@@ -625,11 +733,26 @@ export class AIService {
     try {
       let cleanedText = revisionPackText || "{}";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const revisionPack = JSON.parse(cleanedText);
-      return revisionPack;
-    } catch (e) {
+      
+      let parsed: any = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('{');
+        const lastBrace = cleanedText.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          throw new Error("No JSON object found in response");
+        }
+      }
+      
+      return parsed;
+    } catch (e: any) {
       console.error("Revision Pack JSON Parse Error:", e, revisionPackText);
-      throw e;
+      const err = new Error(`Failed to parse revision pack response: ${e.message}`);
+      (err as any).code = "AI_PARSE_ERROR";
+      throw err;
     }
   }
 
@@ -659,11 +782,27 @@ export class AIService {
     try {
       let cleanedText = videosText || "{}";
       cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      const videos = JSON.parse(cleanedText);
-      return { videos: videos.videos || [] };
-    } catch (e) {
+      
+      let parsed: any = null;
+      try {
+        parsed = JSON.parse(cleanedText);
+      } catch {
+        const firstBrace = cleanedText.indexOf('{');
+        const lastBrace = cleanedText.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
+        } else {
+          throw new Error("No JSON object found in response");
+        }
+      }
+      
+      const videos = (parsed && Array.isArray(parsed.videos)) ? parsed.videos : [];
+      return { videos };
+    } catch (e: any) {
       console.error("Videos JSON Parse Error:", e, videosText);
-      throw e;
+      const err = new Error(`Failed to parse video recommendations response: ${e.message}`);
+      (err as any).code = "AI_PARSE_ERROR";
+      throw err;
     }
   }
 

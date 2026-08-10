@@ -14,7 +14,8 @@ import {
   Clock,
   Award,
   Sparkles,
-  Zap
+  Zap,
+  Play
 } from 'lucide-react';
 import { safeFetch } from '../../lib/api';
 import { addMistakeToBook } from './MistakeBook';
@@ -268,7 +269,7 @@ export default function UnifiedExamLab() {
   };
 
   const handleStartQuiz = (type: 'practice' | 'mock') => {
-    if (type === 'practice' && data.practiceQuestions) {
+    if (type === 'practice' && data.practiceQuestions && Array.isArray(data.practiceQuestions.questions)) {
       setActiveQuiz({
         type,
         answers: new Array(data.practiceQuestions.questions.length).fill(-1),
@@ -281,12 +282,18 @@ export default function UnifiedExamLab() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ numQuestions: 10, subject: formData.subject })
       }).then(res => res.json()).then(mockData => {
+        if (!mockData || !Array.isArray(mockData.questions)) {
+          setError('Invalid mock test response format. Please try again.');
+          return;
+        }
         setData(prev => ({ ...prev, mockTest: mockData }));
         setActiveQuiz({
           type,
           answers: new Array(mockData.questions.length).fill(-1),
           submitted: false
         });
+      }).catch(err => {
+        setError(err?.message || 'Failed to generate mock test.');
       });
     }
   };
@@ -303,10 +310,10 @@ export default function UnifiedExamLab() {
     setActiveQuiz({ ...activeQuiz, submitted: true });
 
     // Save mistakes
-    const questions = activeQuiz.type === 'practice' && data.practiceQuestions
-      ? data.practiceQuestions.questions
-      : activeQuiz.type === 'mock' && data.mockTest
-      ? data.mockTest.questions
+    const questions = activeQuiz.type === 'practice' && data.practiceQuestions?.questions
+      ? (Array.isArray(data.practiceQuestions.questions) ? data.practiceQuestions.questions : [])
+      : activeQuiz.type === 'mock' && data.mockTest?.questions
+      ? (Array.isArray(data.mockTest.questions) ? data.mockTest.questions : [])
       : [];
 
     questions.forEach((q, index) => {
@@ -325,10 +332,10 @@ export default function UnifiedExamLab() {
 
   const calculateScore = () => {
     if (!activeQuiz || !activeQuiz.submitted) return 0;
-    const questions = activeQuiz.type === 'practice' && data.practiceQuestions
-      ? data.practiceQuestions.questions
-      : activeQuiz.type === 'mock' && data.mockTest
-      ? data.mockTest.questions
+    const questions = activeQuiz.type === 'practice' && data.practiceQuestions?.questions
+      ? (Array.isArray(data.practiceQuestions.questions) ? data.practiceQuestions.questions : [])
+      : activeQuiz.type === 'mock' && data.mockTest?.questions
+      ? (Array.isArray(data.mockTest.questions) ? data.mockTest.questions : [])
       : [];
 
     let correct = 0;
@@ -481,7 +488,18 @@ export default function UnifiedExamLab() {
 
       {/* AI Response Sections */}
       <AnimatePresence>
-        {data.studyPlan && (
+        {isLoading && (
+          <motion.div
+            key="loading-skeletons"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="space-y-6"
+          >
+            <SkeletonGrid count={2} />
+          </motion.div>
+        )}
+        {!isLoading && data.studyPlan && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -552,29 +570,45 @@ export default function UnifiedExamLab() {
             </div>
 
             {/* Practice Questions */}
-            {data.practiceQuestions && !activeQuiz && (
-              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 md:p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl flex items-center justify-center">
-                      <Brain size={20} className="text-emerald-600 dark:text-emerald-400" />
+              {data.practiceQuestions && !activeQuiz && (
+                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 md:p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl flex items-center justify-center">
+                        <Brain size={20} className="text-emerald-600 dark:text-emerald-400" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white">
+                          Practice Questions
+                        </h2>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">{(data.practiceQuestions.questions || []).length} questions ready</p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white">
-                        Practice Questions
-                      </h2>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400">{data.practiceQuestions.questions.length} questions ready</p>
-                    </div>
+                    <button
+                      onClick={() => handleStartQuiz('practice')}
+                      className="px-4 py-2 bg-emerald-600 text-white text-xs font-black uppercase tracking-wider rounded-xl hover:bg-emerald-700 transition-all flex items-center gap-2"
+                    >
+                      <Play size={14} /> Start Practice
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleStartQuiz('practice')}
-                    className="px-4 py-2 bg-emerald-600 text-white text-xs font-black uppercase tracking-wider rounded-xl hover:bg-emerald-700 transition-all"
-                  >
-                    Start Practice
-                  </button>
+
+                  {(data.practiceQuestions.questions || []).length > 0 && (
+                    <div className="mt-4 first-letter:pl-0">
+                      <div className="flex items-start gap-3 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                        <span className="flex-shrink-0 w-7 h-7 bg-emerald-500/10 rounded-lg flex items-center justify-center text-xs font-black text-emerald-700 dark:text-emerald-400">
+                          1
+                        </span>
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          {(data.practiceQuestions.questions || [])[0]?.question || ''}
+                        </p>
+                      </div>
+                      <p className="mt-3 text-[10px] text-zinc-400 dark:text-zinc-500 italic">
+                        Answer option A: {(data.practiceQuestions.questions || [])[0]?.options?.[0] || ''}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Active Quiz */}
             {activeQuiz && (
@@ -591,8 +625,11 @@ export default function UnifiedExamLab() {
                     </div>
 
                     <div className="space-y-4">
-                      {(activeQuiz.type === 'practice' && data.practiceQuestions ? data.practiceQuestions.questions :
-                       activeQuiz.type === 'mock' && data.mockTest ? data.mockTest.questions : []).map((q, qIndex) => (
+                      {(activeQuiz.type === 'practice' && data.practiceQuestions?.questions
+                        ? (Array.isArray(data.practiceQuestions.questions) ? data.practiceQuestions.questions : [])
+                        : activeQuiz.type === 'mock' && data.mockTest?.questions
+                        ? (Array.isArray(data.mockTest.questions) ? data.mockTest.questions : [])
+                        : []).map((q, qIndex) => (
                         <div key={qIndex} className="p-5 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
                           <div className="flex items-start gap-3 mb-4">
                             <span className="flex-shrink-0 w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center text-xs font-black text-emerald-700 dark:text-emerald-400">
