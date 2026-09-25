@@ -59,7 +59,7 @@ export default function PrivacyPolicy() {
               <p>We restrict data collection exclusively to variables that improve your experience:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li><strong className="text-zinc-800 dark:text-zinc-200">Account Identity:</strong> Display name and email addresses verified safely via Google Sign-In. We never store personal passwords.</li>
-                <li><strong className="text-zinc-800 dark:text-zinc-200">Academic Assets:</strong> Practice quizzes, study notes, timetables, flashcards, and plans created by you.</li>
+                <li><strong className="text-zinc-800 dark:text-zinc-200">Academic Assets:</strong> Practice quizzes, study notes, and plans created by you.</li>
                 <li><strong className="text-zinc-800 dark:text-zinc-200">Interaction Telemetry:</strong> Unbiased duration stats, focus minutes completed, and feature popularities aggregated anonymised on Firestore.</li>
               </ul>
             </div>
@@ -81,7 +81,7 @@ export default function PrivacyPolicy() {
               4. AI Process and Chat Queries
             </h2>
             <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              All interactions routed through our AI Tutor and Exam Lab are secured using server-side AI endpoints. Chat conversations are not sent to third-party public networks for marketing indexing.
+                            All interactions routed through our AI Tutor are secured using server-side AI endpoints. Chat conversations are not sent to third-party public networks for marketing indexing.
             </p>
           </section>
 

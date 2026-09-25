@@ -55,7 +55,7 @@ export default function TermsOfService() {
               2. Permitted Educational Use
             </h2>
             <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              TeenGenius is offered strictly to assist, accelerate, and optimize your learning, notes management, test preparation, and focus circles. Students are expected to use the generated study guides, timetable lists, and doubt solutions responsibly.
+              TeenGenius is offered strictly to assist, accelerate, and optimize your learning, notes management, test preparation, and focus circles. Students are expected to use the generated study guides and doubt solutions responsibly.
             </p>
           </section>
 
@@ -79,7 +79,7 @@ export default function TermsOfService() {
               4. Disclaimer of AI Outputs
             </h2>
             <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              TeenGenius utilizes advanced learning models compiled in our AI stack. While highly accurate, study answers, math solutions, and memory palaces should be double-checked against your official textbook guidelines to verify ultimate exactness before exam submissions.
+              TeenGenius utilizes advanced learning models compiled in our AI stack. While highly accurate, study answers and math solutions should be double-checked against your official textbook guidelines to verify ultimate exactness before exam submissions.
             </p>
           </section>
 

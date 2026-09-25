@@ -101,20 +101,6 @@
       },
       "required": ["fromId", "toId", "status", "timestamp"]
     },
-    "Timetable": {
-      "title": "Timetable",
-      "description": "AI generated study schedule",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string" },
-        "subjects": { "type": "array", "items": { "type": "string" } },
-        "timetableData": { "type": "object" },
-        "hoursPerDay": { "type": "string" },
-        "preferences": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["userId", "timetableData", "createdAt"]
-    },
     "AIChat": {
       "title": "AIChat",
       "description": "User session with AI assistant",
@@ -140,21 +126,6 @@
       },
       "required": ["role", "content", "timestamp"]
     },
-    "HomeworkSolution": {
-      "title": "Homework Solution",
-      "description": "Solved homework problems with step-by-step guidance",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string" },
-        "subject": { "type": "string" },
-        "question": { "type": "string" },
-        "imageUrl": { "type": "string" },
-        "solution": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["userId", "subject", "question", "solution", "createdAt"]
-    },
-
     "Doubt": {
       "title": "Doubt",
       "description": "Doubt or question raised in study group",
@@ -284,14 +255,6 @@
         "required": ["userId", "startTime", "duration"]
       },
       "description": "Logs of study activity for hours tracking"
-    },
-    "timetables/{timetableId}": {
-      "schema": "Timetable",
-      "description": "User specific generated study schedules"
-    },
-    "homeworkSolutions/{solutionId}": {
-      "schema": "HomeworkSolution",
-      "description": "Historical homework solutions solved by AI for user"
     },
     "notesLab/{noteId}": {
       "schema": {

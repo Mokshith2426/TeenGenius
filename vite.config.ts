@@ -15,6 +15,17 @@ export default defineConfig(({mode}) => {
       cssCodeSplit: true,
       chunkSizeWarningLimit: 1200,
       minify: 'esbuild',
+      rollupOptions: {
+        output: {
+          // Split stable vendor libraries so repeated visits hit cache,
+          // and release deploys only invalidate app code.
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+            'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+            'vendor-motion': ['motion'],
+          },
+        },
+      },
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.

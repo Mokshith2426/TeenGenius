@@ -121,6 +121,40 @@ html, body {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
+  /* --- Android-first mobile ergonomics --- */
+  html, body {
+    /* Eliminates the legacy tap delay & improves scroll predictability on touch */
+    touch-action: manipulation;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Prevent mobile browsers zooming inputs on focus (16px threshold) */
+  input, select, textarea {
+    font-size: 16px;
+  }
+  @media (min-width: 768px) {
+    input, select, textarea { font-size: inherit; }
+  }
+
+  /* Respect users who prefer reduced motion (battery + accessibility) */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Sticky/threshold-safe horizontal scrollers (chat chips, calendar strips) */
+  .mobile-scroll-x {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
 /* Premium Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;

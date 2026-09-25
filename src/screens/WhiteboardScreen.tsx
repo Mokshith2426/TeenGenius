@@ -9,7 +9,7 @@ export default function WhiteboardScreen() {
   const userId = user?.uid || 'guest';
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-zinc-55 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 select-none">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-zinc-55 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 select-none">
       {/* Header Bar */}
       <header className="h-16 shrink-0 bg-white dark:bg-zinc-900 border-b border-zinc-250/60 dark:border-zinc-800 flex items-center justify-between px-6 z-10">
         <div className="flex items-center gap-3">

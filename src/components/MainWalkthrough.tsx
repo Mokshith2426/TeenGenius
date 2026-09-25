@@ -49,8 +49,8 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
     {
       title: "Complete Student Study Tools",
       badge: "Study Headquarters",
-      tagline: "Explore Notes, Quizzes, Flashcards & Timetables",
-      description: "Everything you need to conquer your curriculum is at your fingertips. Instantly compile notes into summaries, generate revision notes, practice with smart AI quizzes, study flashcards, and track your learning milestones dynamically.",
+      tagline: "Explore Notes, Quizzes & Study Tools",
+      description: "Everything you need to conquer your curriculum is at your fingertips. Instantly compile notes into summaries, generate revision notes, practice with smart AI quizzes, and track your learning milestones dynamically.",
       icon: GraduationCap,
       iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
       gradient: "from-purple-500 via-pink-600 to-indigo-505"
@@ -228,12 +228,6 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
                 {currentStep === 2 && (
                   <div className="grid grid-cols-2 gap-2.5">
                     <div className="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-2xl flex items-center gap-2.5">
-                      <div className="w-7 h-7 bg-purple-500/10 text-purple-600 rounded-lg flex items-center justify-center shrink-0">
-                        <GraduationCap size={15} />
-                      </div>
-                      <span className="text-[10px] font-black uppercase text-zinc-700 dark:text-zinc-300">Exam Lab</span>
-                    </div>
-                    <div className="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-2xl flex items-center gap-2.5">
                       <div className="w-7 h-7 bg-blue-500/10 text-blue-600 rounded-lg flex items-center justify-center shrink-0">
                         <Brain size={15} />
                       </div>
@@ -243,7 +237,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
                       <div className="w-7 h-7 bg-emerald-505/10 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
                         <Calendar size={15} />
                       </div>
-                      <span className="text-[10px] font-black uppercase text-zinc-700 dark:text-zinc-300">Timetable Maker</span>
+                      <span className="text-[10px] font-black uppercase text-zinc-700 dark:text-zinc-300">Study Planner</span>
                     </div>
                     <div className="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-2xl flex items-center gap-2.5">
                       <div className="w-7 h-7 bg-rose-500/10 text-rose-600 rounded-lg flex items-center justify-center shrink-0">

@@ -3,13 +3,14 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'motion/react';
 import { 
   Home, MessageSquare, Users, Sparkles, User, LogOut, Calendar, FileText, 
-  UserPlus, Target, Brain, Map, GraduationCap, Settings, Sun, Moon, 
+  UserPlus, Target, Brain, Map, Settings, Sun, Moon, 
   HeartHandshake, LayoutGrid, X, Search, Menu, ShieldAlert, ArrowRight, Check,
-  BookOpen, Compass, Headphones, Play, Pause, SkipForward, ChevronLeft, ChevronRight
+  BookOpen, Compass, Headphones, Play, Pause, SkipForward, ChevronLeft, ChevronRight, WifiOff
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useMusic } from '../context/MusicContext';
 import { cn } from '../lib/utils';
+import { isOnboardingComplete } from '../lib/study';
 import Logo from './Logo';
 import SettingsModal from './SettingsModal';
 import CommandPalette from './CommandPalette';
@@ -18,35 +19,61 @@ import MainWalkthrough from './MainWalkthrough';
 const primaryTabs = [
   { icon: Home, label: 'Home', path: '/app' },
   { icon: BookOpen, label: 'Learn', path: '/app/learn' },
-  { icon: Users, label: 'Classrooms', path: '/app/community' },
-  { icon: Target, label: 'Focus', path: '/app/focus' },
+  { icon: Brain, label: 'AI', path: '/app/ai-assistant' },
+  { icon: Calendar, label: 'Plan', path: '/app/planner' },
+  { icon: User, label: 'Me', path: '/app/profile' },
 ];
 
 const getActiveTab = (pathname: string) => {
   if (pathname === '/app') return 'Home';
   if (
     pathname.startsWith('/app/learn') ||
-    pathname.startsWith('/app/ai-assistant') ||
-    pathname.startsWith('/app/exam-lab') ||
     pathname.startsWith('/app/notes') ||
-    pathname.startsWith('/app/timetable')
+    pathname.startsWith('/app/whiteboard') ||
+    pathname.startsWith('/app/explore') ||
+    pathname.startsWith('/app/tools') ||
+    pathname.startsWith('/app/roadmap')
   ) return 'Learn';
+  if (pathname.startsWith('/app/ai-assistant')) return 'AI';
+  if (pathname.startsWith('/app/practice')) return 'Learn';
+  if (pathname.startsWith('/app/planner') || pathname.startsWith('/app/exam')) return 'Plan';
   if (
-    pathname.startsWith('/app/community') ||
-    pathname.startsWith('/app/chats') ||
-    pathname.startsWith('/app/study-groups')
-  ) return 'Classrooms';
-  if (pathname.startsWith('/app/focus')) return 'Focus';
-  return 'Home';
+    pathname.startsWith('/app/profile') ||
+    pathname.startsWith('/app/friends') ||
+    pathname.startsWith('/app/feedback') ||
+    pathname.startsWith('/app/safety')
+  ) return 'Me';
+  // Community, chats, focus, study-groups are accessible via the More menu
+  return null;
+};
+
+// Map a pathname to a human-readable title for the mobile header
+const getRouteTitle = (pathname: string) => {
+  if (pathname === '/app') return 'Home';
+  if (pathname.startsWith('/app/learn')) return 'Learn Hub';
+  if (pathname.startsWith('/app/ai-assistant')) return 'AI Assistant';
+  if (pathname.startsWith('/app/notes')) return 'Notes Lab';
+  if (pathname.startsWith('/app/planner')) return 'Planner Hub';
+  if (pathname.startsWith('/app/practice')) return 'Practice';
+  if (pathname.startsWith('/app/exam')) return 'Exam Prep';
+  if (pathname.startsWith('/app/focus')) return 'Focus Room';
+  if (pathname.startsWith('/app/community')) return 'Community';
+  if (pathname.startsWith('/app/chats')) return 'Secure Chat';
+  if (pathname.startsWith('/app/study-groups')) return 'Study Groups';
+  if (pathname.startsWith('/app/profile')) return 'My Profile';
+  if (pathname.startsWith('/app/friends')) return 'My Friends';
+  if (pathname.startsWith('/app/whiteboard')) return 'Whiteboard';
+  if (pathname.startsWith('/app/feedback')) return 'Feedback';
+  return 'TeenGenius';
 };
 
 const navItems = [
   { icon: Home, label: 'Dashboard', path: '/app' },
-  { icon: Sparkles, label: 'AI Tutor', path: '/app/ai-assistant', badge: 'AI' },
-  { icon: GraduationCap, label: 'Exam Lab', path: '/app/exam-lab' },
+  { icon: Brain, label: 'AI Assistant', path: '/app/ai-assistant', badge: 'AI' },
   { icon: FileText, label: 'Notes Lab', path: '/app/notes' },
-  { icon: Calendar, label: 'Timetable Maker', path: '/app/timetable' },
+  { icon: Calendar, label: 'Planner Hub', path: '/app/planner' },
   { icon: Target, label: 'Focus Zone', path: '/app/focus' },
+  { icon: BookOpen, label: 'Whiteboard', path: '/app/whiteboard' },
   { icon: MessageSquare, label: 'Secure Chat', path: '/app/chats' },
   { icon: Users, label: 'Classrooms', path: '/app/community?tab=classrooms' },
   { icon: UserPlus, label: 'Study Buddies', path: '/app/community?tab=buddies' },
@@ -67,13 +94,14 @@ export default function Layout() {
       ]
     },
     {
-      title: '📚 Educational Tools',
+      title: '📚 Learn & Plan',
       items: [
-        { icon: Sparkles, label: 'AI Tutor', path: '/app/ai-assistant', badge: 'AI' },
-        { icon: GraduationCap, label: 'Exam Lab', path: '/app/exam-lab' },
+        { icon: BookOpen, label: 'Learn Hub', path: '/app/learn' },
+        { icon: Brain, label: 'AI Assistant', path: '/app/ai-assistant', badge: 'AI' },
         { icon: FileText, label: 'Notes Lab', path: '/app/notes' },
-        { icon: Calendar, label: 'Timetable Maker', path: '/app/timetable' },
+        { icon: Calendar, label: 'Planner Hub', path: '/app/planner' },
         { icon: Target, label: 'Focus Zone', path: '/app/focus' },
+        { icon: BookOpen, label: 'Whiteboard', path: '/app/whiteboard' },
       ]
     },
     {
@@ -122,7 +150,8 @@ export default function Layout() {
   // Trigger main walkthrough if first time login
   useEffect(() => {
     const isCompleted = localStorage.getItem('TEENGENIUS_MAIN_WALKTHROUGH_COMPLETED_v2') === 'true';
-    if (!isCompleted && user) {
+    // Wait for the profile onboarding flow to finish first so modals never stack.
+    if (!isCompleted && user && isOnboardingComplete()) {
       setIsWalkthroughOpen(true);
     }
   }, [user]);
@@ -288,8 +317,8 @@ export default function Layout() {
     <div className={cn(
       "w-full bg-zinc-50 dark:bg-zinc-950 flex relative font-sans text-zinc-900 dark:text-zinc-100 antialiased",
       isFullHeightScreen 
-        ? "h-screen overflow-hidden" 
-        : "min-h-screen"
+        ? "h-[100dvh] overflow-hidden" 
+        : "min-h-[100dvh]"
     )}>
       {/* Scroll-Linked Glow Progress Indicator */}
       {!isFullHeightScreen && (
@@ -516,9 +545,9 @@ export default function Layout() {
                 title="Toggle Menu Portal"
               >
                 <Menu size={18} strokeWidth={2.4} />
-              </button>
+                            </button>
               <h1 className="text-sm font-black uppercase tracking-wider text-zinc-850 dark:text-zinc-200">
-                {navItems.find(item => location.pathname === item.path || (item.path !== '/app' && location.pathname.startsWith(item.path)))?.label || 'TeenGenius'}
+                {getRouteTitle(location.pathname)}
               </h1>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -649,7 +678,7 @@ export default function Layout() {
               {isFullHeightScreen ? (
                 <Outlet />
               ) : (
-                <div id="main-scroll-container" className="flex-1 flex flex-col pb-24 md:pb-12">
+                <div id="main-scroll-container" className="flex-1 flex flex-col pb-28 sm:pb-24 md:pb-12">
                   
                   {/* Central inner limits grid to keep dashboards looking majestic even on mega displays */}
                   <div className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 lg:p-12">
@@ -680,32 +709,55 @@ export default function Layout() {
         </div>
 
         {/* ========================================================= */}
+        {/* 3.5 OFFLINE / CONNECTIVITY INDICATOR (mobile)             */}
+        {/* ========================================================= */}
+        {!isOnline && !isFullHeightScreen && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="fixed top-16 left-0 right-0 z-45 flex items-center justify-center gap-2 bg-amber-500/95 dark:bg-amber-600/95 text-white text-[10px] font-black uppercase tracking-widest py-2 px-4 md:hidden shadow-md"
+          >
+            <WifiOff size={12} />
+            Connection lost — some features may be unavailable. Retrying…
+          </div>
+        )}
+
+        {/* ========================================================= */}
         {/* 4. MODERN LABELED MOBILE BOTTOM NAVIGATION BAR           */}
         {/* ========================================================= */}
         {showBottomNav && (
-          <nav className="flex md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md h-16 border-t border-zinc-200/80 dark:border-zinc-805 justify-around items-center z-45 px-2 shadow-[0_-4px_25px_rgba(0,0,0,0.08)] select-none">
+          <nav className="flex md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md h-16 border-t border-zinc-200/80 dark:border-zinc-805 justify-around items-center z-45 px-1 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_25px_rgba(0,0,0,0.08)] select-none">
             {primaryTabs.map((item) => {
               const isActive = getActiveTab(location.pathname) === item.label && !isMoreOpen;
+              const isAITab = item.label === 'AI';
               return (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    "flex flex-col items-center justify-center flex-1 h-full py-1 text-center select-none active:scale-95 transition-all outline-none relative",
-                    isActive 
-                      ? "text-blue-600 dark:text-blue-400 font-extrabold" 
+                    "flex flex-col items-center justify-center flex-1 h-16 min-w-[44px] min-h-[44px] py-1 text-center select-none active:scale-95 transition-all outline-none relative",
+                    isActive
+                      ? (isAITab
+                          ? "text-indigo-600 dark:text-indigo-400 font-extrabold"
+                          : "text-blue-600 dark:text-blue-400 font-extrabold")
                       : "text-zinc-450 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
                   )}
                 >
                   {isActive && (
-                    <motion.div
-                      layoutId="activeBottomTabIndicator"
-                      className="absolute inset-x-2.5 top-2.5 bottom-2.5 bg-blue-600/10 dark:bg-blue-400/10 rounded-2xl -z-10"
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                    />
+                    <div className="absolute inset-x-2.5 top-2.5 bottom-2.5 bg-blue-600/10 dark:bg-blue-400/10 rounded-2xl -z-10 transition-opacity duration-200" />
                   )}
-                  <item.icon size={18} className={cn("mb-1 transition-transform", isActive ? "scale-105" : "scale-100")} strokeWidth={isActive ? 2.6 : 2.0} />
-                  <span className="text-[9.5px] uppercase tracking-wide font-black leading-none">{item.label}</span>
+                  <item.icon
+                    size={isActive ? 20 : 18}
+                    strokeWidth={isActive ? 2.6 : 2.0}
+                    className={cn(
+                      "mb-1 transition-transform",
+                      isActive ? "scale-105" : "scale-100",
+                      isAITab && !isActive && "text-zinc-450 dark:text-indigo-400/40"
+                    )}
+                  />
+                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wide font-black leading-none">
+                    {item.label}
+                  </span>
                 </Link>
               );
             })}

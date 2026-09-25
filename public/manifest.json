@@ -1,9 +1,12 @@
 {
+  "id": "/",
   "name": "TeenGenius",
   "short_name": "TeenGenius",
-  "description": "Premium AI-powered student study companion, Exam Lab, and Collaborative Focus Room.",
+  "scope": "/",
+  "description": "Premium AI-powered student study companion and Collaborative Focus Room.",
   "start_url": "/",
   "display": "standalone",
+  "launch_handler": { "client_mode": "focus-existing" },
   "orientation": "portrait-primary",
   "background_color": "#09090b",
   "theme_color": "#2563eb",

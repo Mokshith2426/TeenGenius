@@ -1,0 +1,91 @@
+# TeenGenius — Continuation Log
+
+**Last updated:** 2026-09-25 (Phase 4: Focused Core Polish)
+**Branch:** main
+**Status:** Build ✅ | TypeScript lint ✅ | Production server smoke test ✅
+
+---
+
+## PHASE 4 — FOCUSED CORE POLISH (this session)
+
+**Theme:** keep the feature declutter (Homework Solver / AI Timetable Maker / Memory Lab / Exam Lab stay removed) and make the existing core feel intentional.
+
+### Completed
+1. **First-run onboarding consolidated (dashboard UX).** Previously a brand-new user could get **three stacked modals at once**: `OnboardingFlow` (profile setup), a legacy 3-step "Quick Tour" overlay in `Home.tsx` (`TEENGENIUS_ONBOARDED_1`, stale copy like "Four Study Tools"), and `MainWalkthrough` (z-10000). Now:
+   - Removed the legacy Quick Tour entirely from `Home.tsx` — `OnboardingFlow` is the single profile-setup entry point.
+   - `Layout.tsx` only auto-opens `MainWalkthrough` after onboarding is complete (`isOnboardingComplete()` gate), so modals never stack.
+   - `OnboardingFlow.finish()` hands off to the walkthrough (`trigger-walkthrough` event, only if not skipped and not already completed) — sequential, not simultaneous.
+2. **Mobile nav consistency:** `/app/practice` and `/app/exam` now have proper mobile header titles ("Practice", "Exam Prep") and correct bottom-nav active states (Practice → Learn tab, Exam → Plan tab).
+3. **Dashboard layout fix:** "Where can I continue studying?" tool grid was `lg:grid-cols-5` with only 3 cards (2 empty columns on desktop) → `lg:grid-cols-3`.
+4. **Removed-feature leftovers:** deleted the stale empty `EXAM LAB PROMPTS` section header in `src/lib/ai-prompts.ts`. Remaining references to removed features are only the intentional legacy-route redirects in `App.tsx` (`timetable`, `homework-solver`, `memory-lab` → current equivalents).
+
+### Validated this session
+- `npm run lint` (tsc --noEmit) → exit 0
+- `npm run build` (vite build + esbuild server) → exit 0
+- Production server smoke test: `/` → 200, `/api/version` → 200
+- Secret scan over new/changed files → no keys (only the key-redaction regex in `ai-provider.ts`)
+
+---
+
+## PHASE 3 — LAUNCH READINESS (previous session)
+
+### Completed
+1. **README.md rewritten** — removed leftover Google AI Studio template branding (GHBanner image, ai.studio link, GEMINI_API_KEY instructions). Now documents: what TeenGenius is, tech stack, project structure, install/env vars/commands, deployment, Firebase setup, AI configuration, PWA configuration, and known limitations (including honest AI-accuracy disclaimer).
+2. **In-chat AI transparency note added** (`AIAssistant.tsx`) — subtle always-visible line under the composer: "AI can make mistakes — double-check important answers against your textbook." Complements the existing Terms of Service clause.
+3. **Chat composer keyboard UX** — added `enterKeyHint="send"` and `autoComplete="off"` so Android keyboards show a Send action key.
+
+### Verified already-good (no changes needed)
+- **Onboarding**: 4-step, skip-able flow (subjects → goal → help focus) mounts on first Home visit; saves to study profile; guest-safe local fallback. No giant questionnaire.
+- **First-session guidance**: Home shows a computed "next step" recommendation rather than a text tutorial.
+- **Zero-data states**: Planner ("Your planner is empty"), Notes ("No notes found" + guidance), ChatList ("No Chats Yet"), Focus ("No sessions yet"), ExamPrep ("No exams yet") all have informative empty states.
+- **Error recovery**: standardized AI error contract (`{ error, code }`) in `ai-provider.ts`/`app.ts`; retry with exponential backoff (`src/lib/retry.ts`); friendly, actionable messages; server burst limiting + 429 handling.
+- **Security**: Firestore rules enforce per-user ownership on `aiChats`, `notesLab`, etc.; Groq key stays server-side; Firebase web keys are public-by-design and protected by rules.
+- **Feedback system**: `/app/feedback` screen + `feedbacks` Firestore collection (create-only for users).
+- **Analytics**: event-based `trackEvent` (`src/lib/analytics.ts`) — product-level events, no invasive tracking.
+- **Install prompt**: single dismissible in-flow banner (no intrusive loops), gated on `beforeinstallprompt` + not-already-installed.
+- **No fabricated claims**: landing has no fake user counts/testimonials; ToS contains real AI-limitations language; Privacy Policy and Terms exist as public pages.
+
+### Release checklist status
+- AUTH: signup/login/logout/reset implemented (Login.tsx), guest mode supported — password recovery requires Firebase to have email sending configured on the project.
+- CORE: all routes lazy-loaded; core screens verified to build and render.
+- MOBILE: bottom nav + safe areas + dvh + keyboard handling (Phase 2 work) in place.
+- BACKEND: build outputs `dist/server.cjs`; Netlify function exists; Firestore rules ready to deploy.
+- QUALITY: no template branding remaining; console clean at build time.
+
+### Remaining (recommended before broad rollout)
+1. **Manual real-device test pass** (Android Chrome + installed PWA) of the full student workflow: signup → onboarding → ask AI → generate notes → quiz → flashcards → schedule → focus session.
+2. **Deploy + verify in production** (this environment cannot complete a real deploy; Netlify/Firebase config must be supplied and tested — do not claim "deployed" until done).
+3. **`assetlinks.json`** — replace placeholder SHA-256 with the actual release signing cert fingerprint for TWA/Play Store.
+4. **Password-reset email template/sender** configured in Firebase console.
+5. **Consider tightening** `feedbacks`/`analytics_events` read rules (currently any signed-in user can read).
+6. **Beta program**: hand to 5–20 students with the checklist in README/continuation (signup works? dashboard clear? AI useful? phone performance OK? where do they get confused?).
+
+---
+
+## PHASE 2 — ANDROID OPTIMIZATION (previous session, summary)
+- Regenerated corrupted PWA icons (192/512/maskable) + manifest screenshots (1280×720, 640×1136).
+- `viewport-fit=cover` + `interactive-widget=resizes-content` meta; `h-screen` → `h-[100dvh]` on chat/whiteboard screens (keyboard-safe).
+- Service worker v3 with `SW_UPDATED` client notification → "New version available → Refresh" toast.
+- Offline banner in Layout; AI chat draft persistence (sessionStorage); manifest `id`/`scope`/`launch_handler`.
+- Vendor chunk splitting: main 1,425 kB → 554 kB (react/firebase/motion cached separately).
+- Accessibility: `touch-action: manipulation`, 16px inputs (no focus zoom), `prefers-reduced-motion`.
+- Fixed pre-existing `Profile.tsx` syntax corruption that broke the build.
+
+## PWA/TWA notes
+- Manifest: `display: standalone`, portrait, theme `#2563eb`, icons + maskable + screenshots present.
+- SW: network-first HTML, cache-first assets, API/Firestore explicitly excluded from caching (no private data cached).
+- TWA: Capacitor config + assetlinks present; **fingerprint is a placeholder** — must be replaced before Play Store release.
+
+## Key files
+- `src/components/Layout.tsx` — nav, install banner, offline state, Capacitor back button
+- `src/screens/AIAssistant.tsx` — AI tutor chat (88 KB, largest screen)
+- `src/lib/study.ts` — study profile + persistence layer
+- `app.ts` / `ai-provider.ts` — AI endpoints, error taxonomy, retries, burst guard
+- `firestore.rules` — data isolation
+- `public/sw.js` + `public/manifest.json` — PWA
+
+---
+
+## 📦 EXPORT
+
+Full project (excluding `node_modules`, `dist`, `.claude/worktrees`, `.kilo/worktrees`) exported as `teengenius-android-optimized.zip` in the project parent directory. Re-exported after Phase 3 as `teengenius-phase3-launch-ready.zip`.

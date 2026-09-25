@@ -89,7 +89,7 @@ export default function Safety() {
     },
     {
       title: "Cite Your Sources",
-      desc: "Do not copy homework directly from online without understanding it. Use the Homework Helper to learn step-by-step.",
+      desc: "Do not copy homework directly from online without understanding it. Use the AI Tutor to learn step-by-step.",
       color: "border-emerald-200 dark:border-emerald-900 bg-emerald-50/10 text-emerald-600 dark:text-emerald-400"
     }
   ];
@@ -203,12 +203,10 @@ export default function Safety() {
                 <label className="text-[10px] font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-400">Content Type</label>
                 <select
                   className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-xl p-3 text-xs font-bold text-zinc-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500"
-                  value={form.itemType}
                   onChange={(e) => setForm(prev => ({ ...prev, itemType: e.target.value }))}
                 >
                   <option>Chat Message</option>
                   <option>Study Circle Name</option>
-                  <option>Homework Helper Solution</option>
                   <option>Shared Note</option>
                   <option>Student Profile</option>
                 </select>

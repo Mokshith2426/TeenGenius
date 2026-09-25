@@ -88,7 +88,7 @@ export default function Landing() {
     },
     {
       icon: BookOpen,
-      title: "Homework Help",
+      title: "Step-by-Step Solutions",
       desc: "Step-by-step breakdowns for tricky equations and complex tasks, written so you actually understand them.",
       badge: "Easy Explanations",
       color: "from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400"
@@ -96,7 +96,7 @@ export default function Landing() {
     {
       icon: Sparkles,
       title: "Concept Explanations",
-      desc: "Paste long textbook paragraphs to turn them into clear, simple revision summaries and dynamic flashcards.",
+      desc: "Paste long textbook paragraphs to turn them into clear, simple revision summaries.",
       badge: "Fast Summarizer",
       color: "from-purple-500/10 to-pink-500/10 text-purple-600 dark:text-purple-400"
     },

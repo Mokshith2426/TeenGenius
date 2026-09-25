@@ -5,11 +5,9 @@ import {
   Target, 
   Users, 
   Sparkles, 
-  FileText, 
-  ArrowRight, 
-  Plus, 
+  FileText,
+  Plus,
   Clock, 
-  GraduationCap, 
   Flame, 
   Check, 
   Trash2, 
@@ -17,7 +15,17 @@ import {
   MessageSquare,
   TrendingUp,
   Award,
-  CheckCircle2
+  CheckCircle2,
+  ClipboardCheck,
+  Brain,
+  BookOpen,
+  User,
+  ChevronRight,
+  Play,
+  Clock as ClockIcon,
+  TrendingUp as TrendingUpIcon,
+  Award as AwardIcon,
+  CalendarDays,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
@@ -48,6 +56,15 @@ import Logo from '../components/Logo';
 import confetti from 'canvas-confetti';
 import { trackEvent } from '../lib/analytics';
 import AcademicActivityFeed from '../components/AcademicActivityFeed';
+import OnboardingFlow from '../components/OnboardingFlow';
+import { 
+  NextStep,
+  TaskSource,
+  SessionRecord,
+  CalendarNode
+} from '../lib/nextStep';
+import { formatDate, formatTime } from '../lib/dateUtils';
+import { useNextAction, useStudentProfile, daysUntilExam } from '../lib/study';
 
 // -------------------------------------------------------------
 // TIMER SUBCOMPONENT (STUDY TIME MODULE)
@@ -186,6 +203,179 @@ function StudyTimer({ onSessionSave }: { onSessionSave?: () => void }) {
         <span className="font-mono font-bold tracking-tight">{isActive ? formatTime(seconds) : "Start Session"}</span>
       </button>
     </div>
+    );
+}
+
+// ─── Next Step Recommendation ─────────────────────────────────────────────
+// Derives a single clear recommendation for "What should I do right now?"
+// from the user's existing task data and study-session history.
+function NextStepRecommendation({
+  tasks,
+  todayMinutes,
+  dailyTarget,
+  hasStudyHistory,
+  onAddTask,
+}: {
+  tasks: { id: string; text: string; completed: boolean }[];
+  todayMinutes: number;
+  dailyTarget: number;
+  hasStudyHistory: boolean;
+  onAddTask: (text: string) => void;
+}) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const firstIncomplete = tasks.find(t => !t.completed);
+  const targetMins = Math.round(dailyTarget * 60);
+  const goalMet = todayMinutes >= targetMins && todayMinutes > 0;
+
+  // Personal study engine recommendation (learn → practice loop). Takes priority
+  // when the student has real study data; the legacy task/goal cards remain as fallback.
+  const studyAction = useNextAction();
+  const StudyActionIcon = ({ Play, ClipboardCheck, BookOpen, Target, Sparkles, ChevronRight } as Record<string, any>)[studyAction?.icon ?? ''] ?? Sparkles;
+  const { profile } = useStudentProfile();
+
+  // Calm exam countdown (≤14 days) — links into the exam prep workflow.
+  const upcomingExam = (profile?.exams ?? [])
+    .map((e) => ({ e, d: daysUntilExam(e.date) }))
+    .filter((x) => x.d >= 0)
+    .sort((a, b) => a.d - b.d)[0] ?? null;
+
+  return (
+    <section className="space-y-5 max-w-7xl mx-auto pt-2">
+      {/* Greeting — concise */}
+      <div className="space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-zinc-900 dark:text-white leading-tight">
+          Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 18 ? 'Afternoon' : 'Evening'}, {user?.displayName ? user.displayName.split(' ')[0] : 'Scholar'}
+        </h1>
+        <p className="text-xs text-zinc-500 dark:text-zinc-450 font-medium">
+          What should you focus on right now?
+        </p>
+      </div>
+
+      {/* Upcoming exam countdown (calm, only ≤14 days out) */}
+      {upcomingExam && upcomingExam.d <= 14 && (
+        <Link to={`/app/exam/${upcomingExam.e.id}`} className="flex items-center gap-3 p-4 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-850 rounded-2xl hover:border-rose-300 dark:hover:border-rose-800 transition-colors cursor-pointer">
+          <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center shrink-0', upcomingExam.d <= 3 ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400' : 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-500')}>
+            <CalendarDays size={16} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{upcomingExam.e.name}</p>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+              {upcomingExam.d === 0 ? 'Today' : upcomingExam.d === 1 ? 'Tomorrow' : `In ${upcomingExam.d} days`} · tap to prepare
+            </p>
+          </div>
+          <ChevronRight size={15} className="text-zinc-300 dark:text-zinc-600 shrink-0" />
+        </Link>
+      )}
+
+      {/* Next Step card — study engine first, legacy flow fallback */}
+      {studyAction && studyAction.type !== 'start' ? (
+        <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-600 to-indigo-600 text-white border border-blue-500/20 rounded-[2rem] shadow-lg shadow-blue-600/15 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div className="space-y-2.5 min-w-0 flex-1">
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-100 bg-white/15 px-2.5 py-1 rounded-full inline-flex items-center gap-1.5">
+              <Sparkles size={11} />
+              Recommended for you
+            </span>
+            <h2 className="text-base sm:text-lg font-black tracking-tight leading-snug truncate">
+              {studyAction.title}
+            </h2>
+            <p className="text-xs text-blue-100 font-medium">{studyAction.subtitle}</p>
+          </div>
+          <button
+            onClick={() => navigate(studyAction.type === 'exam-prep' ? '/app/planner' : studyAction.to)}
+            className="px-5 py-3 bg-white text-blue-700 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-md cursor-pointer shrink-0"
+          >
+            <StudyActionIcon size={12} />
+            {studyAction.action}
+          </button>
+        </div>
+      ) : firstIncomplete ? (
+        <div className="p-6 sm:p-8 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-850 rounded-[2rem] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div className="space-y-2.5 min-w-0 flex-1">
+            <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 px-2.5 py-1 rounded-full inline-block">
+              Next on Deck
+            </span>
+            <h2 className="text-base sm:text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white leading-snug truncate">
+              {firstIncomplete.text}
+            </h2>
+            <p className="text-xs text-zinc-500 dark:text-zinc-450 font-medium">
+              Your top priority for today.
+            </p>
+          </div>
+          <div className="flex gap-2.5 shrink-0">
+            <button
+              onClick={() => navigate('/app/focus')}
+              className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-md cursor-pointer"
+              aria-label="Start focus session"
+            >
+              <Play size={12} fill="currentColor" />
+              Start
+            </button>
+            <button
+              onClick={() => navigate('/app/planner')}
+              className="px-4 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-150 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-100 transition-all active:scale-95 cursor-pointer"
+              aria-label="View all tasks"
+            >
+              All Tasks
+            </button>
+          </div>
+        </div>
+      ) : goalMet ? (
+        <div className="p-6 sm:p-8 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-850 rounded-[2rem] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div className="space-y-2.5 min-w-0 flex-1">
+            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-full inline-block">
+              Daily Goal Reached
+            </span>
+            <h2 className="text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white">
+              Great job today!
+            </h2>
+            <p className="text-xs text-zinc-500 dark:text-zinc-450 font-medium">
+              You've hit your {targetMins}m study target. Ready for more?
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/app/learn')}
+            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-md cursor-pointer shrink-0"
+          >
+            <Brain size={12} />
+            Review Concepts
+          </button>
+        </div>
+      ) : (
+        <div className="p-6 sm:p-8 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-850 rounded-[2rem] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div className="space-y-2.5 min-w-0 flex-1">
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-2.5 py-1 rounded-full inline-block">
+              Focus Time
+            </span>
+            <h2 className="text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white">
+              {hasStudyHistory ? 'Ready for another session?' : 'Create your first study goal'}
+            </h2>
+            <p className="text-xs text-zinc-500 dark:text-zinc-450 font-medium">
+              {hasStudyHistory
+                ? `You've logged ${todayMinutes}m today. Aim for ${targetMins}m to hit your target.`
+                : 'Add a task below or start a focused study session to begin.'}
+            </p>
+          </div>
+          <div className="flex gap-2.5 shrink-0">
+            <button
+              onClick={() => navigate('/app/focus')}
+              className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-md cursor-pointer"
+            >
+              <Play size={12} fill="currentColor" />
+              Start Session
+            </button>
+            <button
+              onClick={() => onAddTask('Study for upcoming exam')}
+              className="px-4 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-150 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-100 transition-all active:scale-95 cursor-pointer"
+            >
+              <Plus size={12} />
+              Add Task
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -222,7 +412,6 @@ export default function Home() {
 
   const [taskInput, setTaskInput] = useState('');
   const [isGoalMet, setIsGoalMet] = useState(false);
-  const [onboardStep, setOnboardStep] = useState<number | null>(null);
 
   // Initialize stats to 0, matching a clean empty-state initially
   const [stats, setStats] = useState([
@@ -234,15 +423,12 @@ export default function Home() {
   const [chartData, setChartData] = useState<any[]>([]);
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
 
-  // State counts for actual homework, notes, and circles
+  // State counts for actual notes and circles
   const [notesCount, setNotesCount] = useState<number>(0);
-  const [homeworkCount, setHomeworkCount] = useState<number>(0);
   const [circlesCount, setCirclesCount] = useState<number>(0);
 
   useEffect(() => {
     trackEvent('use_feature', { featureName: 'Dashboard' });
-    const onboarded = localStorage.getItem('TEENGENIUS_ONBOARDED_1');
-    if (!onboarded) setOnboardStep(1);
   }, []);
 
   useEffect(() => {
@@ -386,11 +572,6 @@ export default function Home() {
         setNotesCount(JSON.parse(savedNotes).length);
       } catch (_) {}
 
-      try {
-        const savedHomework = localStorage.getItem(`STUDENT_LOCAL_HOMEWORK_CACHE_${user.uid}`) || '[]';
-        setHomeworkCount(JSON.parse(savedHomework).length);
-      } catch (_) {}
-
       setCirclesCount(0);
       return;
     }
@@ -452,13 +633,7 @@ export default function Home() {
       setNotesCount(snap.size);
     }, () => setNotesCount(0));
 
-    // C. Sub to Homework solved metrics
-    const homeworkQuery = query(collection(db, 'homeworkSolutions'), where('userId', '==', user.uid));
-    const unsubscribeHomework = onSnapshot(homeworkQuery, (snap) => {
-      setHomeworkCount(snap.size);
-    }, () => setHomeworkCount(0));
-
-    // D. Sub to Circles (where user is part of group)
+    // C. Sub to Circles (where user is part of group)
     const circlesQuery = query(collection(db, 'studyGroups'));
     const unsubscribeCircles = onSnapshot(circlesQuery, (snap) => {
       const count = snap.docs.filter(d => {
@@ -471,123 +646,30 @@ export default function Home() {
     return () => {
       unsubscribeSessions();
       unsubscribeNotes();
-      unsubscribeHomework();
       unsubscribeCircles();
     };
   }, [user, isGuest, sessionTrigger]);
 
   const CONTINUE_LEARNING_TOOLS = [
     { name: "AI Tutor", desc: "No-judgment assistant for asking difficult questions and clarifying concepts", path: "/app/ai-assistant", icon: Sparkles, color: "text-purple-600 bg-purple-100 dark:bg-purple-950/40" },
-    { name: "Exam Lab", desc: "AI-powered exam preparation with mock tests, practice questions, and study planner", path: "/app/exam-lab", icon: GraduationCap, color: "text-blue-600 bg-blue-100 dark:bg-blue-950/40" },
     { name: "Notes Lab", desc: "Upload study materials to instantly generate quick revision notes", path: "/app/notes", icon: FileText, color: "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/40" },
-    { name: "Timetable Maker", desc: "Personal weekly class agenda planner", path: "/app/timetable", icon: Calendar, color: "text-amber-600 bg-amber-100 dark:bg-amber-950/40" },
     { name: "Focus Zone", desc: "Procedural soundscapes and focus clocks to keep your study sessions distraction-free", path: "/app/focus", icon: Target, color: "text-rose-600 bg-rose-100 dark:bg-rose-955/40" },
   ];
 
   return (
     <div className="w-full max-w-7xl mx-auto p-3.5 sm:p-6 md:p-8 space-y-8 overflow-x-hidden">
       
-      {/* Onboarding Tour overlay */}
-      <AnimatePresence>
-        {onboardStep !== null && (
-          <div className="fixed inset-0 bg-zinc-950/75 z-[300] flex items-center justify-center p-4 backdrop-blur-sm select-none">
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-850 rounded-3xl p-6 sm:p-10 max-w-lg w-full space-y-5 text-zinc-900 dark:text-white shadow-2xl"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-black tracking-widest text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-3.5 py-1 rounded-full">
-                  Step {onboardStep} of 3 • Quick Tour
-                </span>
-                <button 
-                  onClick={() => {
-                    localStorage.setItem('TEENGENIUS_ONBOARDED_1', 'true');
-                    setOnboardStep(null);
-                  }}
-                  className="text-xs font-black uppercase text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 tracking-wider transition-colors cursor-pointer"
-                >
-                  Skip Tour
-                </button>
-              </div>
+      {/* First-run onboarding for new students (self-dismissing once complete) */}
+      <OnboardingFlow />
 
-              {onboardStep === 1 && (
-                <div className="space-y-3">
-                  <span className="text-4xl">🚀</span>
-                  <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Active Headquarters</h2>
-                  <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-300 font-medium leading-relaxed">
-                    Say hello to TeenGenius Version 1.0! A fast, modern study workspace styled beautifully to help you conquer assignments, draft neat notes, organize classes, and revise with AI tutors.
-                  </p>
-                </div>
-              )}
-
-              {onboardStep === 2 && (
-                <div className="space-y-3">
-                  <span className="text-4xl">📚</span>
-                  <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Five Study Tools</h2>
-                  <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-300 font-medium leading-relaxed">
-                    Access our AI Tutor, Exam Lab, Notes Lab, Timetable Maker, and Focus Zone from the brand-new <b>Educational Tools</b> segment. Everything you need grouped in one clean panel.
-                  </p>
-                </div>
-              )}
-
-              {onboardStep === 3 && (
-                <div className="space-y-3">
-                  <span className="text-4xl">⏱️</span>
-                  <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Frictionless Tracking</h2>
-                  <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-300 font-medium leading-relaxed">
-                    Earn Study Streak days and Growth Credits dynamically by clicking the action button inside the Study Timer. Keep your focus high!
-                  </p>
-                </div>
-              )}
-
-              <div className="flex items-center gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onboardStep < 3) {
-                      setOnboardStep(prev => prev! + 1);
-                    } else {
-                      localStorage.setItem('TEENGENIUS_ONBOARDED_1', 'true');
-                      setOnboardStep(null);
-                      triggerConfetti();
-                    }
-                  }}
-                  className="w-full py-3.5 bg-zinc-950 dark:bg-white text-white dark:text-zinc-900 font-black text-xs uppercase tracking-widest rounded-xl hover:bg-zinc-805 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  {onboardStep === 3 ? "Complete Tour 🎉" : "Continue"}
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* SECTION 1: WELCOME MESSAGE */}
-      <header className="space-y-4 max-w-7xl mx-auto pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-blue-50/70 dark:bg-zinc-900 border border-blue-105/30 dark:border-zinc-800 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-full select-none">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" />
-              <span>Personal Workspace Active</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight text-zinc-900 dark:text-white leading-tight">
-              Welcome, {user?.displayName ? user.displayName.split(' ')[0] : 'Scholar'} ⚡
-            </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 font-semibold italic">
-              "Let's conquer today's study goals together."
-            </p>
-          </div>
-          <div className="flex items-center gap-2 select-none self-start sm:self-center bg-white dark:bg-zinc-900 px-4 py-2 border border-zinc-150 dark:border-zinc-800 rounded-2xl shadow-xs">
-            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-450">Ecosystem:</span>
-            <span className="text-zinc-700 dark:text-zinc-300 text-[10px] font-black uppercase tracking-tight">
-              V1.0 Live
-            </span>
-          </div>
-        </div>
-      </header>
+      {/* SECTION 1: GREETING + NEXT STEP RECOMMENDATION (PRIMARY) */}
+      <NextStepRecommendation
+        tasks={tasks}
+        todayMinutes={todayMinutes}
+        dailyTarget={dailyTarget}
+        hasStudyHistory={recentSessions.length > 0}
+        onAddTask={addTask}
+      />
 
       {/* DASHBOARD STATS OVERVIEWS ROW - TERTIARY DETAILS */}
       <div className="grid grid-cols-3 gap-4 max-w-7xl mx-auto select-none pt-2">
@@ -786,7 +868,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {CONTINUE_LEARNING_TOOLS.map((tool, i) => {
             const Icon = tool.icon;
             return (
@@ -838,20 +920,6 @@ export default function Home() {
                   <span className="text-[9.5px] tracking-wider">Ask AI Tutor</span>
                   <div className="w-7 h-7 bg-purple-600 rounded-xl flex items-center justify-center text-white shrink-0">
                     <Sparkles size={13} />
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsQuickOpen(false);
-                    navigate('/app/exam-lab');
-                  }}
-                  className="flex items-center gap-2.5 bg-zinc-900 dark:bg-zinc-950 border border-zinc-850 text-white pl-4 pr-3.5 py-2.5 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-xs font-black uppercase tracking-widest cursor-pointer hover:bg-zinc-805"
-                >
-                  <span className="text-[9.5px] tracking-wider">Exam Lab</span>
-                  <div className="w-7 h-7 bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0">
-                    <GraduationCap size={13} />
                   </div>
                 </button>
 

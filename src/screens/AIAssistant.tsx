@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Send, Sparkles, User, Bot, Loader2, Image as ImageIcon, X, List, History, Plus, Trash2, MessageSquare, PanelLeftOpen, PanelLeftClose, ChevronLeft, Check, CheckCheck, Copy, Trophy, Award, ArrowRight, Mic, MicOff, GraduationCap } from 'lucide-react';
+import { Send, Sparkles, User, Bot, Loader2, Image as ImageIcon, X, List, History, Plus, Trash2, MessageSquare, PanelLeftOpen, PanelLeftClose, ChevronLeft, Check, CheckCheck, Copy, Trophy, Award, ArrowRight, Mic, MicOff, Lightbulb, ListCheck, PenLine } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
@@ -35,7 +35,16 @@ export default function AIAssistant() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(() => {
+    // Restore unsent draft so users never lose typed content on mobile
+    try { return sessionStorage.getItem('tg_ai_draft') || ''; } catch { return ''; }
+  });
+  useEffect(() => {
+    try {
+      if (input) sessionStorage.setItem('tg_ai_draft', input);
+      else sessionStorage.removeItem('tg_ai_draft');
+    } catch { /* storage unavailable */ }
+  }, [input]);
   const [isLoading, setIsLoading] = useState(false);
   const [showPromptMenu, setShowPromptMenu] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -44,6 +53,12 @@ export default function AIAssistant() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [streamingText, setStreamingText] = useState<string | null>(null);
   const [gamificationAlert, setGamificationAlert] = useState<{ xp: number; badges: string[] } | null>(null);
+
+  // Immersive tutor-mode: the student picks a learning action, types a topic,
+  // and the action instruction wraps their topic when the message is sent.
+  const chatInputRef = useRef<HTMLInputElement | null>(null);
+  const pendingTutorModeRef = useRef<((topic: string) => string) | null>(null);
+  const [pendingActionLabel, setPendingActionLabel] = useState<string | null>(null);
   
   // Smart Subject Detection
   const [detectedSubject, setDetectedSubject] = useState<string>("General");
@@ -324,7 +339,7 @@ export default function AIAssistant() {
   // Check for auto-triggered initial prompt from onboarding walkthrough
   const location = useLocation();
   const hasTriggeredInitialPrompt = useRef(false);
-  const hasPrefilledFromHomework = useRef(false);
+  const hasPrefilledFromNav = useRef(false);
 
   useEffect(() => {
     if (location.state?.initialPrompt && !hasTriggeredInitialPrompt.current) {
@@ -342,8 +357,8 @@ export default function AIAssistant() {
 
   // Prefill question from quick question routing
   useEffect(() => {
-    if (location.state?.prefillQuestion && !hasPrefilledFromHomework.current) {
-      hasPrefilledFromHomework.current = true;
+    if (location.state?.prefillQuestion && !hasPrefilledFromNav.current) {
+      hasPrefilledFromNav.current = true;
       const question = location.state.prefillQuestion;
       
       // Clear navigation state history
@@ -352,6 +367,20 @@ export default function AIAssistant() {
       // Prefill the input but do NOT auto-submit
       setInput(question);
     }
+  }, [location.state]);
+
+  // Deep-link from Home quick actions: arm a tutor mode (e.g. "explain") so the
+  // student only has to type their topic or class question.
+  useEffect(() => {
+    const qa = (location.state as any)?.quickAction;
+    if (!qa) return;
+    const idx = tutorActions.findIndex((a) => a.id === qa);
+    if (idx === -1) return;
+    window.history.replaceState({}, document.title);
+    pendingTutorModeRef.current = tutorActions[idx].build;
+    setPendingActionLabel(tutorActions[idx].label);
+    setInput('');
+    setTimeout(() => chatInputRef.current?.focus(), 250);
   }, [location.state]);
 
   // Load pending prompts from interactive landing screen buttons
@@ -568,10 +597,22 @@ export default function AIAssistant() {
   };
 
   const handleSend = async (overrideText?: string) => {
-    const textToSend = overrideText !== undefined ? overrideText : input;
+    let textToSend = overrideText !== undefined ? overrideText : input;
+    const rawIntent = textToSend;
+
+    // Apply an armed tutor action (e.g. "Explain simply") to whatever the student types.
+    if (pendingTutorModeRef.current && textToSend.trim()) {
+      textToSend = pendingTutorModeRef.current(textToSend.trim());
+      pendingTutorModeRef.current = null;
+      setPendingActionLabel(null);
+    }
+
     if ((!textToSend.trim() && !selectedFile) || isLoading || !user) {
       return;
     }
+
+    // Remember the raw topic so later screens can personalise ("Continue studying X?").
+    trackRecentTopic(rawIntent, detectedSubject);
 
     const currentInput = textToSend;
     const currentFile = selectedFile;
@@ -841,15 +882,82 @@ export default function AIAssistant() {
     }
   };
 
-  const suggestions = [
-    "Explain a Class 10 Science concept",
-    "Create a study plan for my exams",
-    "Quiz me on Mathematics",
-    "Summarize a chapter",
-    "Help me prepare for tomorrow's test",
-    "Generate revision notes",
-    "Create flashcards"
+  // Tutor quick actions — wrap the student's current topic in a specific learning
+  // task so the AI behaves like a tutor, not an answer machine.
+  const tutorActions: { id: string; label: string; icon: any; build: (topic: string) => string }[] = [
+    {
+      id: 'explain',
+      label: 'Explain simply',
+      icon: Sparkles,
+      build: (topic) => `Explain this simply for me: "${topic}". Start with a one-sentence plain-English version, break it into small pieces, give one relatable example, then offer to quiz me with 3 quick questions.`,
+    },
+    {
+      id: 'example',
+      label: 'Give an example',
+      icon: Lightbulb,
+      build: (topic) => `Teach me "${topic}" using a simple, relatable everyday example first, then one more example from a different context to make it stick.`,
+    },
+    {
+      id: 'quiz',
+      label: 'Quiz me',
+      icon: ListCheck,
+      build: (topic) => `Quiz me on "${topic}". Ask 3 short questions ONE AT A TIME, wait for my answer each time, mark it, and explain anything I get wrong.`,
+    },
+    {
+      id: 'summarize',
+      label: 'Summarize',
+      icon: Sparkles,
+      build: (topic) => `Summarize "${topic}" in 5 clear bullet points I can copy straight into my revision notes, plus one exam-style tip.`,
+    },
+    {
+      id: 'practice',
+      label: 'Practice questions',
+      icon: PenLine,
+      build: (topic) => `Give me 3 practice questions on "${topic}". Start with a small hint for each one first, then show the full worked answer after I try.`,
+    },
   ];
+
+  // Friendly openers shown on the welcome screen and prompt menu.
+  const starterSuggestions = [
+    "I don't understand photosynthesis",
+    "Explain Pythagoras' theorem simply",
+    "Create a study plan for my exams",
+    "Quiz me on cell division",
+    "Summarize a history chapter",
+    "Help me prepare for tomorrow's test",
+  ];
+
+  const getContextTopic = () => {
+    const lastUser = [...messages].reverse().find((m) => m.role === 'user' && m.content && m.content.trim());
+    return lastUser ? lastUser.content.trim().slice(0, 180) : null;
+  };
+
+  // Lightweight personalisation: remember the topics a student asks about so the
+  // Home screen can offer "Continue studying X?" later.
+  const trackRecentTopic = (topic: string, subject: string) => {
+    if (!topic || !topic.trim()) return;
+    try {
+      const list = JSON.parse(localStorage.getItem('tg_recent_topics') || '[]');
+      list.unshift({ topic: topic.trim().slice(0, 120), subject, at: Date.now() });
+      localStorage.setItem('tg_recent_topics', JSON.stringify(list.slice(0, 12)));
+    } catch (e) { /* ignore */ }
+  };
+
+  const startTutorAction = (actionIndex: number) => {
+    const action = tutorActions[actionIndex];
+    const topic = getContextTopic();
+    if (topic) {
+      handleSend(action.build(topic));
+      return;
+    }
+    // No topic in the conversation yet — arm the action so whatever the student
+    // types next gets wrapped in it.
+    pendingTutorModeRef.current = action.build;
+    setPendingActionLabel(action.label);
+    setInput('');
+    setShowPromptMenu(false);
+    setTimeout(() => chatInputRef.current?.focus(), 50);
+  };
 
   return (
     <div className="flex h-full bg-white dark:bg-zinc-950 transition-colors overflow-hidden relative">
@@ -1062,16 +1170,7 @@ export default function AIAssistant() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            {currentSessionId && messages.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => navigate('/app/exam-lab')}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 dark:bg-zinc-800 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-zinc-800 transition-all cursor-pointer"
-                  >
-                    <GraduationCap size={14} />
-                    <span>Exam Lab</span>
-                  </button>
-            )}
+           
             {currentSessionId && (
               <button 
                 onClick={(e) => deleteSession(currentSessionId, e)}
@@ -1095,10 +1194,10 @@ export default function AIAssistant() {
                   🎓 Welcome to TeenGenius
                 </span>
                 <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">
-                  Your AI-powered study companion
+                  Your personal AI tutor{user?.displayName ? `, ${user.displayName.split(' ')[0]}` : ''}
                 </h1>
                 <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto leading-relaxed font-semibold">
-                  Deepen your understanding of homework concepts, create custom calendars, test your skills, and solve curriculum questions instantly using advanced educational intelligence.
+                  Ask me anything about your studies — I&rsquo;ll explain it simply, give you examples and check your understanding. Stuck on homework? I guide you step by step instead of just handing over answers.
                 </p>
               </div>
 
@@ -1109,20 +1208,43 @@ export default function AIAssistant() {
                   <div className="h-0.5 w-8 bg-zinc-200 dark:bg-zinc-850" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl mx-auto">
-                  {suggestions.map(s => (
-                    <button
-                      key={s}
-                      onClick={() => handleSend(s)}
-                      className="text-left p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 hover:border-blue-500 hover:bg-blue-50/10 transition-all active:scale-[0.98] group cursor-pointer shadow-sm flex items-center justify-between"
-                    >
-                      <div className="space-y-1">
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-blue-500 group-hover:text-blue-600">Starter Topic</p>
-                        <p className="text-xs font-bold text-zinc-850 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors leading-relaxed">{s}</p>
-                      </div>
-                      <ArrowRight size={14} className="text-zinc-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
-                    </button>
-                  ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl mx-auto">
+                  {tutorActions.map((a, idx) => {
+                    const Icon = a.icon;
+                    return (
+                      <button
+                        key={a.id}
+                        onClick={() => startTutorAction(idx)}
+                        className="text-left p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 hover:border-blue-500 hover:bg-blue-50/10 transition-all active:scale-[0.98] group cursor-pointer shadow-sm flex items-center gap-3"
+                      >
+                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                          <Icon size={16} />
+                        </div>
+                        <div className="space-y-0.5 min-w-0">
+                          <p className="text-xs font-bold text-zinc-850 dark:text-zinc-200 group-hover:text-blue-600 transition-colors">{a.label}</p>
+                          <p className="text-[10px] text-zinc-400 font-semibold leading-tight">
+                            {idx === 2 ? 'I ask, you answer — one at a time' : 'Type your topic and press send'}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={() => handleSend("I don't understand photosynthesis")}
+                    className="text-left p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-blue-500/5 border border-indigo-500/20 hover:border-indigo-500/40 transition-all active:scale-[0.98] group cursor-pointer shadow-sm flex items-center gap-3 sm:col-span-2"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Award size={16} />
+                    </div>
+                    <div className="space-y-0.5 min-w-0">
+                      <p className="text-xs font-bold text-zinc-850 dark:text-zinc-200 group-hover:text-indigo-600 transition-colors">
+                        Try it: &ldquo;I don&rsquo;t understand photosynthesis&rdquo;
+                      </p>
+                      <p className="text-[10px] text-zinc-400 font-semibold leading-tight">
+                        Watch the tutor explain it simply, give an example and offer a quiz
+                      </p>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1260,14 +1382,14 @@ export default function AIAssistant() {
         <div className="sticky bottom-0 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-xl pt-4 pb-24 md:pb-6 flex-shrink-0">
         {messages.length > 0 && (
           <div className="flex gap-2 max-w-4xl mx-auto px-1 md:px-0 mb-3 overflow-x-auto scrollbar-hide py-1">
-            {suggestions.map((s) => (
+            {tutorActions.map((a, idx) => (
               <button
-                key={s}
-                onClick={() => handleSend(s)}
-                className="bg-zinc-100/80 hover:bg-blue-50 hover:text-blue-600 dark:bg-zinc-800/80 dark:hover:bg-blue-950/40 dark:hover:text-blue-400 text-zinc-750 dark:text-zinc-200 font-black px-4 py-2 rounded-full text-[10px] md:text-xs tracking-tight transition-all border border-zinc-200/40 dark:border-zinc-750/40 cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 hover:scale-102 active:scale-95"
+                key={a.id}
+                onClick={() => startTutorAction(idx)}
+                className="bg-zinc-100/80 hover:bg-blue-50 hover:text-blue-600 dark:bg-zinc-800/80 dark:hover:bg-blue-950/40 dark:hover:text-blue-400 text-zinc-750 dark:text-zinc-200 font-semibold px-4 py-2 rounded-full text-xs tracking-tight transition-all border border-zinc-200/40 dark:border-zinc-750/40 cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 hover:scale-102 active:scale-95"
               >
-                <Sparkles size={11} className="text-blue-500 shrink-0" />
-                <span>{s}</span>
+                <a.icon size={12} className="text-blue-500 shrink-0" />
+                <span>{a.label}</span>
               </button>
             ))}
           </div>
@@ -1371,6 +1493,38 @@ export default function AIAssistant() {
           )}
         </AnimatePresence>
 
+        {pendingActionLabel && (
+          <div className="max-w-4xl mx-auto px-1 md:px-0 mb-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-500/20 px-3 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300">
+              <Sparkles size={13} className="shrink-0" />
+              Tutor mode: {pendingActionLabel.toLowerCase()} — type a topic and send
+              <button
+                onClick={() => {
+                  pendingTutorModeRef.current = null;
+                  setPendingActionLabel(null);
+                }}
+                className="ml-1 text-blue-400 hover:text-blue-700 cursor-pointer"
+                aria-label="Cancel tutor mode"
+              >
+                <X size={13} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {messages.length > 0 && !isLoading && !pendingActionLabel && (
+          <div className="max-w-4xl mx-auto px-1 md:px-0 mb-2">
+            <button
+              onClick={() => handleSend("I'm still stuck on this. Try a different approach: explain it more simply, use a real-life analogy, break it into smaller steps, walk through one worked example, then ask me which part is still confusing.")}
+              className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-500/20 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors cursor-pointer active:scale-95"
+              aria-label="Tell the tutor you're stuck"
+            >
+              <Lightbulb size={13} className="shrink-0" />
+              I&apos;m Stuck
+            </button>
+          </div>
+        )}
+
         <div className="relative flex items-center gap-2 md:gap-3 max-w-4xl mx-auto px-1 md:px-0">
           <AnimatePresence>
             {showPromptMenu && (
@@ -1387,12 +1541,13 @@ export default function AIAssistant() {
                   </button>
                 </div>
                 <div className="max-h-60 md:max-h-64 overflow-y-auto p-2 space-y-1">
-                  {suggestions.map(s => (
+                  {starterSuggestions.map((s) => (
                     <button
                       key={s}
                       onClick={() => {
                         setInput(s);
                         setShowPromptMenu(false);
+                        setTimeout(() => chatInputRef.current?.focus(), 50);
                       }}
                       className="w-full text-left p-3 md:p-4 rounded-xl md:rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
                     >
@@ -1474,9 +1629,18 @@ export default function AIAssistant() {
                   handleSend();
                 }
               }}
-              placeholder={speechState === 'listening' ? "Speak to input query..." : "Stream query..."}
+              enterKeyHint="send"
+              autoComplete="off"
+              placeholder={
+                pendingActionLabel
+                  ? `Type what you want me to ${pendingActionLabel.toLowerCase()}...`
+                  : speechState === 'listening'
+                    ? "Speak to input query..."
+                    : "Ask me anything about your studies..."
+              }
               className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl md:rounded-[1.5rem] px-4 md:px-8 py-3.5 md:py-5 pr-14 md:pr-20 font-bold text-zinc-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all shadow-xl placeholder:italic placeholder:text-zinc-400 text-sm md:text-base"
               id="chat-query-input-box"
+              ref={chatInputRef}
             />
             <button
               onClick={() => handleSend()}
@@ -1487,6 +1651,11 @@ export default function AIAssistant() {
             </button>
           </div>
         </div>
+
+        {/* AI transparency note — always visible but unobtrusive */}
+        <p className="text-center text-[10px] font-medium text-zinc-400 dark:text-zinc-600 mt-2 px-4 select-none">
+          AI can make mistakes — double-check important answers against your textbook.
+        </p>
       </div>
 
       {/* Dynamic Pop-up Celebration Badge Alert overlay */}

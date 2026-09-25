@@ -3,27 +3,19 @@ import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   User, Mail, Shield, Bell, Moon, LogOut, ChevronRight, Settings, Camera, 
-  Loader2, Lock, Calendar, X, Activity, Cpu, Clock, Sparkles, TrendingUp, HelpCircle,
-  Users, UserPlus, UserMinus, Check, Search, MessageSquare, Award, CheckCircle2, Bookmark
+  Loader2, Lock, X, Activity, Cpu, Clock, Sparkles, TrendingUp, HelpCircle,
+  Users, UserPlus, UserMinus, Check, Search, MessageSquare, Award, CheckCircle2
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { updateProfile } from 'firebase/auth';
 import { 
-  doc, updateDoc, getDoc, collection, query, where, getDocs, deleteDoc, 
+  doc, updateDoc, getDoc, collection, query, where, getDocs,
   setDoc, addDoc, serverTimestamp, onSnapshot, arrayUnion, arrayRemove 
 } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
 import { cn } from '../lib/utils';
-import { formatDate } from '../lib/dateUtils';
 import { getLocalStats, trackEvent, fetchRealtimeStats } from '../lib/analytics';
 import AcademicProfileCard from '../components/AcademicProfileCard';
-
-interface TimetableRecord {
-  id: string;
-  subjects: string[];
-  timetableData: any;
-  createdAt: any;
-}
 
 export default function Profile() {
   const { user, logout, isGuest, triggerGuestPrompt, updateUserInContext } = useAuth();
@@ -32,9 +24,6 @@ export default function Profile() {
   const [isUploading, setIsUploading] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(user?.displayName || '');
-  const [savedTimetables, setSavedTimetables] = useState<TimetableRecord[]>([]);
-  const [isLoadingPlans, setIsLoadingPlans] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<TimetableRecord | null>(null);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isAccountInfoOpen, setIsAccountInfoOpen] = useState(false);
   const [stats, setStats] = useState(getLocalStats());
@@ -84,61 +73,6 @@ export default function Profile() {
       setActiveSubTab('profile');
     }
   }, [location.search]);
-
-  // Fetch timetables with offline storage caching fallback
-  useEffect(() => {
-    if (!user) return;
-
-    if (isGuest || user.uid.includes('sandbox')) {
-      setSavedTimetables([
-        {
-          id: 'sb_timetable1',
-          subjects: ['Mathematics', 'Physics', 'Chemistry'],
-          timetableData: {
-            'Monday': [
-              { timeSlot: '08:00 - 09:30', subject: 'Mathematics', topic: 'Calculus: Derivatives', type: 'revision' },
-              { timeSlot: '16:00 - 17:30', subject: 'Physics', topic: 'Electromagnetism Lecture', type: 'primary' }
-            ],
-            'Wednesday': [
-              { timeSlot: '09:00 - 10:30', subject: 'Chemistry', topic: 'Organic Reaction mechanisms', type: 'practice' }
-            ]
-          },
-          createdAt: new Date()
-        }
-      ]);
-      setIsLoadingPlans(false);
-      return;
-    }
-
-    // Load initial timetables from local cache
-    const cachedTimetables = localStorage.getItem(`STUDENT_LOCAL_PROFILE_TIMETABLES_CACHE_${user.uid}`);
-    if (cachedTimetables) {
-      try {
-        setSavedTimetables(JSON.parse(cachedTimetables));
-      } catch (err) {
-        console.warn("Error parsing profile timetables cache:", err);
-      }
-    }
-
-    const fetchPlans = async () => {
-      setIsLoadingPlans(true);
-      try {
-        const q = query(collection(db, 'timetables'), where('userId', '==', user.uid));
-        const snap = await getDocs(q);
-        const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() } as TimetableRecord));
-        setSavedTimetables(fetched);
-        
-        // Save to cache
-        localStorage.setItem(`STUDENT_LOCAL_PROFILE_TIMETABLES_CACHE_${user.uid}`, JSON.stringify(fetched));
-      } catch (error) {
-        console.error("Profile timetables fetching error:", error);
-      } finally {
-        setIsLoadingPlans(false);
-      }
-    };
-
-    fetchPlans();
-  }, [user, isGuest]);
 
   // Synchronize sandbox / guest local storage
   useEffect(() => {
@@ -476,18 +410,6 @@ export default function Profile() {
     }
   };
 
-  const handleDeletePlan = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!confirm('Are you sure you want to delete this plan?')) return;
-    try {
-      await deleteDoc(doc(db, 'timetables', id));
-      setSavedTimetables(prev => prev.filter(t => t.id !== id));
-      if (selectedPlan?.id === id) setSelectedPlan(null);
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `timetables/${id}`);
-    }
-  };
-
   const handleUpdateName = async () => {
     if (isGuest) {
       triggerGuestPrompt("Update profile display name");
@@ -576,15 +498,6 @@ export default function Profile() {
       color: "from-rose-500/10 to-orange-500/10 text-rose-500 border-rose-500/25",
       isUnlocked: true,
       progress: "100%"
-    },
-    {
-      id: "academic_scholar",
-      title: "Academic Scholar",
-      desc: "Unlocked by creating and saving personalized timetables or study plans.",
-      icon: Bookmark,
-      color: "from-blue-500/10 to-indigo-500/10 text-blue-500 border-blue-500/25",
-      isUnlocked: savedTimetables.length > 0,
-      progress: savedTimetables.length > 0 ? "100%" : "0%"
     },
     {
       id: "peer_networker",
@@ -741,65 +654,6 @@ export default function Profile() {
             <div className="space-y-6">
               {/* Academic Profile Smart Defaults */}
               <AcademicProfileCard user={user} isGuest={isGuest} triggerGuestPrompt={triggerGuestPrompt} />
-
-              {/* Saved timetable plans */}
-              <section className="space-y-4">
-                <div className="flex items-center justify-between px-2">
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 dark:text-zinc-500 italic">Academic Saved Planners</h2>
-                  <span className="text-[9px] bg-zinc-150 dark:bg-zinc-800 px-3 py-1 rounded-full text-zinc-500 font-extrabold uppercase">
-                    {savedTimetables.length} Saved Plans
-                  </span>
-                </div>
-
-                {isLoadingPlans ? (
-                  <div className="flex justify-center py-10">
-                    <Loader2 size={24} className="animate-spin text-zinc-300" />
-                  </div>
-                ) : savedTimetables.length === 0 ? (
-                  <div className="bg-white dark:bg-zinc-900 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-10 text-center space-y-2">
-                    <Calendar size={28} className="mx-auto text-zinc-300" />
-                    <p className="text-zinc-450 text-xs font-semibold leading-relaxed">You haven't generated any study timetables yet.</p>
-                    <button 
-                      onClick={() => navigate('/app/tools')} 
-                      className="px-3.5 py-1.5 bg-blue-50 dark:bg-blue-955/20 text-blue-600 dark:text-blue-400 font-extrabold text-[9px] uppercase tracking-wider rounded-lg border border-blue-500/10 cursor-pointer hover:bg-blue-600 hover:text-white transition-all active:scale-95"
-                    >
-                      Make timetables
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid gap-3.5">
-                    {savedTimetables.map((plan) => (
-                      <motion.div
-                        key={plan.id}
-                        whileHover={{ scale: 1.005 }}
-                        className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800 rounded-2.5xl cursor-pointer hover:border-blue-500 transition-all select-none"
-                        onClick={() => setSelectedPlan(plan)}
-                      >
-                        <div className="flex items-center gap-4 text-left min-w-0">
-                          <div className="w-11 h-11 bg-orange-50 dark:bg-orange-950/20 rounded-2xl flex items-center justify-center text-orange-650 shrink-0">
-                            <Calendar size={18} />
-                          </div>
-                          <div className="min-w-0">
-                            <h3 className="font-extrabold text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-tight truncate">
-                              {plan.subjects.slice(0, 3).join(', ')}{plan.subjects.length > 3 ? '...' : ''}
-                            </h3>
-                            <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">
-                              Saved on: {formatDate(plan.createdAt)}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={(e) => handleDeletePlan(plan.id, e)}
-                          className="p-2 text-zinc-300 hover:text-red-500 dark:hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all cursor-pointer"
-                          title="Delete study plan"
-                        >
-                          <X size={15} />
-                        </button>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-              </section>
 
               {/* Study Stats Quick Glance */}
               <section className="space-y-4">
@@ -1097,9 +951,6 @@ export default function Profile() {
                   <button onClick={() => { setActiveSubTab('friends'); setFriendsActiveTab('search'); }} className="px-3.5 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-black text-[9px] uppercase tracking-wider border border-zinc-200/50 dark:border-zinc-800 rounded-xl transition-all cursor-pointer active:scale-95">
                     👥 Link Peers (Earn Catalyst)
                   </button>
-                  <button onClick={() => navigate('/app/timetable')} className="px-3.5 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-black text-[9px] uppercase tracking-wider border border-zinc-200/50 dark:border-zinc-800 rounded-xl transition-all cursor-pointer active:scale-95">
-                    📅 Timetables (Earn Scholar)
-                  </button>
                 </div>
               </div>
 
@@ -1231,53 +1082,6 @@ export default function Profile() {
                 >
                   Save Changes
                 </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-
-        {/* View Timetable Plan Detail modal */}
-        {selectedPlan && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[110] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 15 }}
-              className="bg-zinc-50 dark:bg-zinc-950 rounded-[2.5rem] w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl border border-white/5"
-            >
-              <header className="p-6 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">Saved Academic Plan</h2>
-                  <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-0.5">Custom study roadmap &amp; class periods</p>
-                </div>
-                <button 
-                  onClick={() => setSelectedPlan(null)}
-                  className="p-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-xl hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-900 transition-all cursor-pointer"
-                >
-                  <X size={15} />
-                </button>
-              </header>
-
-              <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(selectedPlan.timetableData || {}).map(([day, items]) => (
-                    <div key={day} className="bg-white dark:bg-zinc-900 p-5 rounded-2.5xl border border-zinc-150 dark:border-zinc-800 space-y-3">
-                      <h4 className="font-black text-zinc-900 dark:text-white uppercase tracking-widest text-[10px] border-b border-zinc-100 dark:border-zinc-800 pb-2">
-                        {day}
-                      </h4>
-                      <div className="space-y-1.5">
-                        {Array.isArray(items) ? (items as any[]).map((item, i) => (
-                          <div key={i} className="p-2.5 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl">
-                            <span className="text-[8px] font-black uppercase text-orange-600 tracking-wide">{item.time}</span>
-                            <h5 className="font-extrabold text-[11px] text-zinc-850 dark:text-zinc-205 leading-tight uppercase mt-0.5">{item.subject}</h5>
-                          </div>
-                        )) : (
-                          <span className="text-[9.5px] text-zinc-400 font-medium">Free day/No registered studies.</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
             </motion.div>
           </div>

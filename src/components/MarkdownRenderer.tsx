@@ -32,15 +32,7 @@ export default function MarkdownRenderer({ content, onLinkClick, className = '' 
       navigate('/app/focus');
       return true;
     } else if (
-      textContent.includes('homework solver') || 
-      textContent.includes('equation analyzer') ||
-      hrefLower.includes('homework') || 
-      hrefLower.includes('solve-homework')
-    ) {
-      navigate('/app/homework-solver');
-      return true;
-    } else if (
-      textContent.includes('notes lab') || 
+      textContent.includes('notes lab') ||
       textContent.includes('notes synthesizer') || 
       textContent.includes('notes generator') ||
       hrefLower.includes('notes')
@@ -53,22 +45,6 @@ export default function MarkdownRenderer({ content, onLinkClick, className = '' 
       hrefLower.includes('roadmap')
     ) {
       navigate('/app/roadmap');
-      return true;
-    } else if (
-      textContent.includes('memory lab') || 
-      textContent.includes('memory palace') || 
-      textContent.includes('loci') ||
-      hrefLower.includes('memory') || 
-      hrefLower.includes('mnemonic')
-    ) {
-      navigate('/app/memory-lab');
-      return true;
-    } else if (
-      textContent.includes('timetable') || 
-      textContent.includes('schedule') || 
-      hrefLower.includes('timetable')
-    ) {
-      navigate('/app/timetable');
       return true;
     } else if (onLinkClick) {
       onLinkClick(href);

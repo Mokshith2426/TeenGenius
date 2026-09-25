@@ -16,16 +16,11 @@ const StudyGroups = lazy(() => import('./screens/StudyGroups'));
 const StudyGroupDetail = lazy(() => import('./screens/StudyGroupDetail'));
 const AIAssistant = lazy(() => import('./screens/AIAssistant'));
 const Profile = lazy(() => import('./screens/Profile'));
-const TimetableMaker = lazy(() => import('./screens/TimetableMaker'));
   const NotesGenerator = lazy(() => import('./screens/NotesGenerator'));
-  const HomeworkSolver = lazy(() => import('./screens/HomeworkSolver'));
   const Friends = lazy(() => import('./screens/Friends'));
   const FocusRoom = lazy(() => import('./screens/FocusRoom'));
-  const MemoryPalace = lazy(() => import('./screens/MemoryPalace'));
-const ExploreHub = lazy(() => import('./screens/ExploreHub'));
 const Login = lazy(() => import('./screens/Login'));
 const Landing = lazy(() => import('./screens/Landing'));
-const ExamLab = lazy(() => import('./screens/exam-lab/UnifiedExamLab'));
 const Feedback = lazy(() => import('./screens/Feedback'));
 const PrivacyPolicy = lazy(() => import('./screens/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./screens/TermsOfService'));
@@ -35,6 +30,8 @@ const LearnHub = lazy(() => import('./screens/LearnHub'));
 const CommunityHub = lazy(() => import('./screens/CommunityHub'));
 const PlannerHub = lazy(() => import('./screens/PlannerHub'));
 const WhiteboardScreen = lazy(() => import('./screens/WhiteboardScreen'));
+const PracticeExperience = lazy(() => import('./screens/PracticeExperience'));
+const ExamPrep = lazy(() => import('./screens/ExamPrep'));
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -223,12 +220,14 @@ export default function App() {
                   <Route path="study-groups" element={<StudyGroups />} />
                   <Route path="study-groups/:groupId" element={<StudyGroupDetail />} />
                   <Route path="ai-assistant" element={<AIAssistant />} />
-                  <Route path="exam-lab" element={<ExamLab />} />
-                  <Route path="timetable" element={<TimetableMaker />} />
                   <Route path="notes" element={<NotesGenerator />} />
-                  <Route path="homework-solver" element={<HomeworkSolver />} />
                   <Route path="profile" element={<Profile />} />
                   <Route path="learn" element={<LearnHub />} />
+                  <Route path="study/:subjectId" element={<LearnHub />} />
+                  <Route path="study/:subjectId/:topicId" element={<LearnHub />} />
+                  <Route path="practice" element={<PracticeExperience />} />
+                  <Route path="exam" element={<ExamPrep />} />
+                  <Route path="exam/:examId" element={<ExamPrep />} />
                   <Route path="explore" element={<Navigate to="/app/learn" replace />} />
                   <Route path="tools" element={<Navigate to="/app/learn" replace />} />
                   <Route path="community" element={<CommunityHub />} />
@@ -236,8 +235,11 @@ export default function App() {
                   <Route path="whiteboard" element={<WhiteboardScreen />} />
                   <Route path="friends" element={<Navigate to="/app/profile?tab=friends" replace />} />
                   <Route path="focus" element={<FocusRoom />} />
-                  <Route path="memory-lab" element={<MemoryPalace />} />
                   <Route path="roadmap" element={<Navigate to="/app/learn" replace />} />
+                  {/* Removed features — keep old links working */}
+                  <Route path="timetable" element={<Navigate to="/app/planner" replace />} />
+                  <Route path="homework-solver" element={<Navigate to="/app/ai-assistant" replace />} />
+                  <Route path="memory-lab" element={<Navigate to="/app/learn" replace />} />
                   <Route path="feedback" element={<Feedback />} />
                   <Route path="safety" element={<Navigate to="/app" replace />} />
                 </Route>

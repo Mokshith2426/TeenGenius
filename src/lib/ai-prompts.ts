@@ -137,258 +137,6 @@ ${chatText}
 """`;
 
 // ============================================================================
-// EXAM LAB PROMPTS
-// ============================================================================
-
-export const MOCK_TEST_PROMPT = (params: {
-  numQuestions: number;
-  subject: string;
-}) => `Generate exactly ${params.numQuestions} multiple choice questions for a mock test on ${params.subject}. 
-
-Make it a comprehensive test covering various topics within ${params.subject}.
-Ensure questions are of mixed difficulty (easy, medium, hard).
-
-OUTPUT FORMAT (JSON):
-{
-  "questions": [
-    {
-      "question": "Question text here",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correctAnswerIndex": 0,
-      "explanation": "Detailed explanation of why this answer is correct"
-    }
-  ]
-}`;
-
-export const PRACTICE_QUESTIONS_PROMPT = (params: {
-  subject: string;
-  chapter?: string;
-  difficulty: string;
-  questionType: string;
-}) => `Generate exactly 5 ${params.difficulty} difficulty ${params.questionType} questions on ${params.subject}${params.chapter ? ` - Chapter: ${params.chapter}` : ''}. 
-
-For MCQ: Provide 4 options with one correct answer.
-For short answer: Provide brief answer prompts.
-For long answer: Provide detailed question prompts.
-
-OUTPUT FORMAT (JSON):
-{
-  "questions": [
-    {
-      "question": "Question text here",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correctAnswerIndex": 0,
-      "explanation": "Detailed explanation of why this answer is correct"
-    }
-  ]
-}`;
-
-export const REVISION_PACK_PROMPT = (params: {
-  subject: string;
-  topic?: string;
-}) => `Create a comprehensive revision pack for ${params.subject}${params.topic ? ` - Topic: ${params.topic}` : ''}.
-
-Include the following sections:
- 
-1. FORMULA SHEET: List all important formulas with variable definitions
-2. KEY CONCEPTS: Brief explanations of critical concepts
-3. QUICK TIPS: Exam tips and common mistakes to avoid
-4. SUMMARY: Ultra-concise summary for last-minute revision
- 
-Also create 5 flashcards (question-answer pairs) for quick revision.
- 
-OUTPUT FORMAT (JSON):
-{
-  "subject": "${params.subject}",
-  "materials": [
-    {
-      "title": "Important Formulas",
-      "content": "Formula 1: ...\\nFormula 2: ...",
-      "type": "formula"
-    },
-    {
-      "title": "Key Concepts",
-      "content": "Concept 1: ...\\nConcept 2: ...",
-      "type": "concept"
-    },
-    {
-      "title": "Quick Tips",
-      "content": "Tip 1: ...\\nTip 2: ...",
-      "type": "tip"
-    },
-    {
-      "title": "Summary",
-      "content": "Ultra-concise summary...",
-      "type": "summary"
-    }
-  ],
-  "flashcards": [
-    {
-      "question": "What is...?",
-      "answer": "It is..."
-    }
-  ]
-}`;
-
-export const LEARN_WITH_VIDEOS_PROMPT = (params: {
-  subject: string;
-  topic?: string;
-}) => `Recommend 6 educational YouTube videos for learning ${params.subject}${params.topic ? ` - Topic: ${params.topic}` : ''}.
-
-For each video, provide:
-- Title (clear and descriptive)
-- Channel name (real educational channels like Khan Academy, CrashCourse, etc.)
-- Duration (e.g., "10:25")
-- Brief description of what the video covers
-- Search query that would find this video
- 
-Focus on high-quality, popular educational content creators.
- 
-OUTPUT FORMAT (JSON):
-{
-  "videos": [
-    {
-      "id": "1",
-      "title": "Video Title",
-      "channel": "Channel Name",
-      "duration": "10:25",
-      "thumbnail": "https://i.ytimg.com/vi/VIDEO_ID/mqdefault.jpg",
-      "url": "https://www.youtube.com/results?search_query=SEARCH_QUERY",
-      "description": "Brief description of the video content"
-    }
-  ]
-}`;
-
-export const MISTAKE_REVISION_TIPS_PROMPT = (params: {
-  subject: string;
-  topic: string;
-  question: string;
-  userAnswer: string;
-  correctAnswer: string;
-}) => `A student made a mistake on this question:
- 
-Subject: ${params.subject}
-Topic: ${params.topic}
-Question: ${params.question}
-Student's Answer: ${params.userAnswer}
-Correct Answer: ${params.correctAnswer}
- 
-Provide:
-1. Why the student's answer was wrong
-2. The correct concept/formula to remember
-3. A mnemonic or tip to avoid this mistake in the future
-4. Similar types of questions to practice
- 
-Keep it concise and actionable.`;
-
-// ============================================================================
-// TIMETABLE GENERATOR PROMPT
-// ============================================================================
-
-export const TIMETABLE_PROMPT = (params: {
-  subjects: string[];
-  hoursPerDay: number;
-  preferences: string;
-  durationCategory: string;
-  durationValue: string;
-  studentClass: string;
-  board: string;
-  stream: string;
-  weakSubjects: string;
-  strongSubjects: string;
-  examDates: string;
-  goals: string;
-}) => {
-  const durationCategoryStr = params.durationCategory || "weekly";
-  const durationValueStr = params.durationValue || "1_week";
-
-  let prompt = `Generate a highly optimized, fully customized student study timetable. 
-Additional student profile attributes to leverage for high-fidelity personalized tailoring:
-- Student Class: ${params.studentClass || "General student"}
-- Board/Curriculum: ${params.board || "Standard Board"}
-- Academic Stream/Major: ${params.stream || "All Subjects"}
-- Weak Subjects (Needs extra focus / revision / spaced practice): ${params.weakSubjects || "None specified"}
-- Strong Subjects (Needs advanced challenges / maintenance review): ${params.strongSubjects || "None specified"}
-- Exam Target Dates, Milestones, or Benchmarks: ${params.examDates || "Aesthetic balanced preparation limit"}
-- Personal Objectives and Goals: ${params.goals || "Improve comprehension and exam compliance"}
-
-Syllabus/Subjects to emphasize specifically: ${params.subjects.join(', ')}.
-Available Hours Per Study Day: ${params.hoursPerDay || 4} hours.
-Special Learning Preferences: ${params.preferences || "No special requests, optimize scientifically"}.
-
-Duration context for selection: Category is "${durationCategoryStr}" (value: "${durationValueStr}").`;
-
-  if (durationCategoryStr === 'quick') {
-    prompt += ` Generate a plan for a single quick study session. Divide the planned time (${durationValueStr.replace('_', ' ')}) into sequential chronological blocks as keys: e.g. "0 to 10 Mins (Warmup)", etc. Define realistic tasks for this short session.`;
-  } else if (durationCategoryStr === 'daily') {
-    prompt += ` Generate a high-productivity plan for ${durationValueStr === 'tomorrow' ? 'Tomorrow' : 'Today'} only. Divide the schedule into blocks as keys: e.g., "Morning Slot", "Afternoon Slot", "Evening Slot".`;
-  } else if (durationCategoryStr === 'multiday') {
-    prompt += ` Generate a robust short-term study timetable for ${durationValueStr.replace('_', ' ')}. Organize study sessions chronologically for each day with keys like Day 1, Day 2, etc.`;
-  } else if (durationCategoryStr === 'weekly') {
-    if (durationValueStr === '2_weeks') {
-      prompt += ` Generate a balanced revision roadmap across a 2-week timeline. Organize into two structural milestones as keys: "Week 1 (Days 1-7)" and "Week 2 (Days 8-14)".`;
-    } else {
-      prompt += ` Generate a standard weekly timetable with the days of the week as keys. Ensure Monday to Sunday are comprehensive.`;
-    }
-  } else if (durationCategoryStr === 'longterm') {
-    prompt += ` Generate an ambitious, highly strategic long-term study calendar for ${durationValueStr.replace('_', ' ')}. To keep it realistic, actionable, and visually balanced, divide this long journey into 4 strategic phases as keys: "Phase 1: Foundation (Conceptual Review)", "Phase 2: Practice (Problem Solving & Retrieval)", "Phase 3: Integration (Full Mock Tests & Weak Areas)", and "Phase 4: Revision (Deep Mindmap & High Speed Recall)". Describe exactly what they should study in each phase.`;
-  }
-
-  prompt += `
-
-OUTPUT FORMAT (STRICT - RETURN ONLY VALID JSON, NO MARKDOWN, NO EXTRA TEXT):
-{
-  "<key>": [
-    { "time": "HH:MM AM/PM - HH:MM AM/PM", "subject": "Subject Name", "activity": "What to study/practice" }
-  ]
-}
-- Keys are the schedule identifiers (day names, time blocks, phases, etc.) as instructed above.
-- Each value is an array of study blocks.
-- Each study block MUST have exactly these three fields: time, subject, activity.
-- Return ONLY the JSON object. No markdown fences, no explanations, no preamble.`;
-
-  return prompt;
-};
-
-// ============================================================================
-// MNEMONIC GENERATOR PROMPT
-// ============================================================================
-
-export const MNEMONIC_PROMPT = (topic: string) => `Act as a memory expert. Create 3 unique, catchy, and highly effective mnemonics (acronyms or creative sentences) to help a student memorize the following topic: "${topic}". 
-Format the output as a simple list, one mnemonic per line. Do not include extra text or explanations.`;
-
-// ============================================================================
-// FLASHCARDS GENERATOR PROMPT
-// ============================================================================
-
-export const FLASHCARDS_PROMPT = (topic: string, notesContent?: string) => {
-  if (notesContent && notesContent.trim()) {
-    return `Act as a study expert. Create exactly 5 challenging and informative flashcards (Question and Answer) for learning and memorization based on the following notes / materials: "${notesContent}". Make them highly specific to the facts, key terms, and summaries provided in the notes.
-
-OUTPUT FORMAT (JSON):
-{
-  "flashcards": [
-    {
-      "question": "Question text",
-      "answer": "Answer text"
-    }
-  ]
-}`;
-  }
-  return `Act as a study expert. Create exactly 5 challenging and informative flashcards (Question and Answer) for the following topic: "${topic}".
-
-OUTPUT FORMAT (JSON):
-{
-  "flashcards": [
-    {
-      "question": "Question text",
-      "answer": "Answer text"
-    }
-  ]
-}`;
-};
-
-// ============================================================================
 // ROADMAP GENERATOR PROMPT
 // ============================================================================
 
@@ -424,34 +172,50 @@ export const EDITOR_ASSIST_PROMPT = (text: string, language: string, action: 're
 
 export const CHAT_SYSTEM_INSTRUCTION = (includePlatformKnowledge: boolean, detectedSubject?: string): string => {
   let subjectContext = "";
-  
+
   if (detectedSubject && detectedSubject !== "General") {
     subjectContext = `
-
-DETECTED SUBJECT CONTEXT:
-The student's query has been automatically classified as: ${detectedSubject}
+\nDETECTED SUBJECT CONTEXT:\nThe student's query has been automatically classified as: ${detectedSubject}
 - Tailor your explanation, examples, and terminology specifically to ${detectedSubject}.
 - Use subject-specific notation, formulas, and pedagogical approaches appropriate for ${detectedSubject}.
 - Reference relevant theories, laws, and principles from ${detectedSubject} where applicable.`;
   }
-  
-  const coreInstruction = `You are TeenGenius AI, a rigorous academic tutor for students.
+
+  const coreInstruction = `You are TeenGenius AI, a warm and patient personal tutor for school students.
+
+TEACHING METHODOLOGY (FOLLOW THIS WHENEVER THE STUDENT ASKS YOU TO EXPLAIN A CONCEPT):
+1. Start with ONE simple, plain-English explanation of the core idea. Imagine you are explaining it to a clever student who has never seen the topic before. Use a short, vivid metaphor or everyday analogy where helpful.
+2. Break it into 2–4 small logical pieces. Explain each piece in 2–3 sentences maximum before moving on.
+3. Give ONE concrete, relatable example that shows the idea in action (with a worked example for maths/science).
+4. Check understanding with a gentle question or a quick 3-question quiz. Ask first, then wait for their answer before giving the reveal.
+5. End by offering next steps: "Want me to test you with 3 quick questions?" or "Want a summary you can copy into your notes?"
+
+HOMEWORK & PROBLEM-SOLVING POLICY (WHEN THE STUDENT ASKS YOU TO SOLVE A QUESTION OR DO AN ASSIGNMENT):
+- You are a tutor, not an answer machine. Guide the student step by step.
+- Begin by paraphrasing the problem and asking what they understand so far.
+- Give the first hint and let them try. Only reveal the full solution after they attempt, or if they explicitly ask to see it.
+- Always explain the reasoning behind each step so they can solve similar problems on their own.
+
+QUIZ PROTOCOL:
+- When asked to quiz, ask 3–5 questions ONE AT A TIME. Wait for the student's answer before marking it, revealing the correct answer, and moving on.
+- Keep questions fair and aligned with the topic they asked about.
 
 RESPONSE PROTOCOLS:
-1. Directness: Answer directly and comprehensively. Avoid preambles or meta-commentary.
+1. Directness: Answer directly and naturally. Never start with filler like "Sure!" or "Great question!" — jump straight into teaching.
 2. Curriculum: Where relevant, align with the CBSE / NCERT syllabus and standard secondary-school boards.
-3. Formatting: Use clean Markdown for lists and code, and LaTeX ($...$ or $$...$$) for all math and equations.
-4. Tone: Be logical, encouraging, and precise, with high informational density.${subjectContext}`;
-    
+3. Formatting: Use clean Markdown for lists and code, and LaTeX ($...$ or $$...$$) for all math and equations. Keep paragraphs short.
+4. Length: Default to short, high-value answers (around 100–180 words unless the student asks for more detail). A long textbook dump helps no one.
+5. Tone: Be logical, encouraging, and precise. Address the student as "you", never as "the student".${subjectContext}`;
+
   if (!includePlatformKnowledge) return coreInstruction;
-  
+
   const platformKnowledge = `
 
 TEENGENIUS PLATFORM FACTS (use only when the student asks about the platform, its founder, or its features):
-- TeenGenius is a study platform for students, combining an AI tutor, study planning, focus rooms, notes/memory tools, and secure peer study groups.
+- TeenGenius is a study platform for students, combining an AI tutor, study planning, focus rooms, notes tools, and secure peer study groups.
 - Founder & creator: Mokshith Ramavathu. Credit him on platform/founder questions.
-- Main features: AI Tutor, Study Focus Rooms, Notes Generator, Memory Palace (mnemonics/flashcards), Exam Lab, Timetable Maker, Skills Roadmap, Study Groups, Student Chat, and gamified progress profiles.
+- Main features: AI Tutor, Study Focus Rooms, Notes Generator, Skills Roadmap, Study Groups, Student Chat, and gamified progress profiles.
 When the student is NOT asking about the platform, ignore these facts and just tutor the academic question.`;
-    
+
   return coreInstruction + platformKnowledge;
 };

@@ -33,18 +33,6 @@ router.post('/chat',
 );
 
 /**
- * @route   POST /api/ai/timetable
- * @desc    Generate AI-powered timetable
- * @access  Public (with API key check)
- */
-router.post('/timetable', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.timetable
-);
-
-/**
  * @route   POST /api/ai/notes
  * @desc    Generate study notes
  * @access  Public (with API key check)
@@ -55,30 +43,6 @@ router.post('/notes',
   checkAiKey, 
   requestBurstGuard, 
   AIController.notes
-);
-
-/**
- * @route   POST /api/ai/mnemonic
- * @desc    Generate mnemonics
- * @access  Public (with API key check)
- */
-router.post('/mnemonic', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.mnemonic
-);
-
-/**
- * @route   POST /api/ai/flashcards
- * @desc    Generate flashcards
- * @access  Public (with API key check)
- */
-router.post('/flashcards', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.flashcards
 );
 
 /**
@@ -127,66 +91,6 @@ router.post('/editor-assist',
   checkAiKey, 
   requestBurstGuard, 
   AIController.editorAssist
-);
-
-/**
- * @route   POST /api/ai/mock-test
- * @desc    Generate mock test questions
- * @access  Public (with API key check)
- */
-router.post('/mock-test', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.mockTest
-);
-
-/**
- * @route   POST /api/ai/practice-questions
- * @desc    Generate practice questions
- * @access  Public (with API key check)
- */
-router.post('/practice-questions', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.practiceQuestions
-);
-
-/**
- * @route   POST /api/ai/revision-pack
- * @desc    Generate revision pack
- * @access  Public (with API key check)
- */
-router.post('/revision-pack', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.revisionPack
-);
-
-/**
- * @route   POST /api/ai/learn-with-videos
- * @desc    Get video recommendations
- * @access  Public (with API key check)
- */
-router.post('/learn-with-videos', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.learnWithVideos
-);
-
-/**
- * @route   POST /api/ai/mistake-revision-tips
- * @desc    Generate revision tips for mistakes
- * @access  Public (with API key check)
- */
-router.post('/mistake-revision-tips', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.mistakeRevisionTips
 );
 
 /**

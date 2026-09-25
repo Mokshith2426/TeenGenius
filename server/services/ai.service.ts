@@ -24,16 +24,8 @@ import {
   NOTES_GENERATOR_PROMPT,
   QUIZ_GENERATOR_PROMPT,
   QUICK_QUIZ_PROMPT,
-  TIMETABLE_PROMPT,
-  MNEMONIC_PROMPT,
-  FLASHCARDS_PROMPT,
   ROADMAP_PROMPT,
   EDITOR_ASSIST_PROMPT,
-  MOCK_TEST_PROMPT,
-  PRACTICE_QUESTIONS_PROMPT,
-  REVISION_PACK_PROMPT,
-  LEARN_WITH_VIDEOS_PROMPT,
-  MISTAKE_REVISION_TIPS_PROMPT,
 } from '../../src/lib/ai-prompts';
 
 // ============================================================================
@@ -59,21 +51,6 @@ export interface ChatResponse {
   detectedSubject: string;
 }
 
-export interface TimetableParams {
-  subjects: string[];
-  hoursPerDay: number;
-  preferences: string;
-  durationCategory: string;
-  durationValue: string;
-  studentClass: string;
-  board: string;
-  stream: string;
-  weakSubjects: string;
-  strongSubjects: string;
-  examDates: string;
-  goals: string;
-}
-
 export interface NotesParams {
   content: string;
   focus: string;
@@ -81,15 +58,6 @@ export interface NotesParams {
   summaryLength: string;
   subject: string;
   files?: Array<{ name: string; data: string; mimeType: string }>;
-}
-
-export interface MnemonicParams {
-  topic: string;
-}
-
-export interface FlashcardsParams {
-  topic: string;
-  notesContent: string;
 }
 
 export interface RoadmapParams {
@@ -110,35 +78,6 @@ export interface EditorAssistParams {
   action: 'refactor' | 'complete';
 }
 
-export interface MockTestParams {
-  numQuestions: number;
-  subject: string;
-}
-
-export interface PracticeQuestionsParams {
-  subject: string;
-  chapter?: string;
-  difficulty: string;
-  questionType: string;
-}
-
-export interface RevisionPackParams {
-  subject: string;
-  topic?: string;
-}
-
-export interface LearnWithVideosParams {
-  subject: string;
-  topic?: string;
-}
-
-export interface MistakeRevisionTipsParams {
-  subject: string;
-  topic: string;
-  question: string;
-  userAnswer: string;
-  correctAnswer: string;
-}
 
 // ============================================================================
 // AI SERVICE
@@ -284,64 +223,6 @@ export class AIService {
   }
 
   /**
-   * Timetable Maker
-   */
-  public async generateTimetable(params: TimetableParams, req?: any): Promise<any> {
-    const prompt = TIMETABLE_PROMPT({
-      subjects: params.subjects || [],
-      hoursPerDay: params.hoursPerDay || 4,
-      preferences: params.preferences || '',
-      durationCategory: params.durationCategory || "weekly",
-      durationValue: params.durationValue || "1_week",
-      studentClass: params.studentClass || '',
-      board: params.board || '',
-      stream: params.stream || '',
-      weakSubjects: params.weakSubjects || '',
-      strongSubjects: params.strongSubjects || '',
-      examDates: params.examDates || '',
-      goals: params.goals || ''
-    });
-
-    const generatedText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 4096,
-      },
-      "/api/ai/timetable",
-      req
-    );
-
-    try {
-      let cleanedText = generatedText || "{}";
-      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      
-      let parsed = null;
-      try {
-        parsed = JSON.parse(cleanedText);
-      } catch {
-        const firstBrace = cleanedText.indexOf('{');
-        const lastBrace = cleanedText.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace > firstBrace) {
-          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
-        } else {
-          throw new Error('No JSON object found in response');
-        }
-      }
-      
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-        throw new Error('Invalid timetable format: expected an object');
-      }
-      return parsed;
-    } catch (parseError: any) {
-      console.error("Timetable JSON Parse Error:", parseError, generatedText);
-      const error = new Error(`Failed to parse timetable: ${parseError.message}. The AI response was malformed. Please try again.`);
-      (error as any).code = 'AI_PARSE_ERROR';
-      throw error;
-    }
-  }
-
-  /**
    * Notes Generator
    */
   public async generateNotes(params: NotesParams, req?: any): Promise<{ notes: string }> {
@@ -368,75 +249,6 @@ export class AIService {
     );
 
     return { notes: notesText };
-  }
-
-  /**
-   * Mnemonic Generator
-   */
-  public async generateMnemonic(params: MnemonicParams, req?: any): Promise<{ mnemonics: string[] }> {
-    const prompt = MNEMONIC_PROMPT(params.topic);
-
-    const mnemonicText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.8,
-        maxOutputTokens: 512,
-      },
-      "/api/ai/mnemonic",
-      req
-    );
-
-    const lines = mnemonicText?.split('\n').filter(l => l.trim().length > 0).slice(0, 3) || [];
-    return { mnemonics: lines };
-  }
-
-  /**
-   * Flashcards Generator
-   */
-  public async generateFlashcards(params: FlashcardsParams, req?: any): Promise<{ flashcards: any[] }> {
-    const prompt = FLASHCARDS_PROMPT(params.topic, params.notesContent || "");
-
-    const flashcardsText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 2048,
-      },
-      "/api/ai/flashcards",
-      req
-    );
-
-    try {
-      let cleanedText = flashcardsText || "[]";
-      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      
-      let parsed: any = null;
-      try {
-        parsed = JSON.parse(cleanedText);
-      } catch {
-        const firstBrace = cleanedText.indexOf('[');
-        const lastBrace = cleanedText.lastIndexOf(']');
-        if (firstBrace !== -1 && lastBrace > firstBrace) {
-          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
-        } else {
-          const firstObj = cleanedText.indexOf('{');
-          const lastObj = cleanedText.lastIndexOf('}');
-          if (firstObj !== -1 && lastObj > firstObj) {
-            parsed = JSON.parse(cleanedText.substring(firstObj, lastObj + 1));
-          } else {
-            throw new Error("No JSON object found in response");
-          }
-        }
-      }
-      
-      const flashcards = (parsed && Array.isArray(parsed.flashcards)) ? parsed.flashcards : (Array.isArray(parsed) ? parsed : []);
-      return { flashcards };
-    } catch (e: any) {
-      console.error("Flashcards JSON Parse Error:", e, flashcardsText);
-      const err = new Error(`Failed to parse flashcards response: ${e.message}`);
-      (err as any).code = "AI_PARSE_ERROR";
-      throw err;
-    }
   }
 
   /**
@@ -605,231 +417,6 @@ export class AIService {
     return { result };
   }
 
-  /**
-   * Mock Test Generator
-   */
-  public async generateMockTest(params: MockTestParams, req?: any): Promise<{ questions: any[] }> {
-    if (!params.subject || !params.subject.trim()) {
-      throw new Error("Subject is required");
-    }
-
-    const prompt = MOCK_TEST_PROMPT({
-      numQuestions: params.numQuestions || 10,
-      subject: params.subject
-    });
-
-    const mockTestText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 4096,
-      },
-      "/api/ai/mock-test",
-      req
-    );
-
-    try {
-      let cleanedText = mockTestText || "{}";
-      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      
-      let parsed: any = null;
-      try {
-        parsed = JSON.parse(cleanedText);
-      } catch {
-        const firstBrace = cleanedText.indexOf('{');
-        const lastBrace = cleanedText.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace > firstBrace) {
-          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
-        } else {
-          throw new Error("No JSON object found in response");
-        }
-      }
-      
-      const questions = (parsed && Array.isArray(parsed.questions)) ? parsed.questions : (Array.isArray(parsed) ? parsed : []);
-      return { questions };
-    } catch (e: any) {
-      console.error("Mock Test JSON Parse Error:", e, mockTestText);
-      const err = new Error(`Failed to parse mock test response: ${e.message}`);
-      (err as any).code = "AI_PARSE_ERROR";
-      throw err;
-    }
-  }
-
-  /**
-   * Practice Questions Generator
-   */
-  public async generatePracticeQuestions(params: PracticeQuestionsParams, req?: any): Promise<{ questions: any[] }> {
-    if (!params.subject || !params.subject.trim()) {
-      throw new Error("Subject is required");
-    }
-
-    const prompt = PRACTICE_QUESTIONS_PROMPT({
-      subject: params.subject,
-      chapter: params.chapter,
-      difficulty: params.difficulty || 'medium',
-      questionType: params.questionType || 'mcq'
-    });
-
-    const questionsText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 4096,
-      },
-      "/api/ai/practice-questions",
-      req
-    );
-
-    try {
-      let cleanedText = questionsText || "{}";
-      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      
-      let parsed: any = null;
-      try {
-        parsed = JSON.parse(cleanedText);
-      } catch {
-        const firstBrace = cleanedText.indexOf('{');
-        const lastBrace = cleanedText.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace > firstBrace) {
-          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
-        } else {
-          throw new Error("No JSON object found in response");
-        }
-      }
-      
-      const questions = (parsed && Array.isArray(parsed.questions)) ? parsed.questions : (Array.isArray(parsed) ? parsed : []);
-      return { questions };
-    } catch (e: any) {
-      console.error("Practice Questions JSON Parse Error:", e, questionsText);
-      const err = new Error(`Failed to parse practice questions response: ${e.message}`);
-      (err as any).code = "AI_PARSE_ERROR";
-      throw err;
-    }
-  }
-
-  /**
-   * Revision Pack Generator
-   */
-  public async generateRevisionPack(params: RevisionPackParams, req?: any): Promise<any> {
-    if (!params.subject || !params.subject.trim()) {
-      throw new Error("Subject is required");
-    }
-
-    const prompt = REVISION_PACK_PROMPT({
-      subject: params.subject,
-      topic: params.topic
-    });
-
-    const revisionPackText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 4096,
-      },
-      "/api/ai/revision-pack",
-      req
-    );
-
-    try {
-      let cleanedText = revisionPackText || "{}";
-      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      
-      let parsed: any = null;
-      try {
-        parsed = JSON.parse(cleanedText);
-      } catch {
-        const firstBrace = cleanedText.indexOf('{');
-        const lastBrace = cleanedText.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace > firstBrace) {
-          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
-        } else {
-          throw new Error("No JSON object found in response");
-        }
-      }
-      
-      return parsed;
-    } catch (e: any) {
-      console.error("Revision Pack JSON Parse Error:", e, revisionPackText);
-      const err = new Error(`Failed to parse revision pack response: ${e.message}`);
-      (err as any).code = "AI_PARSE_ERROR";
-      throw err;
-    }
-  }
-
-  /**
-   * Learn With Videos Generator
-   */
-  public async generateVideoRecommendations(params: LearnWithVideosParams, req?: any): Promise<{ videos: any[] }> {
-    if (!params.subject || !params.subject.trim()) {
-      throw new Error("Subject is required");
-    }
-
-    const prompt = LEARN_WITH_VIDEOS_PROMPT({
-      subject: params.subject,
-      topic: params.topic
-    });
-
-    const videosText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 2048,
-      },
-      "/api/ai/learn-with-videos",
-      req
-    );
-
-    try {
-      let cleanedText = videosText || "{}";
-      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      
-      let parsed: any = null;
-      try {
-        parsed = JSON.parse(cleanedText);
-      } catch {
-        const firstBrace = cleanedText.indexOf('{');
-        const lastBrace = cleanedText.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace > firstBrace) {
-          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
-        } else {
-          throw new Error("No JSON object found in response");
-        }
-      }
-      
-      const videos = (parsed && Array.isArray(parsed.videos)) ? parsed.videos : [];
-      return { videos };
-    } catch (e: any) {
-      console.error("Videos JSON Parse Error:", e, videosText);
-      const err = new Error(`Failed to parse video recommendations response: ${e.message}`);
-      (err as any).code = "AI_PARSE_ERROR";
-      throw err;
-    }
-  }
-
-  /**
-   * Mistake Revision Tips Generator
-   */
-  public async generateMistakeRevisionTips(params: MistakeRevisionTipsParams, req?: any): Promise<{ tips: string }> {
-    const prompt = MISTAKE_REVISION_TIPS_PROMPT({
-      subject: params.subject,
-      topic: params.topic,
-      question: params.question,
-      userAnswer: params.userAnswer,
-      correctAnswer: params.correctAnswer
-    });
-
-    const tipsText = await this.generateText(
-      {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 1024,
-      },
-      "/api/ai/mistake-revision-tips",
-      req
-    );
-
-    return { tips: tipsText };
-  }
 }
 
 export default AIService.getInstance();

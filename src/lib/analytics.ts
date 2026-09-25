@@ -44,13 +44,11 @@ export function getLocalStats(): LocalStats {
     wauCount: 0,
     tutorialCompletedCount: 0,
     tutorialStartedCount: 0,
-    featureUsage: {
+        featureUsage: {
       'AI Assistant': 0,
-      'Exam Lab': 0,
       'Focus Room': 0,
       'Notes Lab': 0,
       'Study Circles': 0,
-      'Timetable Creator': 0,
     },
     toolUsage: {},
     sessionsCount: 0,
@@ -68,11 +66,9 @@ export async function fetchRealtimeStats(): Promise<LocalStats> {
     tutorialStartedCount: 0,
     featureUsage: {
       'AI Assistant': 0,
-      'Exam Lab': 0,
       'Focus Room': 0,
       'Notes Lab': 0,
       'Study Circles': 0,
-      'Timetable Creator': 0,
     },
     toolUsage: {},
     sessionsCount: 0,
