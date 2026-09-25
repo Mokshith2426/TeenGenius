@@ -1,12 +1,25 @@
 # TeenGenius — Continuation Log
 
-**Last updated:** 2026-09-25 (Phase 7: Empty / Loading / Error State Voice)
+**Last updated:** 2026-09-25 (Phase 8: Auth & Navigation De-jargon)
 **Branch:** main
 **Status:** Build ✅ | TypeScript lint ✅ | Production server smoke test ✅
 
 ---
 
-## PHASE 7 — EMPTY / LOADING / ERROR STATE VOICE (this session)
+## PHASE 8 — AUTH & NAVIGATION DE-JARGON (this session)
+
+**Theme:** the two highest-traffic surfaces a student sees — the login screen and the command palette / More menu — no longer speak in network-operator jargon. Copy/label pass only for auth; no logic, data, or routing behavior changed.
+
+- **Login**: tagline "COGNITIVE NETWORK" → **STUDY COMPANION**; panel titles ("Authenticate Student" / "Initiate Node" / "Recover Credential") → **Welcome back** / **Create your account** / **Reset your password**; primary CTAs ("Verify Credentials" / "Initiate Node" / "Transmit Reset Link") → **Sign In** / **Create Account** / **Send Reset Link**; field labels "Network Password" & "Confirm Network Password" → **Password** / **Confirm Password**; trust row ("Secure Network" / "Verified Node") → "Private by design" / "Free for students".
+- **Login footer (small UX fix)**: the "you agree to our terms" line previously had `select-none pointer-events-none` so it was inert; it now links to the existing `/terms` and `/privacy` routes (`Link` imported from `react-router-dom`).
+- **CommandPalette**: categories ("Ecosystem Modules" / "System Utilities") → **Navigation** / **Actions**; command labels de-jargoned ("Toggle Visual Theme" → "Toggle Theme", "Open Account Registry" → "Open Settings", "Terminate Secure Session" → "Log Out"); descriptions shortened ("Go to X", "Switch to dark mode", "Sign out of your account"); empty state ("No execution targets found" / "No modules or system macros…") → "No results found" / "Nothing matches your search."; close tooltip.
+- **Layout**: More-sheet headings ("Modules Portal" / "Ecosystem Space") → **Quick Access** / **More Features**; mobile menu tooltip "Toggle Menu Portal" → "More options"; online toast "Connected to active school networks! Restoring real-time sync." → "You're back online — syncing your data."; stale "module/node" code comments tidied.
+- Remaining out-of-scope jargon for a later pass: `SettingsModal` ToS paragraph ("feedback transmissions", "API shortcuts for system scraping") and `Profile`'s "Secure Study Portal Identity" label.
+- Validated: `npm run lint` → 0, `npm run build` → 0, prod smoke `/` 200 + `/api/version` 200, de-jargon strings confirmed in `dist/assets/*.js`.
+
+---
+
+## PHASE 7 — EMPTY / LOADING / ERROR STATE VOICE
 
 **Theme:** every "nothing here", "working…", "failed", and "are you sure?" message in the core screens now sounds like a study app, not a sci-fi terminal. Copy only — 24 lines across 6 files, zero logic changes.
 

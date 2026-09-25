@@ -13,7 +13,7 @@ interface CommandItem {
   id: string;
   label: string;
   description: string;
-  category: 'Ecosystem Modules' | 'System Utilities';
+  category: 'Navigation' | 'Actions';
   icon: React.ComponentType<any>;
   shortcut?: string;
   action: () => void;
@@ -50,12 +50,12 @@ export default function CommandPalette({
 
   // Define static commands & dynamically mapped nav items
   const items: CommandItem[] = [
-    // 1. Ecosystem Navigations
+    // 1. Navigation destinations
     ...navItems.map(item => ({
       id: `nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`,
       label: item.label,
-      description: `Navigate to TeenGenius ${item.label}`,
-      category: 'Ecosystem Modules' as const,
+      description: `Go to ${item.label}`,
+      category: 'Navigation' as const,
       icon: item.icon,
       action: () => {
         navigate(item.path);
@@ -65,9 +65,9 @@ export default function CommandPalette({
     // 2. Control Utilities
     {
       id: 'util-dark-mode',
-      label: 'Toggle Visual Theme',
-      description: isDarkMode ? 'Switch to responsive Light Mode workspace' : 'Switch to eye-safe Dark Mode workspace',
-      category: 'System Utilities' as const,
+      label: 'Toggle Theme',
+      description: isDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
+      category: 'Actions' as const,
       icon: isDarkMode ? Sun : Moon,
       shortcut: 'T',
       action: () => {
@@ -77,9 +77,9 @@ export default function CommandPalette({
     },
     {
       id: 'util-settings',
-      label: 'Open Account Registry',
-      description: 'Manage API configurations, storage instances, and profiles',
-      category: 'System Utilities' as const,
+      label: 'Open Settings',
+      description: 'Theme, account, and app preferences',
+      category: 'Actions' as const,
       icon: Settings,
       shortcut: 'S',
       action: () => {
@@ -89,9 +89,9 @@ export default function CommandPalette({
     },
     {
       id: 'util-logout',
-      label: 'Terminate Secure Session',
-      description: 'Log out of current TeenGenius authorization lease',
-      category: 'System Utilities' as const,
+      label: 'Log Out',
+      description: 'Sign out of your account',
+      category: 'Actions' as const,
       icon: LogOut,
       shortcut: 'Q',
       action: () => {
@@ -239,7 +239,7 @@ export default function CommandPalette({
                 <button 
                   onClick={onClose}
                   className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors cursor-pointer"
-                  title="Close command workspace"
+                  title="Close search"
                 >
                   <X size={15} />
                 </button>
@@ -257,8 +257,8 @@ export default function CommandPalette({
                   <div className="p-3 bg-zinc-100 dark:bg-zinc-800/60 rounded-full text-zinc-400 mb-3 animate-pulse">
                     <Sparkles size={18} />
                   </div>
-                  <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">No execution targets found</h3>
-                  <p className="text-xs text-zinc-400 max-w-sm">No modules or system macros match your current query. Try typing 'ai', 'focus', or 'profile'.</p>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">No results found</h3>
+                  <p className="text-xs text-zinc-400 max-w-sm">Nothing matches your search. Try 'ai', 'focus', or 'profile'.</p>
                 </div>
               ) : (
                 Object.entries(categories).map(([category, catItems]) => (
@@ -290,7 +290,7 @@ export default function CommandPalette({
                             )}
                           >
                             <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                              {/* Left icon node */}
+                              {/* Left icon */}
                               <div className={cn(
                                 "p-2 rounded-lg shrink-0 transition-all",
                                 isItemSelected 

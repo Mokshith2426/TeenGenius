@@ -21,7 +21,7 @@ import {
   Calendar,
   Users
 } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 type AuthMode = 'signin' | 'signup' | 'forgot';
 
@@ -331,7 +331,7 @@ export default function Login() {
                       TEEN<span className="text-blue-500 dark:text-blue-400">GENIUS</span>
                     </span>
                     <span className="text-[9px] sm:text-[10px] font-black text-zinc-400 dark:text-zinc-500 tracking-[0.25em] uppercase leading-none mt-1.5">
-                      COGNITIVE NETWORK
+                      STUDY COMPANION
                     </span>
                   </div>
                 </div>
@@ -424,7 +424,7 @@ export default function Login() {
 
                       <div className="space-y-1.5 text-center">
                         <h3 className="text-xs font-black uppercase tracking-widest text-zinc-800 dark:text-zinc-200">
-                          {authMode === 'signin' ? 'Authenticate Student' : authMode === 'signup' ? 'Initiate Node' : 'Recover Credential'}
+                          {authMode === 'signin' ? 'Welcome back' : authMode === 'signup' ? 'Create your account' : 'Reset your password'}
                         </h3>
                       </div>
 
@@ -482,7 +482,7 @@ export default function Login() {
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
                               <label htmlFor="auth-password" className="text-[9px] font-black uppercase tracking-widest text-[#8a99a6] block leading-none">
-                                Network Password
+                                Password
                               </label>
                               {authMode === 'signin' && (
                                 <button
@@ -519,7 +519,7 @@ export default function Login() {
                         {authMode === 'signup' && (
                           <div className="space-y-1.5">
                             <label htmlFor="auth-confirm-password" className="text-[9px] font-black uppercase tracking-widest text-[#8a99a6] block leading-none">
-                              Confirm Network Password
+                              Confirm Password
                             </label>
                             <div className="relative">
                               <LockKeyhole className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={15} />
@@ -553,7 +553,7 @@ export default function Login() {
                           ) : (
                             <>
                               <span>
-                                {authMode === 'signin' ? 'Verify Credentials' : authMode === 'signup' ? 'Initiate Node' : 'Transmit Reset Link'}
+                                {authMode === 'signin' ? 'Sign In' : authMode === 'signup' ? 'Create Account' : 'Send Reset Link'}
                               </span>
                               <ArrowRight size={13} className="text-zinc-300 font-extrabold" />
                             </>
@@ -611,13 +611,16 @@ export default function Login() {
 
               {/* Secure assurance copy */}
               <div className="mt-8 pt-5 border-t border-zinc-100 dark:border-zinc-800/80 flex justify-center gap-6 text-[9.5px] font-black uppercase tracking-widest text-[#8c9ca8] dark:text-zinc-500 select-none">
-                <span className="flex items-center gap-1.5"><ShieldCheck size={11} className="text-emerald-500 shrink-0 stroke-[3]" /> Secure Network</span>
+                <span className="flex items-center gap-1.5"><ShieldCheck size={11} className="text-emerald-500 shrink-0 stroke-[3]" /> Private by design</span>
                 <span>•</span>
-                <span className="flex items-center gap-1.5"><Sparkles size={11} className="text-blue-500 shrink-0 stroke-[3]" /> Verified Node</span>
+                <span className="flex items-center gap-1.5"><Sparkles size={11} className="text-blue-500 shrink-0 stroke-[3]" /> Free for students</span>
               </div>
 
-              <p className="text-center text-[10px] text-zinc-400 dark:text-zinc-550 mt-6 leading-relaxed cursor-default select-none pointer-events-none">
-                By signing in, you agree to TeenGenius's terms for students and researchers.
+              <p className="text-center text-[10px] text-zinc-400 dark:text-zinc-550 mt-6 leading-relaxed">
+                By signing in, you agree to our{' '}
+                <Link to="/terms" className="text-blue-500 dark:text-blue-400 hover:underline font-semibold">Terms of Service</Link>
+                {' '}and{' '}
+                <Link to="/privacy" className="text-blue-500 dark:text-blue-400 hover:underline font-semibold">Privacy Policy</Link>.
               </p>
             </>
           )}

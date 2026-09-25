@@ -547,7 +547,7 @@ export default function Layout() {
               <button 
                 onClick={() => setIsMoreOpen(!isMoreOpen)}
                 className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white bg-zinc-50 dark:bg-zinc-800/55 rounded-xl border border-zinc-200/40 dark:border-zinc-700/30 transition-all cursor-pointer active:scale-95 touch-manipulation"
-                title="Toggle Menu Portal"
+                title="More options"
               >
                 <Menu size={18} strokeWidth={2.4} />
                             </button>
@@ -658,7 +658,7 @@ export default function Layout() {
               id="online-success-banner"
             >
               <Check size={14} className="shrink-0 text-emerald-500" />
-              <span>Connected to active school networks! Restoring real-time sync.</span>
+              <span>You're back online — syncing your data.</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -784,7 +784,7 @@ export default function Layout() {
                 onClick={() => setIsMoreOpen(false)}
               />
               
-              {/* Slide Drawer Node menu items */}
+              {/* Slide-up drawer menu items */}
               <motion.div
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
@@ -797,8 +797,8 @@ export default function Layout() {
                 
                 <div className="flex items-center justify-between mb-5 px-1">
                   <div>
-                    <h3 className="text-[9px] font-black uppercase tracking-[0.25em] text-zinc-450 dark:text-zinc-555 italic leading-none">Modules Portal</h3>
-                    <h4 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mt-1 leading-none">Ecosystem Space</h4>
+                    <h3 className="text-[9px] font-black uppercase tracking-[0.25em] text-zinc-450 dark:text-zinc-555 italic leading-none">Quick Access</h3>
+                    <h4 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mt-1 leading-none">More Features</h4>
                   </div>
                   <button 
                     onClick={() => setIsMoreOpen(false)}
@@ -808,7 +808,7 @@ export default function Layout() {
                   </button>
                 </div>
 
-                {/* Launcher grid for every core module */}
+                {/* Launcher grid for every core feature */}
                 <div className="grid grid-cols-3 gap-2.5">
                   {navItems.map((item) => {
                     const isActive = location.pathname === item.path || (item.path !== '/app' && location.pathname.startsWith(item.path));
