@@ -46,7 +46,7 @@ export function getLocalStats(): LocalStats {
     tutorialStartedCount: 0,
         featureUsage: {
       'AI Assistant': 0,
-      'Focus Room': 0,
+      'Focus Zone': 0,
       'Notes Lab': 0,
       'Study Circles': 0,
     },
@@ -66,7 +66,7 @@ export async function fetchRealtimeStats(): Promise<LocalStats> {
     tutorialStartedCount: 0,
     featureUsage: {
       'AI Assistant': 0,
-      'Focus Room': 0,
+      'Focus Zone': 0,
       'Notes Lab': 0,
       'Study Circles': 0,
     },

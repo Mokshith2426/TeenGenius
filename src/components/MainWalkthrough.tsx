@@ -243,7 +243,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
                       <div className="w-7 h-7 bg-rose-500/10 text-rose-600 rounded-lg flex items-center justify-center shrink-0">
                         <Target size={15} />
                       </div>
-                      <span className="text-[10px] font-black uppercase text-zinc-700 dark:text-zinc-300">Focus Zones</span>
+                      <span className="text-[10px] font-black uppercase text-zinc-700 dark:text-zinc-300">Focus Zone</span>
                     </div>
                   </div>
                 )}

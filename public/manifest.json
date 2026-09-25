@@ -3,7 +3,7 @@
   "name": "TeenGenius",
   "short_name": "TeenGenius",
   "scope": "/",
-  "description": "Premium AI-powered student study companion and Collaborative Focus Room.",
+  "description": "AI study companion for students: tutoring, notes, planning, focus timer, and study groups.",
   "start_url": "/",
   "display": "standalone",
   "launch_handler": { "client_mode": "focus-existing" },
@@ -44,7 +44,7 @@
       "sizes": "640x1136",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "TeenGenius Focus Rooms and AI Tutoring Mobile View"
+      "label": "TeenGenius Focus Zone and AI Tutoring on mobile"
     }
   ]
 }

@@ -946,7 +946,7 @@ export default function Profile() {
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   <button onClick={() => navigate('/app/focus')} className="px-3.5 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-black text-[9px] uppercase tracking-wider border border-zinc-200/50 dark:border-zinc-800 rounded-xl transition-all cursor-pointer active:scale-95">
-                    ⏱️ Focus Room (+XP)
+                    ⏱️ Focus Zone (+XP)
                   </button>
                   <button onClick={() => { setActiveSubTab('friends'); setFriendsActiveTab('search'); }} className="px-3.5 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-black text-[9px] uppercase tracking-wider border border-zinc-200/50 dark:border-zinc-800 rounded-xl transition-all cursor-pointer active:scale-95">
                     👥 Find Classmates (+XP)

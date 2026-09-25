@@ -496,7 +496,7 @@ export default function FocusRoom() {
             <h1 className="text-2xl md:text-3xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase leading-none">
               Focus <span className="text-blue-600">Zone</span>
             </h1>
-            <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Deep Work Engine</p>
+            <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Pomodoro timer &amp; study audio</p>
           </div>
         </div>
 
@@ -526,14 +526,14 @@ export default function FocusRoom() {
       {/* ── Stats Bar ────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Today', value: `${todayMin}`, unit: 'MIN', icon: Clock, color: 'blue' },
-          { label: 'Sessions', value: `${todaySessions}`, unit: 'TODAY', icon: Target, color: 'indigo' },
-          { label: 'Streak', value: `${streak}`, unit: 'DAYS', icon: Flame, color: 'orange' },
-          { label: 'Cycle', value: `${(timer.sessionCount % LONG_BREAK_INTERVAL) + 1}/${LONG_BREAK_INTERVAL}`, unit: 'SESSION', icon: BarChart3, color: 'emerald' },
-        ].map(({ label, value, unit, icon: Icon, color }) => (
+          { label: 'Today', value: `${todayMin}`, unit: 'MIN', icon: Clock, chip: 'bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400' },
+          { label: 'Sessions', value: `${todaySessions}`, unit: 'TODAY', icon: Target, chip: 'bg-indigo-100 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400' },
+          { label: 'Streak', value: `${streak}`, unit: 'DAYS', icon: Flame, chip: 'bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400' },
+          { label: 'Cycle', value: `${(timer.sessionCount % LONG_BREAK_INTERVAL) + 1}`, unit: `OF ${LONG_BREAK_INTERVAL}`, icon: BarChart3, chip: 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400' },
+        ].map(({ label, value, unit, icon: Icon, chip }) => (
           <div key={label} className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl p-4 flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-${color}-100 dark:bg-${color}-950/40`}>
-              <Icon size={16} className={`text-${color}-600 dark:text-${color}-400`} />
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${chip}`}>
+              <Icon size={16} />
             </div>
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">{label}</p>
@@ -550,7 +550,7 @@ export default function FocusRoom() {
       <div className="grid lg:grid-cols-2 gap-8 items-start">
 
         {/* Timer Card */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[2.5rem] p-8 md:p-10 shadow-xl shadow-zinc-100/50 dark:shadow-none flex flex-col items-center gap-6">
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-xl shadow-zinc-100/50 dark:shadow-none flex flex-col items-center gap-6">
 
           {/* Mode tabs */}
           <div className="flex gap-1 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-2xl w-full max-w-sm">
@@ -558,6 +558,7 @@ export default function FocusRoom() {
               <button
                 key={m}
                 onClick={() => switchMode(m)}
+                aria-pressed={timer.mode === m}
                 className={cn(
                   "flex-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer",
                   timer.mode === m
@@ -598,7 +599,7 @@ export default function FocusRoom() {
           </div>
 
           {/* Circular progress */}
-          <div className="relative w-72 h-72">
+          <div className="relative w-full max-w-[15rem] sm:max-w-[18rem] aspect-square">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 300 300">
               <circle cx="150" cy="150" r={RADIUS}
                 className="fill-none stroke-zinc-100 dark:stroke-zinc-800" strokeWidth={10} />
@@ -619,7 +620,7 @@ export default function FocusRoom() {
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <motion.span
                 key={`${displayMin}:${displaySec}`}
-                className="text-7xl font-black tracking-tighter text-zinc-900 dark:text-white tabular-nums leading-none"
+                className="text-6xl sm:text-7xl font-black tracking-tighter text-zinc-900 dark:text-white tabular-nums leading-none"
               >
                 {displayMin}:{displaySec}
               </motion.span>
@@ -675,7 +676,7 @@ export default function FocusRoom() {
           </div>
 
           {/* Weekly chart */}
-          <div className="w-full border-t border-zinc-100 dark:border-zinc-800 pt-6 space-y-3">
+          <div className="w-full border-t border-zinc-100 dark:border-zinc-800 pt-6 space-y-5">
             <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Weekly Progress</p>
             <div className="flex items-end justify-between h-14 gap-1.5">
               {weeklyStats.map((s, i) => (

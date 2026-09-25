@@ -64,7 +64,7 @@ export default function TermsOfService() {
               3. Staying Respectful
             </h2>
             <div className="space-y-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
-              <p>When you study in Focus Rooms or Classrooms with other students, you agree to:</p>
+              <p>When you use the Focus Zone or Classrooms with other students, you agree to:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Never post anything offensive, hurtful, or inappropriate.</li>
                 <li>Respect other students' progress and their focus time.</li>

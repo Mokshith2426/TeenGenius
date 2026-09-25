@@ -653,7 +653,7 @@ export default function Home() {
   const CONTINUE_LEARNING_TOOLS = [
     { name: "AI Tutor", desc: "No-judgment assistant for asking difficult questions and clarifying concepts", path: "/app/ai-assistant", icon: Sparkles, color: "text-purple-600 bg-purple-100 dark:bg-purple-950/40" },
     { name: "Notes Lab", desc: "Upload study materials to instantly generate quick revision notes", path: "/app/notes", icon: FileText, color: "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/40" },
-    { name: "Focus Zone", desc: "Procedural soundscapes and focus clocks to keep your study sessions distraction-free", path: "/app/focus", icon: Target, color: "text-rose-600 bg-rose-100 dark:bg-rose-955/40" },
+    { name: "Focus Zone", desc: "Study audio and a Pomodoro timer to keep your focus sessions distraction-free", path: "/app/focus", icon: Target, color: "text-rose-600 bg-rose-100 dark:bg-rose-950/40" },
   ];
 
   return (
@@ -824,7 +824,7 @@ export default function Home() {
                 to="/app/focus" 
                 className="text-[10px] font-black uppercase tracking-widest bg-white text-zinc-900 px-4 py-2.5 rounded-xl block text-center hover:bg-zinc-100 transition-all shadow-sm font-bold"
               >
-                Focus Room
+                Focus Zone
               </Link>
             </div>
           </div>

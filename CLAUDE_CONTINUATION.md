@@ -1,8 +1,24 @@
 # TeenGenius — Continuation Log
 
-**Last updated:** 2026-09-25 (Phase 9: Settings & Profile De-jargon)
+**Last updated:** 2026-09-25 (Phase 10: Focus Zone Polish & Mobile Timer Fix)
 **Branch:** main
 **Status:** Build ✅ | TypeScript lint ✅ | Production server smoke test ✅
+
+---
+
+## PHASE 10 — FOCUS ZONE POLISH & MOBILE TIMER FIX (this session)
+
+**Theme:** the Focus screen already called itself **Focus Zone** in the nav, the page `<h1>`, and the command palette, but five other places still said "Focus Room" — so the feature seemed to have two names. Renamed consistently, and fixed two real rendering defects found while in the file.
+
+- **One name everywhere**: `Layout.tsx` route title ("Focus Room" → **Focus Zone**), dashboard Study Tools card CTA and Focus Zone card subtitle (`Home.tsx`), Profile quick-action (`⏱️ Focus Room (+XP)` → **⏱️ Focus Zone (+XP)**), `MainWalkthrough` label ("Focus Zones" → **Focus Zone**), Terms of Service ("When you study in Focus Rooms or Classrooms…" → "When you use the **Focus Zone** or Classrooms…"), `analytics.ts` `featureUsage` keys in **both** `getLocalStats()` and `fetchRealtimeStats()` (so the Activity & Stats chart accumulates under one label instead of two), PWA `manifest.json` description + mobile screenshot label, `index.html` meta keywords ("focus room" → "focus timer"), and the server-side AI platform facts.
+- **Bug: Streak chip had no tint.** The stats bar built its chip classes by string interpolation — `` `bg-${color}-100 dark:bg-${color}-950/40` `` and `` `text-${color}-600` `` — which Tailwind cannot see, so it never emits them. The other three chips happened to look right only because their literal classes exist elsewhere in the app; `orange` appears nowhere else, so the Streak chip rendered as a bare icon while its siblings had colour. Replaced with literal per-chip class strings (`chip` field) and dropped the interpolated `Icon` colour prop.
+- **Bug: timer circle overflowed on phones.** The progress dial was a fixed `w-72 h-72` (288 px) inside a `p-8` card. On a 360–375 px viewport the Layout content padding is only 16 px each side, so 288 + 64 = 352 px plus padding exceeded the screen and pushed a horizontal scrollbar. Now `w-full max-w-[15rem] sm:max-w-[18rem] aspect-square` with card padding `p-6 sm:p-8 md:p-10` and corners `rounded-[2rem] sm:rounded-[2.5rem]`; the clock digits scale `text-6xl sm:text-7xl`. Dial is 240 px on a small phone, unchanged from before on tablet/desktop.
+- **Copy**: screen subtitle "Deep Work Engine" → **"Pomodoro timer & study audio"** (says what the screen actually does); the "Cycle" stat no longer reads `3/4 SESSION` — value `3` with unit `OF 4`; dashboard card blurb "Procedural soundscapes and focus clocks…" → "Study audio and a Pomodoro timer…".
+- **Accessibility**: the Pomodoro/Short Break/Long Break tabs conveyed selection by colour only — added `aria-pressed={timer.mode === m}`.
+- **Dead class**: dashboard Focus Zone card used `dark:bg-rose-955/40` (no such shade in the `@theme`) → `dark:bg-rose-950/40`.
+- **Notes / non-changes**: `src/lib/ai-prompts.ts` **is** live (imported by `server/services/ai.service.ts`) — an earlier suspicion that it was dead was wrong, so both prompt copies were updated deliberately. `MarkdownRenderer.tsx` keeps its defensive `'focus room'` matcher on purpose, so AI-generated links using the old wording still route to `/app/focus`. `src/components/AcademicCalendar.tsx` has **no importers** (dead file) and was left untouched — its line 627 is the only other stale "Focus Room" text in the repo and cannot reach users.
+- **Logged for the next checkpoint**: two more dead shade utilities of the same kind fixed earlier in Profile.tsx still exist — `src/screens/Login.tsx:590` (`dark:bg-rose-955/25`, the sign-in error banner) and `src/screens/StudyGroupDetail.tsx:1624` (`dark:bg-rose-955/20`, the badge). Neither emits CSS, so those dark-mode tints are currently missing. Also `src/components/AcademicCalendar.tsx` is an unimported duplicate of the calendar screen and is a deletion candidate.
+- Validated: `npm run lint` → 0, `npm run build` → 0, prod smoke `/` 200 + `/api/version` 200 + `/manifest.json` 200 with empty stderr; new strings confirmed in the client and server bundles, old strings confirmed gone.
 
 ---
 

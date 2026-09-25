@@ -57,7 +57,7 @@ const getRouteTitle = (pathname: string) => {
   if (pathname.startsWith('/app/planner')) return 'Planner Hub';
   if (pathname.startsWith('/app/practice')) return 'Practice';
   if (pathname.startsWith('/app/exam')) return 'Exam Prep';
-  if (pathname.startsWith('/app/focus')) return 'Focus Room';
+  if (pathname.startsWith('/app/focus')) return 'Focus Zone';
   if (pathname.startsWith('/app/community')) return 'Community';
   if (pathname.startsWith('/app/chats')) return 'Secure Chat';
   if (pathname.startsWith('/app/study-groups')) return 'Study Groups';
