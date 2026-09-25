@@ -221,7 +221,7 @@ export default function Feedback() {
                   ) : (
                     <Send size={16} />
                   )}
-                  {isLoading ? 'Transmitting Module...' : 'Transmit Feedback'}
+                  {isLoading ? 'Sending…' : 'Send Feedback'}
                 </button>
                 <a
                   href={getMailtoLink()}

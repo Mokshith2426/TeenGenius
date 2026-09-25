@@ -1,12 +1,27 @@
 # TeenGenius — Continuation Log
 
-**Last updated:** 2026-09-25 (Phase 6: Dashboard Copy Pass)
+**Last updated:** 2026-09-25 (Phase 7: Empty / Loading / Error State Voice)
 **Branch:** main
 **Status:** Build ✅ | TypeScript lint ✅ | Production server smoke test ✅
 
 ---
 
-## PHASE 6 — DASHBOARD COPY PASS (this session)
+## PHASE 7 — EMPTY / LOADING / ERROR STATE VOICE (this session)
+
+**Theme:** every "nothing here", "working…", "failed", and "are you sure?" message in the core screens now sounds like a study app, not a sci-fi terminal. Copy only — 24 lines across 6 files, zero logic changes.
+
+- **ChatList**: "Communication Array Empty" → **No friends yet** (+ plain explanation, CTA **Find Friends**); chat-row fallback "Channel established... awaiting comms." → **No messages yet — say hi!**; "Unit 3" fallback → **New Chat**; "No peers match" → "No friends match".
+- **AIAssistant**: delete confirms now say what actually happens ("Delete this chat?…", "Delete all chats?…"); offline queued-message banner rewritten plainly (was "Study-Pod Offline Cache Active … neural histories"); chat placeholders ("New Chat" / "No messages yet"); voice-input processing text; quiz result copy ("Perfect score — you got every question right!").
+- **ChatRoom**: decrypting state "Decrypting Tunnel..." → "Decrypting message…"; decrypt-error card rewritten in plain language.
+- **StudyGroupDetail**: locked-room screen "Access Locked or Circle Not Found / …neural node space…" → **Classroom Unavailable** + one plain sentence.
+- **Feedback**: button "Transmit Feedback" / "Transmitting Module..." → **Send Feedback** / **Sending…**.
+- **NotesGenerator**: saved-notes empty state de-jargoned ("Alter your filter query sets." → "No saved notes match your search or filters.").
+- Remaining jargon deliberately left for a later pass: Login auth buttons ("Initiate Node"), Layout More-sheet title ("Ecosystem Space"), CommandPalette category ("Ecosystem Modules").
+- Validated: `npm run lint` → 0, `npm run build` → 0, prod smoke `/` 200 + `/api/version` 200, 6 spot-checked strings confirmed in `dist/assets/*.js`.
+
+---
+
+## PHASE 6 — DASHBOARD COPY PASS (previous session)
 
 **Theme:** the Home dashboard should read like a study app, not a brochure. Copy/label pass only — zero logic, layout, or data changes (`src/screens/Home.tsx`, 26 lines changed).
 

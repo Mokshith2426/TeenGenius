@@ -60,14 +60,14 @@ function EncryptedMessage({ message, chatId, isImage }: { message: Message, chat
   }, [message.content, message.isEncrypted, chatId]);
 
   if (message.isEncrypted && !decryptedText && !error) {
-    return <div className="italic text-xs opacity-50 flex items-center gap-2"><Lock size={10} /> Decrypting Tunnel...</div>;
+    return <div className="italic text-xs opacity-50 flex items-center gap-2"><Lock size={10} /> Decrypting message…</div>;
   }
 
   if (error) {
     return (
       <div className="text-xs text-red-500 bg-red-500/5 dark:bg-red-400/5 p-3 rounded-xl border border-red-500/20 italic space-y-2">
         <p className="flex items-center gap-2 font-black uppercase text-[8px] tracking-widest"><ShieldCheck size={12} /> Decryption Error</p>
-        <p>This transmission segment is inaccessible on this device. System keys may be mismatching.</p>
+        <p>This message couldn't be decrypted on this device. Try refreshing the chat.</p>
       </div>
     );
   }

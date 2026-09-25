@@ -515,8 +515,8 @@ export default function AIAssistant() {
     try {
       const docRef = await addDoc(collection(db, 'aiChats'), {
         userId: user.uid,
-        title: firstMessage ? (firstMessage.length > 30 ? firstMessage.substring(0, 30) + '...' : firstMessage) : 'New Transmission',
-        lastMessage: firstMessage || 'Establishing sync...',
+        title: firstMessage ? (firstMessage.length > 30 ? firstMessage.substring(0, 30) + '...' : firstMessage) : 'New Chat',
+        lastMessage: firstMessage || 'No messages yet',
         lastUpdatedAt: serverTimestamp()
       });
       setCurrentSessionId(docRef.id);
@@ -532,7 +532,7 @@ export default function AIAssistant() {
 
   const deleteSession = async (sessionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm('Abort this transmission sequence? Data will be purged.')) return;
+    if (!confirm('Delete this chat? All of its messages will be removed.')) return;
     try {
       if (currentSessionId === sessionId) setCurrentSessionId(null);
       await deleteDoc(doc(db, 'aiChats', sessionId));
@@ -543,7 +543,7 @@ export default function AIAssistant() {
 
   const clearAllHistory = async () => {
     if (!user || !sessions.length) return;
-    if (!confirm('Wipe all neural logs? This action is irreversible.')) return;
+    if (!confirm('Delete all chats? This cannot be undone.')) return;
     
     try {
       const batch = writeBatch(db);
@@ -679,7 +679,7 @@ export default function AIAssistant() {
         const assistantMsg: Message = {
           id: 'sys_queued_a_' + Date.now(),
           role: 'assistant',
-          content: "🔮 **TeenGenius AI Study-Pod Offline Cache Active**\n\nAI queries require cloud assistance to connect. I have securely stored and queued your message inside your browser's private vault.\n\nYour study query will automatically sync and fetch answers once your internet returns! Feel free to continue reading and browsing previous neural histories in the left history list.",
+          content: "📴 **You're offline**\n\nYour message has been saved and will be sent automatically once you're back online. You can keep reading your previous chats from the history list on the left.",
           timestamp: new Date()
         };
         const finalCachedList = [...updatedList, assistantMsg];
@@ -725,7 +725,7 @@ export default function AIAssistant() {
       }
 
       // 2. Save User Message to Firestore
-      const userMessageContent = currentInput || (finalImageUrl ? "Image Transmission" : "");
+      const userMessageContent = currentInput || (finalImageUrl ? "Sent an image" : "");
       
       const userMessage: any = { 
         role: 'user', 
@@ -1461,7 +1461,7 @@ export default function AIAssistant() {
                     </h4>
                     <p className="text-[11px] md:text-xs font-bold mt-1 opacity-95 leading-relaxed">
                       {speechState === 'listening' ? 'Speak clearly as TeenGenius transcribes your words into the chat box automatically.' :
-                       speechState === 'processing' ? 'Converting your acoustic profile into a written query with neural Web Speech nodes...' :
+                       speechState === 'processing' ? 'Transcribing your speech into the chat box...' :
                        speechState === 'completed' ? 'Successfully converted voice to text! You can edit the text before sending.' :
                        speechError || 'Your microphone permission is currently blocked. Click the lock/permission icon in your address bar to grant access.'}
                     </p>
@@ -1863,9 +1863,9 @@ export default function AIAssistant() {
                           <span className="text-lg font-bold text-zinc-400 font-mono ml-2">/ {quickQuiz.questions.length}</span>
                         </div>
                         <p className="text-xs text-zinc-450 dark:text-zinc-400 max-w-xs leading-relaxed">
-                          {quizScore === quickQuiz.questions.length 
-                            ? "Absolute mastery synchrony! You retained 100% of the cognitive concepts discussed in your neural logs." 
-                            : "Excellent work! Keep utilizing the AI Assistant node to solidify your core syllabus mastery."}
+                          {quizScore === quickQuiz.questions.length
+                            ? "Perfect score — you got every question right!"
+                            : "Great effort! Ask the AI tutor to explain the ones you missed, then try again."}
                         </p>
                       </div>
 

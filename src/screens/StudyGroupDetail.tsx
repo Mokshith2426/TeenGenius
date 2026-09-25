@@ -626,9 +626,9 @@ export default function StudyGroupDetail() {
         <div className="w-16 h-16 bg-red-100 dark:bg-red-950/20 text-red-500 rounded-2xl flex items-center justify-center mb-6">
           <Lock size={32} />
         </div>
-        <h2 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">Access Locked or Circle Not Found</h2>
+        <h2 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">Classroom Unavailable</h2>
         <p className="text-xs text-zinc-400 max-w-sm font-semibold italic mt-1.5 leading-relaxed">
-          You lack authorization key tags to enter this neural node space, or the requested room does not exist.
+          You don't have access to this classroom, or it doesn't exist.
         </p>
         <button
           onClick={() => navigate('/app/study-groups')}

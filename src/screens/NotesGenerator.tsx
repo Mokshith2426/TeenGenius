@@ -1228,9 +1228,9 @@ Format: Structured Markdown Note
                         <div>
                           <p className="text-xs font-black uppercase tracking-wider text-zinc-800 dark:text-zinc-200">No notes found</p>
                           <p className="text-[10px] text-zinc-455 dark:text-zinc-500 max-w-sm mt-1 mx-auto leading-relaxed font-semibold">
-                            {savedNotes.length === 0 
-                              ? "Your Study Notes library is currently empty. Get started by populating reading notes on structural studies."
-                              : "No saved notes match your active filter categories. Alter your filter query sets."}
+                            {savedNotes.length === 0
+                              ? "You haven't saved any notes yet. Generate notes from your study material and save them here."
+                              : "No saved notes match your search or filters."}
                           </p>
                         </div>
                         

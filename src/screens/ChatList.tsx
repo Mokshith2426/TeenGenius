@@ -255,14 +255,14 @@ export default function ChatList() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className="font-black text-zinc-900 dark:text-white uppercase tracking-tight text-lg truncate">
-                        {chat.name || `Unit ${chat.memberIds.length}`}
+                        {chat.name || 'New Chat'}
                       </h3>
                       <span className="text-[10px] text-zinc-400 font-black uppercase tracking-widest bg-zinc-50 dark:bg-zinc-800 px-2 py-1 rounded-full shrink-0">
                         {formatTime(chat.lastUpdatedAt)}
                       </span>
                     </div>
                     <p className="text-sm text-zinc-400 truncate italic font-medium">
-                      {chat.lastMessage || 'Channel established... awaiting comms.'}
+                      {chat.lastMessage || 'No messages yet — say hi!'}
                     </p>
                   </div>
                 </div>
@@ -332,9 +332,9 @@ export default function ChatList() {
                       <div className="w-16 h-16 bg-blue-50 dark:bg-blue-950/20 text-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
                         <Users size={24} />
                       </div>
-                      <h4 className="text-lg font-bold text-zinc-900 dark:text-white">Communication Array Empty</h4>
+                      <h4 className="text-lg font-bold text-zinc-900 dark:text-white">No friends yet</h4>
                       <p className="text-sm text-zinc-400 max-w-xs mx-auto">
-                        In order to forge a secure transmission line, you must first connect with other academic minds.
+                        Add a friend first — you can only start chats with people you've connected with.
                       </p>
                       <button
                         onClick={() => {
@@ -343,13 +343,13 @@ export default function ChatList() {
                         }}
                         className="px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-black text-[10px] uppercase tracking-wider hover:bg-black select-none transition-all active:scale-95 shadow-md inline-flex items-center gap-2 cursor-pointer"
                       >
-                        Explore Network <ArrowRight size={12} />
+                        Find Friends <ArrowRight size={12} />
                       </button>
                     </div>
                   ) : filteredFriends.length === 0 ? (
                     <div className="text-center py-10">
                       <Search size={32} className="mx-auto text-zinc-300 mb-2 animate-pulse" />
-                      <p className="text-sm text-zinc-400 italic">No peers match "{forgeSearch}"</p>
+                      <p className="text-sm text-zinc-400 italic">No friends match "{forgeSearch}"</p>
                     </div>
                   ) : (
                     filteredFriends.map(friend => (
