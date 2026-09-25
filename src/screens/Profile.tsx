@@ -504,7 +504,7 @@ export default function Profile() {
       title: "Peer Catalyst",
       desc: "Unlocked when you add classmates to study with.",
       icon: Users,
-      color: "from-emerald-500/10 to-teal-500/10 text-emerald-550 border-emerald-550/25",
+      color: "from-emerald-500/10 to-teal-500/10 text-emerald-600 border-emerald-500/25",
       isUnlocked: friends.length > 0,
       progress: friends.length > 0 ? "100%" : "0%"
     },
@@ -602,7 +602,7 @@ export default function Profile() {
                 "flex flex-col sm:flex-row items-center justify-center gap-1.5 py-3 sm:py-3.5 px-1 rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-widest relative transition-all cursor-pointer",
                 isActive
                   ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs"
-                  : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-350"
+                  : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350"
               )}
             >
               <Icon size={14} className="shrink-0" />
@@ -941,7 +941,7 @@ export default function Profile() {
                   <Award size={18} className="animate-bounce" />
                   <span className="text-[10px] font-black uppercase tracking-widest leading-none">Level Up Study Rewards</span>
                 </div>
-                <p className="text-[11px] text-zinc-650 dark:text-zinc-300 font-semibold leading-relaxed">
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-300 font-semibold leading-relaxed">
                   Keep your streak going to collect badges. Complete every milestone to earn the <strong className="text-blue-500">Ultimate Scholar</strong> title and a <strong className="text-emerald-600 dark:text-emerald-400">+500 XP</strong> bonus!
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -1098,7 +1098,7 @@ export default function Profile() {
             >
               <header className="p-6 bg-white dark:bg-zinc-900 border-b border-zinc-150 dark:border-zinc-850 flex items-center justify-between">
                 <div>
-                  <div className="text-[8.5px] font-black uppercase tracking-widest text-rose-600 dark:text-rose-450 flex items-center gap-1 mb-0.5">
+                  <div className="text-[8.5px] font-black uppercase tracking-widest text-rose-600 dark:text-rose-400 flex items-center gap-1 mb-0.5">
                     <span className="relative flex h-1.5 w-1.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
