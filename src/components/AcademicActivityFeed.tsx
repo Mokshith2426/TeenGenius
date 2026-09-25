@@ -291,13 +291,13 @@ export default function AcademicActivityFeed() {
             <span>Academic Command Feed</span>
           </div>
           <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">Active Classroom Agenda</h3>
-          <p className="text-xs text-zinc-455 dark:text-zinc-500 font-semibold leading-none">
+          <p className="text-xs text-zinc-450 dark:text-zinc-500 font-semibold leading-none">
             Consolidated agenda pulled instantly from your enrolled school spaces.
           </p>
         </div>
         
         {/* Real-time status badge */}
-        <span className="px-3.5 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-xl text-[10px] font-mono font-black uppercase text-zinc-500 dark:text-zinc-650 self-start sm:self-center">
+        <span className="px-3.5 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-xl text-[10px] font-mono font-black uppercase text-zinc-500 dark:text-zinc-600 self-start sm:self-center">
           ● Synced Offline Mode
         </span>
       </div>
@@ -310,7 +310,7 @@ export default function AcademicActivityFeed() {
             "py-3 px-3 rounded-xl font-bold text-[10.5px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2",
             activeTab === 'work' 
               ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm font-black border border-zinc-100 dark:border-zinc-800" 
-              : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-350"
+              : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-350"
           )}
         >
           <Calendar size={13} />
@@ -326,7 +326,7 @@ export default function AcademicActivityFeed() {
             "py-3 px-3 rounded-xl font-bold text-[10.5px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2",
             activeTab === 'announcements' 
               ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm font-black border border-zinc-100 dark:border-zinc-800" 
-              : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-350"
+              : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-350"
           )}
         >
           <Bell size={13} />
@@ -342,7 +342,7 @@ export default function AcademicActivityFeed() {
             "py-3 px-3 rounded-xl font-bold text-[10.5px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2",
             activeTab === 'quizzes' 
               ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm font-black border border-zinc-100 dark:border-zinc-800" 
-              : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-350"
+              : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-350"
           )}
         >
           <Sparkles size={13} />
@@ -358,7 +358,7 @@ export default function AcademicActivityFeed() {
             "py-3 px-3 rounded-xl font-bold text-[10.5px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2",
             activeTab === 'buddies' 
               ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm font-black border border-zinc-100 dark:border-zinc-800" 
-              : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-350"
+              : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-350"
           )}
         >
           <UserPlus size={13} />
@@ -388,10 +388,10 @@ export default function AcademicActivityFeed() {
                 <div 
                   key={ass.id} 
                   onClick={() => navigate(`/app/study-groups/${ass.classroomId}`)}
-                  className="p-4 bg-zinc-50/70 dark:bg-zinc-955/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/40 border border-zinc-150/60 dark:border-zinc-850 rounded-2xl flex items-center justify-between gap-4 transition-all cursor-pointer group"
+                  className="p-4 bg-zinc-50/70 dark:bg-zinc-950/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/40 border border-zinc-150/60 dark:border-zinc-850 rounded-2xl flex items-center justify-between gap-4 transition-all cursor-pointer group"
                 >
                   <div className="space-y-1 min-w-0">
-                    <span className="text-[9.5px] font-mono font-black text-blue-600 dark:text-blue-450 uppercase tracking-wider block">
+                    <span className="text-[9.5px] font-mono font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
                       {ass.classroomName}
                     </span>
                     <p className="text-xs font-bold text-zinc-805 dark:text-zinc-200 line-clamp-1">
@@ -401,7 +401,7 @@ export default function AcademicActivityFeed() {
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right select-none">
                       <span className="text-[9px] font-black uppercase text-zinc-400 block leading-none">Deadline</span>
-                      <span className="text-[10px] font-mono font-black text-rose-550 dark:text-rose-400 block mt-0.5">{ass.dueDate || 'Today'}</span>
+                      <span className="text-[10px] font-mono font-black text-rose-500 dark:text-rose-400 block mt-0.5">{ass.dueDate || 'Today'}</span>
                     </div>
                     <ChevronRight size={14} className="text-zinc-400 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -416,7 +416,7 @@ export default function AcademicActivityFeed() {
           <div className="space-y-3.5 animate-fadeIn">
             {announcements.length === 0 ? (
               <div className="py-12 text-center rounded-2xl bg-zinc-50/50 dark:bg-zinc-950/20 border border-dashed border-zinc-200 dark:border-zinc-800 px-6 space-y-2">
-                <Bell size={32} className="mx-auto text-zinc-400 dark:text-zinc-650" />
+                <Bell size={32} className="mx-auto text-zinc-400 dark:text-zinc-600" />
                 <h4 className="text-xs font-black uppercase text-zinc-800 dark:text-zinc-200">Silence is Golden</h4>
                 <p className="text-[10.5px] text-zinc-400 font-semibold max-w-sm mx-auto leading-relaxed">
                   No notifications recorded from your registered academic workspaces. Announcements posted by tutors will show up instantly.
@@ -427,10 +427,10 @@ export default function AcademicActivityFeed() {
                 <div 
                   key={ann.id}
                   onClick={() => navigate(`/app/study-groups/${ann.classroomId}`)}
-                  className="p-4 bg-zinc-50/70 dark:bg-zinc-955/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/40 border border-zinc-150/60 dark:border-zinc-850 rounded-2xl space-y-2 transition-all cursor-pointer group"
+                  className="p-4 bg-zinc-50/70 dark:bg-zinc-950/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/40 border border-zinc-150/60 dark:border-zinc-850 rounded-2xl space-y-2 transition-all cursor-pointer group"
                 >
                   <div className="flex items-center justify-between gap-4 select-none">
-                    <span className="text-[9.5px] font-mono font-black text-purple-600 dark:text-purple-450 uppercase tracking-wider block">
+                    <span className="text-[9.5px] font-mono font-black text-purple-600 dark:text-purple-400 uppercase tracking-wider block">
                       {ann.classroomName}
                     </span>
                     <span className="text-[9.5px] font-mono text-zinc-400">
@@ -498,7 +498,7 @@ export default function AcademicActivityFeed() {
                   <div 
                     key={qz.id}
                     onClick={() => navigate(`/app/study-groups/${qz.classroomId}?tab=quiz`)}
-                    className="p-4 bg-zinc-50/70 dark:bg-zinc-955/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/40 border border-zinc-150/60 dark:border-zinc-850 rounded-2xl flex items-center justify-between gap-4 transition-all cursor-pointer group"
+                    className="p-4 bg-zinc-50/70 dark:bg-zinc-950/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/40 border border-zinc-150/60 dark:border-zinc-850 rounded-2xl flex items-center justify-between gap-4 transition-all cursor-pointer group"
                   >
                     <div className="space-y-1 min-w-0">
                       <span className="text-[9.5px] font-mono font-black text-amber-600 dark:text-amber-500 uppercase tracking-wider block leading-none">
@@ -524,7 +524,7 @@ export default function AcademicActivityFeed() {
           <div className="space-y-3 animate-fadeIn">
             {buddyRequests.length === 0 ? (
               <div className="py-12 text-center rounded-2xl bg-zinc-50/50 dark:bg-zinc-950/20 border border-dashed border-zinc-200 dark:border-zinc-800 px-6 space-y-2">
-                <UserPlus size={32} className="mx-auto text-zinc-400 dark:text-zinc-650" />
+                <UserPlus size={32} className="mx-auto text-zinc-400 dark:text-zinc-600" />
                 <h4 className="text-xs font-black uppercase text-zinc-800 dark:text-zinc-200">No Pending Requests</h4>
                 <p className="text-[10.5px] text-zinc-400 font-semibold max-w-sm mx-auto leading-relaxed">
                   No pending buddy invitations from other students. Share your custom Classrooms or Direct Message links to invite your school colleagues!
@@ -540,7 +540,7 @@ export default function AcademicActivityFeed() {
               buddyRequests.map(req => (
                 <div 
                   key={req.id}
-                  className="p-4 bg-zinc-50/70 dark:bg-zinc-955/30 border border-zinc-150/60 dark:border-zinc-850 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all"
+                  className="p-4 bg-zinc-50/70 dark:bg-zinc-950/30 border border-zinc-150/60 dark:border-zinc-850 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all"
                 >
                   <div className="space-y-1 min-w-0">
                     <h4 className="text-xs font-black uppercase tracking-tight text-zinc-900 dark:text-zinc-100">{req.fromName}</h4>

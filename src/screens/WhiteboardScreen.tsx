@@ -9,13 +9,13 @@ export default function WhiteboardScreen() {
   const userId = user?.uid || 'guest';
 
   return (
-    <div className="h-[100dvh] flex flex-col overflow-hidden bg-zinc-55 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 select-none">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 select-none">
       {/* Header Bar */}
       <header className="h-16 shrink-0 bg-white dark:bg-zinc-900 border-b border-zinc-250/60 dark:border-zinc-800 flex items-center justify-between px-6 z-10">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/app/community')}
-            className="p-2 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-750 text-zinc-650 dark:text-zinc-400 rounded-xl transition-all cursor-pointer active:scale-95"
+            className="p-2 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded-xl transition-all cursor-pointer active:scale-95"
             title="Back to Community"
           >
             <ArrowLeft size={16} />
@@ -34,7 +34,7 @@ export default function WhiteboardScreen() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[8.5px] font-black uppercase tracking-widest bg-blue-50 dark:bg-blue-950/40 text-blue-650 dark:text-blue-300 px-2.5 py-1 rounded border border-blue-150/40 dark:border-blue-800">
+          <span className="text-[8.5px] font-black uppercase tracking-widest bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 px-2.5 py-1 rounded border border-blue-100/40 dark:border-blue-800">
             Channel: Personal Board
           </span>
         </div>

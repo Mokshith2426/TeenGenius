@@ -508,7 +508,7 @@ export default function Friends() {
             <span>{actionFeedback.message}</span>
             <button
               onClick={() => setActionFeedback(null)}
-              className="text-zinc-400 hover:text-zinc-650 shrink-0 font-black px-2 cursor-pointer"
+              className="text-zinc-400 hover:text-zinc-600 shrink-0 font-black px-2 cursor-pointer"
             >
               <X size={14} />
             </button>
@@ -555,7 +555,7 @@ export default function Friends() {
               type="text"
               required
               placeholder="e.g. Mokshith420, Emily Chen, or student@school.edu..."
-              className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-250 dark:border-zinc-750 rounded-2xl px-5 py-3 text-xs font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+              className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-250 dark:border-zinc-700 rounded-2xl px-5 py-3 text-xs font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all outline-none"
               value={directUsernameInput}
               onChange={(e) => setDirectUsernameInput(e.target.value)}
             />
@@ -603,10 +603,10 @@ export default function Friends() {
                 const isReceived = pendingReceived.some(r => r.fromId === result.uid);
 
                 return (
-                  <div key={result.uid} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 p-5 sm:p-6 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:border-zinc-200 dark:hover:border-zinc-750 transition-all">
+                  <div key={result.uid} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 p-5 sm:p-6 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:border-zinc-200 dark:hover:border-zinc-700 transition-all">
                     <div className="flex items-center gap-4">
                       <div className="relative">
-                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-300 rounded-2xl flex items-center justify-center font-bold uppercase">
+                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-2xl flex items-center justify-center font-bold uppercase">
                           {result.displayName?.[0] || '?'}
                         </div>
                         {result.isOnline && (
@@ -669,7 +669,7 @@ export default function Friends() {
                   <p className="text-zinc-400 dark:text-zinc-500 italic text-sm p-10 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl text-center bg-white dark:bg-zinc-900">No incoming requests</p>
                 ) : (
                   pendingReceived.map(req => (
-                    <div key={req.id} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 p-5 sm:p-6 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm transition-all hover:border-zinc-200 dark:hover:border-zinc-750">
+                    <div key={req.id} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 p-5 sm:p-6 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm transition-all hover:border-zinc-200 dark:hover:border-zinc-700">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center font-bold text-lg">
                           {req.fromName?.[0] || '?'}
@@ -723,7 +723,7 @@ export default function Friends() {
                       <div className="flex justify-end shrink-0">
                         <button 
                           onClick={() => declineRequest(req.id)}
-                          className="p-3 text-zinc-450 dark:text-zinc-500 hover:text-red-650 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-955/20 rounded-2xl transition-all cursor-pointer"
+                          className="p-3 text-zinc-450 dark:text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-2xl transition-all cursor-pointer"
                           title="Cancel Request"
                         >
                           <X size={20} />
@@ -749,7 +749,7 @@ export default function Friends() {
               {friends.length === 0 ? (
                 <div className="text-center py-24 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-[2.5rem] shadow-sm">
                   <div className="w-20 h-20 bg-zinc-50 dark:bg-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
-                    <Users size={32} className="text-zinc-350 dark:text-zinc-650" />
+                    <Users size={32} className="text-zinc-350 dark:text-zinc-600" />
                   </div>
                   <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">No friends yet</h3>
                   <p className="text-zinc-400 dark:text-zinc-500 mb-8 max-w-xs mx-auto text-sm">Build your study network by finding fellow students.</p>
@@ -762,10 +762,10 @@ export default function Friends() {
                 </div>
               ) : (
                 friends.map(friend => (
-                  <div key={friend.uid} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 p-6 sm:p-8 rounded-[2rem] flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:border-zinc-200 dark:hover:border-zinc-750 transition-all shadow-sm">
+                  <div key={friend.uid} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 p-6 sm:p-8 rounded-[2rem] flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:border-zinc-200 dark:hover:border-zinc-700 transition-all shadow-sm">
                     <div className="flex items-center gap-4 sm:gap-6">
                       <div className="relative">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-900 dark:bg-zinc-805 text-white rounded-[1.5rem] flex items-center justify-center font-bold text-xl sm:text-2xl uppercase shadow-lg shadow-zinc-205/30">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-900 dark:bg-zinc-805 text-white rounded-[1.5rem] flex items-center justify-center font-bold text-xl sm:text-2xl uppercase shadow-lg shadow-zinc-200/30">
                           {friend.displayName?.[0] || '?'}
                         </div>
                         {friend.isOnline && (
@@ -782,7 +782,7 @@ export default function Friends() {
                         <div className="flex items-center gap-2 flex-wrap mt-1">
                           <span className={cn(
                             "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md",
-                            friend.isOnline ? "bg-green-50 dark:bg-green-950/20 text-green-605 dark:text-green-400" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500"
+                            friend.isOnline ? "bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500"
                           )}>
                             {friend.isOnline ? 'Active' : 'Offline'}
                           </span>
@@ -794,7 +794,7 @@ export default function Friends() {
                     <div className="flex gap-2 justify-end shrink-0">
                       <button 
                         onClick={() => removeFriend(friend.uid)}
-                        className="p-3 text-zinc-350 dark:text-zinc-500 hover:text-red-650 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-955/20 rounded-2xl transition-all active:scale-95 cursor-pointer"
+                        className="p-3 text-zinc-350 dark:text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-2xl transition-all active:scale-95 cursor-pointer"
                         title="Remove Friend"
                       >
                         <UserMinus size={20} />

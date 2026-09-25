@@ -577,7 +577,7 @@ export default function Profile() {
             <span className="text-[10px] font-extrabold uppercase bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-lg border border-emerald-500/10">
               Connections: {friends.length}
             </span>
-            <span className="text-[10px] font-extrabold uppercase bg-indigo-50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 px-3 py-1 rounded-lg border border-indigo-500/10">
+            <span className="text-[10px] font-extrabold uppercase bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-lg border border-indigo-500/10">
               Xp Level: {stats.newUsersCount * 50 + friends.length * 100 + 350} XP
             </span>
           </div>
@@ -627,8 +627,8 @@ export default function Profile() {
             className={cn(
               "p-4 rounded-2xl font-extrabold text-xs uppercase tracking-wider flex items-center justify-between shadow-xl",
               actionFeedback.type === 'error'
-                ? "bg-red-50 dark:bg-red-950/20 text-red-650 border border-red-550/15"
-                : "bg-green-50 dark:bg-green-950/20 text-green-600 border border-green-550/15"
+                ? "bg-red-50 dark:bg-red-950/20 text-red-600 border border-red-500/15"
+                : "bg-green-50 dark:bg-green-950/20 text-green-600 border border-green-500/15"
             )}
           >
             <span>{actionFeedback.message}</span>
@@ -683,7 +683,7 @@ export default function Profile() {
 
               <button 
                 onClick={logout}
-                className="w-full bg-red-50 hover:bg-red-100 dark:bg-red-950/10 dark:hover:bg-red-950/20 text-red-650 font-black py-5 px-6 rounded-2.5xl flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 text-sm uppercase tracking-widest shadow-xs"
+                className="w-full bg-red-50 hover:bg-red-100 dark:bg-red-950/10 dark:hover:bg-red-950/20 text-red-600 font-black py-5 px-6 rounded-2.5xl flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 text-sm uppercase tracking-widest shadow-xs"
               >
                 <LogOut size={16} />
                 <span>Terminated Sessions Logout</span>
@@ -743,13 +743,13 @@ export default function Profile() {
                         <div className="grid grid-cols-2 gap-2">
                           <button 
                             onClick={() => navigate('/app/tools')}
-                            className="py-2.5 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-300 font-extrabold text-[9.5px] uppercase tracking-wider rounded-xl transition-all cursor-pointer active:scale-95"
+                            className="py-2.5 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 font-extrabold text-[9.5px] uppercase tracking-wider rounded-xl transition-all cursor-pointer active:scale-95"
                           >
                             ⚡ Study Tools
                           </button>
                           <button 
                             onClick={() => navigate('/app/ai-assistant')}
-                            className="py-2.5 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-300 font-extrabold text-[9.5px] uppercase tracking-wider rounded-xl transition-all cursor-pointer active:scale-95"
+                            className="py-2.5 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 font-extrabold text-[9.5px] uppercase tracking-wider rounded-xl transition-all cursor-pointer active:scale-95"
                           >
                             🤖 Chat AI
                           </button>
@@ -807,7 +807,7 @@ export default function Profile() {
                   <div className="space-y-3.5">
                     <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Incoming requests ({pendingReceived.length})</span>
                     {pendingReceived.length === 0 ? (
-                      <p className="text-xs text-zinc-450 dark:text-zinc-550 pl-2 leading-none">No pending classmate invitations received.</p>
+                      <p className="text-xs text-zinc-450 dark:text-zinc-500 pl-2 leading-none">No pending classmate invitations received.</p>
                     ) : (
                       <div className="grid gap-3">
                         {pendingReceived.map(req => (
@@ -826,7 +826,7 @@ export default function Profile() {
                               </button>
                               <button
                                 onClick={() => declineFriendRequest(req.id)}
-                                className="p-2 bg-red-50 hover:bg-red-650 hover:text-white text-red-600 rounded-xl transition-all cursor-pointer"
+                                className="p-2 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 rounded-xl transition-all cursor-pointer"
                                 title="Ignore invite"
                               >
                                 <X size={14} />
@@ -842,18 +842,18 @@ export default function Profile() {
                   <div className="space-y-3.5">
                     <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Sent requests pending ({pendingSent.length})</span>
                     {pendingSent.length === 0 ? (
-                      <p className="text-xs text-zinc-450 dark:text-zinc-550 pl-2 leading-none">No pending invitations sent.</p>
+                      <p className="text-xs text-zinc-450 dark:text-zinc-500 pl-2 leading-none">No pending invitations sent.</p>
                     ) : (
                       <div className="grid gap-3">
                         {pendingSent.map(req => (
-                          <div key={req.id} className="bg-white dark:bg-zinc-900 border border-zinc-155 dark:border-zinc-805 rounded-2.5xl p-4 flex items-center justify-between gap-3">
+                          <div key={req.id} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-805 rounded-2.5xl p-4 flex items-center justify-between gap-3">
                             <div>
                               <h4 className="text-xs font-black uppercase tracking-wide text-zinc-850 dark:text-zinc-200">{req.toName}</h4>
                               <p className="text-[9.5px] text-zinc-450 dark:text-zinc-500">Waiting for classmate authentication...</p>
                             </div>
                             <button
                               onClick={() => declineFriendRequest(req.id)}
-                              className="px-3.5 py-1.5 bg-zinc-50 dark:bg-zinc-805 hover:bg-red-100 text-[10px] text-zinc-500 hover:text-red-650 font-bold uppercase rounded-lg transition-all cursor-pointer"
+                              className="px-3.5 py-1.5 bg-zinc-50 dark:bg-zinc-805 hover:bg-red-100 text-[10px] text-zinc-500 hover:text-red-600 font-bold uppercase rounded-lg transition-all cursor-pointer"
                             >
                               Cancel
                             </button>
@@ -906,11 +906,11 @@ export default function Profile() {
                               </div>
 
                               {isAlreadyLinked ? (
-                                <span className="text-[9px] font-black uppercase tracking-wide px-3 py-1 bg-emerald-50 dark:bg-emerald-950/25 text-emerald-600 dark:text-emerald-450 rounded-lg">Linked circle</span>
+                                <span className="text-[9px] font-black uppercase tracking-wide px-3 py-1 bg-emerald-50 dark:bg-emerald-950/25 text-emerald-600 dark:text-emerald-400 rounded-lg">Linked circle</span>
                               ) : (
                                 <button
                                   onClick={() => sendFriendRequest(colleague)}
-                                  className="px-3.5 py-2 bg-blue-50 hover:bg-blue-600 hover:text-white dark:bg-blue-955/20 text-blue-600 dark:text-blue-400 font-black text-[9px] uppercase tracking-wider rounded-xl transition-all flex items-center gap-1 cursor-pointer touch-manipulation"
+                                  className="px-3.5 py-2 bg-blue-50 hover:bg-blue-600 hover:text-white dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 font-black text-[9px] uppercase tracking-wider rounded-xl transition-all flex items-center gap-1 cursor-pointer touch-manipulation"
                                 >
                                   <UserPlus size={11} />
                                   <span>Link Circle</span>
@@ -1071,7 +1071,7 @@ export default function Profile() {
                 <button
                   type="button"
                   onClick={() => setIsEditingName(false)}
-                  className="px-4.5 py-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-850 dark:hover:bg-zinc-800 text-zinc-650 dark:text-zinc-300 font-black text-[10px] uppercase tracking-wider rounded-xl cursor-pointer"
+                  className="px-4.5 py-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-850 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-black text-[10px] uppercase tracking-wider rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>

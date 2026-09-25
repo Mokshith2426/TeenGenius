@@ -10,7 +10,6 @@ A modern, feature-rich Android study companion app built with Kotlin and Jetpack
 - **Study Timer**: Track study sessions with streaks and daily targets
 - **Task Management**: Daily to-do lists with completion tracking
 - **Notes Generator**: Create and manage study notes
-- **Timetable Maker**: Plan your weekly schedule
 - **Study Groups**: Collaborate with peers
 - **Gamification**: XP points, badges, and study streaks
 

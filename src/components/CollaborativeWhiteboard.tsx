@@ -175,7 +175,7 @@ export default function CollaborativeWhiteboard({ groupId, userId }: Collaborati
         </div>
       </div>
 
-      <div ref={containerRef} className="flex-1 bg-zinc-55 dark:bg-zinc-900/50 relative min-h-[500px]">
+      <div ref={containerRef} className="flex-1 bg-zinc-50 dark:bg-zinc-900/50 relative min-h-[500px]">
         <Stage
           width={dimensions.width}
           height={dimensions.height}

@@ -307,7 +307,7 @@ export default function Login() {
                     }
                     setOnboardStep(nextStep);
                   }}
-                  className="w-full min-h-[50px] bg-[#141517] hover:bg-black dark:bg-zinc-800 dark:hover:bg-zinc-750 text-white font-extrabold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] text-xs uppercase tracking-wider shadow-md mt-2 cursor-pointer border border-zinc-900"
+                  className="w-full min-h-[50px] bg-[#141517] hover:bg-black dark:bg-zinc-800 dark:hover:bg-zinc-700 text-white font-extrabold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] text-xs uppercase tracking-wider shadow-md mt-2 cursor-pointer border border-zinc-900"
                 >
                   <span>{onboardStep === 2 ? "Get Started" : "Continue"}</span>
                   <ArrowRight size={14} className="stroke-[3]" />
@@ -321,8 +321,8 @@ export default function Login() {
                 <div className="flex items-center gap-3.5 select-none hover:scale-[1.01] transition-transform">
                   <div id="login-app-icon" className="w-16 h-16 bg-zinc-950 dark:bg-zinc-100 rounded-[24%] flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden">
                     <div className="w-12 h-12 border-[5px] border-zinc-700 dark:border-zinc-300 rounded-full flex items-center justify-center">
-                      <div className="w-7 h-7 border-[4px] border-zinc-550 dark:border-zinc-400 rounded-full flex items-center justify-center">
-                        <div className="w-2.5 h-2.5 bg-zinc-300 dark:bg-zinc-650 rounded-full" />
+                      <div className="w-7 h-7 border-[4px] border-zinc-500 dark:border-zinc-400 rounded-full flex items-center justify-center">
+                        <div className="w-2.5 h-2.5 bg-zinc-300 dark:bg-zinc-600 rounded-full" />
                       </div>
                     </div>
                   </div>
@@ -336,7 +336,7 @@ export default function Login() {
                   </div>
                 </div>
                 
-                <h2 className="text-lg font-black tracking-tight text-zinc-955 dark:text-white uppercase mt-6 text-center select-none">
+                <h2 className="text-lg font-black tracking-tight text-zinc-950 dark:text-white uppercase mt-6 text-center select-none">
                   Ready to Begin?
                 </h2>
                 <p className="text-[10px] sm:text-[11px] font-semibold text-[#5c6e80] dark:text-zinc-400 mt-2 text-center leading-relaxed select-none max-w-[280px]">
@@ -362,7 +362,7 @@ export default function Login() {
                         type="button"
                         onClick={handleGoogleSignIn}
                         disabled={isLoading}
-                        className="w-full min-h-[50px] bg-[#141517] hover:bg-black dark:bg-zinc-800 dark:hover:bg-zinc-750 text-white font-extrabold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] disabled:opacity-85 disabled:cursor-not-allowed text-xs uppercase tracking-widest shadow-md border border-zinc-900 cursor-pointer"
+                        className="w-full min-h-[50px] bg-[#141517] hover:bg-black dark:bg-zinc-800 dark:hover:bg-zinc-700 text-white font-extrabold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] disabled:opacity-85 disabled:cursor-not-allowed text-xs uppercase tracking-widest shadow-md border border-zinc-900 cursor-pointer"
                       >
                         <LogIn size={15} className="text-zinc-300 stroke-[3]" />
                         <span>Continue with Google</span>
@@ -384,7 +384,7 @@ export default function Login() {
                         onClick={() => setShowEmailForm(true)}
                         className="w-full min-h-[50px] bg-[#f1f3f5] hover:bg-[#e9ecef] dark:bg-zinc-950/60 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-extrabold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2.5 border border-zinc-200/60 dark:border-zinc-800 transition-all active:scale-[0.98] text-xs uppercase tracking-widest shadow-sm cursor-pointer"
                       >
-                        <Mail size={15} className="text-zinc-650 dark:text-zinc-400" />
+                        <Mail size={15} className="text-zinc-600 dark:text-zinc-400" />
                         <span>Use Student Email & Password</span>
                       </button>
 
@@ -508,7 +508,7 @@ export default function Login() {
                               <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-65"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
                               >
                                 {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                               </button>
@@ -535,7 +535,7 @@ export default function Login() {
                               <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-65"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
                               >
                                 {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                               </button>
@@ -546,7 +546,7 @@ export default function Login() {
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className="w-full min-h-[44px] bg-zinc-950 dark:bg-zinc-800 hover:bg-zinc-900 dark:hover:bg-zinc-750 text-white font-extrabold py-2.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-85 disabled:cursor-not-allowed mt-4 text-[10.5px] uppercase tracking-wider text-center animate-none"
+                          className="w-full min-h-[44px] bg-zinc-950 dark:bg-zinc-800 hover:bg-zinc-900 dark:hover:bg-zinc-700 text-white font-extrabold py-2.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-85 disabled:cursor-not-allowed mt-4 text-[10.5px] uppercase tracking-wider text-center animate-none"
                         >
                           {isLoading ? (
                             <Loader2 className="animate-spin text-white" size={15} />
@@ -587,7 +587,7 @@ export default function Login() {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden mt-4"
                   >
-                    <div className="p-3.5 bg-rose-50 dark:bg-rose-955/25 text-rose-600 dark:text-rose-450 text-[11px] font-semibold rounded-xl border border-rose-100/50 dark:border-rose-950/50 flex gap-2.5 items-start">
+                    <div className="p-3.5 bg-rose-50 dark:bg-rose-950/25 text-rose-600 dark:text-rose-400 text-[11px] font-semibold rounded-xl border border-rose-100/50 dark:border-rose-950/50 flex gap-2.5 items-start">
                       <span className="text-sm leading-none shrink-0">&#x26A0;</span>
                       <p className="leading-relaxed break-words flex-1">{error}</p>
                     </div>
@@ -601,7 +601,7 @@ export default function Login() {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden mt-4"
                   >
-                    <div className="p-3.5 bg-emerald-50 dark:bg-emerald-955/25 text-emerald-600 dark:text-emerald-450 text-[11px] font-semibold rounded-xl border border-emerald-100/40 dark:border-emerald-955/40 flex gap-2.5 items-start">
+                    <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/25 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold rounded-xl border border-emerald-100/40 dark:border-emerald-950/40 flex gap-2.5 items-start">
                       <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-0.5" />
                       <p className="leading-relaxed flex-1">{success}</p>
                     </div>
@@ -616,7 +616,7 @@ export default function Login() {
                 <span className="flex items-center gap-1.5"><Sparkles size={11} className="text-blue-500 shrink-0 stroke-[3]" /> Free for students</span>
               </div>
 
-              <p className="text-center text-[10px] text-zinc-400 dark:text-zinc-550 mt-6 leading-relaxed">
+              <p className="text-center text-[10px] text-zinc-400 dark:text-zinc-500 mt-6 leading-relaxed">
                 By signing in, you agree to our{' '}
                 <Link to="/terms" className="text-blue-500 dark:text-blue-400 hover:underline font-semibold">Terms of Service</Link>
                 {' '}and{' '}

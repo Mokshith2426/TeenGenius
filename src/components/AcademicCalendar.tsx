@@ -487,7 +487,7 @@ export default function AcademicCalendar() {
                               ? "bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/20"
                               : node.type === 'task'
                                 ? "bg-white border-blue-400 hover:bg-blue-50/50 hover:border-blue-500 dark:bg-zinc-950 dark:border-zinc-700"
-                                : "bg-white border-amber-405 hover:bg-amber-50/50 hover:border-amber-500 dark:bg-zinc-950 dark:border-zinc-700"
+                                : "bg-white border-amber-400 hover:bg-amber-50/50 hover:border-amber-500 dark:bg-zinc-950 dark:border-zinc-700"
                           )}
                           title="Toggle Task Status"
                         >
@@ -524,7 +524,7 @@ export default function AcademicCalendar() {
                               </button>
                               <button
                                 onClick={() => setEditingNodeId(null)}
-                                className="p-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-300 hover:bg-zinc-300 rounded-lg transition-colors cursor-pointer flex-shrink-0"
+                                className="p-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-300 rounded-lg transition-colors cursor-pointer flex-shrink-0"
                                 title="Cancel"
                               >
                                 <X size={13} strokeWidth={2.5} />
@@ -553,7 +553,7 @@ export default function AcademicCalendar() {
                         {!isEditing && (
                           <button
                             onClick={() => startEditingNode(node.id, node.title)}
-                            className="p-1.5 text-zinc-400 hover:text-indigo-650 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
                             title="Edit Task Title"
                           >
                             <Edit2 size={13} />
@@ -561,7 +561,7 @@ export default function AcademicCalendar() {
                         )}
                         <button
                           onClick={() => deleteNode(node.id)}
-                          className="p-1.5 text-zinc-400 hover:text-red-650 dark:hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
                           title="Remove Event"
                         >
                           <Trash2 size={13} />

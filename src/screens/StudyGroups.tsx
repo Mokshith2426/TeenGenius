@@ -197,7 +197,7 @@ export default function StudyGroups() {
             "flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all cursor-pointer",
             activeTab === 'my' 
               ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm" 
-              : "text-zinc-455 hover:text-zinc-650 dark:text-zinc-400 dark:hover:text-zinc-200"
+              : "text-zinc-450 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-200"
           )}
         >
           <Users size={14} />
@@ -209,7 +209,7 @@ export default function StudyGroups() {
             "flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all cursor-pointer",
             activeTab === 'discover' 
               ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm" 
-              : "text-zinc-455 hover:text-zinc-650 dark:text-zinc-400 dark:hover:text-zinc-200"
+              : "text-zinc-450 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-200"
           )}
         >
           <Search size={14} />
@@ -234,7 +234,7 @@ export default function StudyGroups() {
                     <Key size={14} className="text-zinc-400" />
                     Join a Private Study Room
                   </h3>
-                  <p className="text-xs text-zinc-455 dark:text-zinc-500 font-semibold italic">
+                  <p className="text-xs text-zinc-450 dark:text-zinc-500 font-semibold italic">
                     Have an invite code? Type it below to join your friends' circle instantly!
                   </p>
                 </div>
@@ -342,14 +342,14 @@ export default function StudyGroups() {
                   <h3 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">
                     {group.name}
                   </h3>
-                  <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-550 mt-2 line-clamp-2 italic mb-5 leading-relaxed">
+                  <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 mt-2 line-clamp-2 italic mb-5 leading-relaxed">
                     {group.description}
                   </p>
                   
                   <button 
                     onClick={() => joinGroup(group.id)}
                     disabled={joiningGroupIds[group.id]}
-                    className="w-full py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-750 text-zinc-900 dark:text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {joiningGroupIds[group.id] ? (
                       <>

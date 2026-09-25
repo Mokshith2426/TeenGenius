@@ -175,7 +175,7 @@ export default function Safety() {
                   className={`border-[1.5px] rounded-[2rem] p-6 space-y-3 shadow-xs ${guide.color}`}
                 >
                   <h3 className="text-md font-black uppercase tracking-tight">{guide.title}</h3>
-                  <p className="text-xs text-zinc-650 dark:text-zinc-350 font-medium leading-relaxed italic">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-350 font-medium leading-relaxed italic">
                     {guide.desc}
                   </p>
                 </div>

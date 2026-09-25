@@ -1386,7 +1386,7 @@ export default function AIAssistant() {
               <button
                 key={a.id}
                 onClick={() => startTutorAction(idx)}
-                className="bg-zinc-100/80 hover:bg-blue-50 hover:text-blue-600 dark:bg-zinc-800/80 dark:hover:bg-blue-950/40 dark:hover:text-blue-400 text-zinc-750 dark:text-zinc-200 font-semibold px-4 py-2 rounded-full text-xs tracking-tight transition-all border border-zinc-200/40 dark:border-zinc-750/40 cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 hover:scale-102 active:scale-95"
+                className="bg-zinc-100/80 hover:bg-blue-50 hover:text-blue-600 dark:bg-zinc-800/80 dark:hover:bg-blue-950/40 dark:hover:text-blue-400 text-zinc-700 dark:text-zinc-200 font-semibold px-4 py-2 rounded-full text-xs tracking-tight transition-all border border-zinc-200/40 dark:border-zinc-700/40 cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 hover:scale-102 active:scale-95"
               >
                 <a.icon size={12} className="text-blue-500 shrink-0" />
                 <span>{a.label}</span>
@@ -1431,16 +1431,16 @@ export default function AIAssistant() {
                 "p-4 rounded-3xl border flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl backdrop-blur-md",
                 speechState === 'listening' ? "bg-rose-500/10 border-rose-500/20 text-rose-700 dark:text-rose-400" :
                 speechState === 'processing' ? "bg-blue-500/10 border-blue-500/20 text-blue-700 dark:text-blue-400" :
-                speechState === 'completed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-750 dark:text-emerald-400" :
+                speechState === 'completed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400" :
                 "bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400"
               )}>
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner relative overflow-hidden",
-                    speechState === 'listening' ? "bg-rose-500/20 text-rose-600 dark:text-rose-450 animate-pulse" :
-                    speechState === 'processing' ? "bg-blue-500/20 text-blue-600 dark:text-blue-450" :
-                    speechState === 'completed' ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-450" :
-                    "bg-amber-500/20 text-amber-600 dark:text-amber-450"
+                    speechState === 'listening' ? "bg-rose-500/20 text-rose-600 dark:text-rose-400 animate-pulse" :
+                    speechState === 'processing' ? "bg-blue-500/20 text-blue-600 dark:text-blue-400" :
+                    speechState === 'completed' ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" :
+                    "bg-amber-500/20 text-amber-600 dark:text-amber-400"
                   )}>
                     {speechState === 'listening' ? (
                       <>
@@ -1597,7 +1597,7 @@ export default function AIAssistant() {
                   ? "bg-emerald-600 border-emerald-600 text-white animate-pulse"
                   : speechState === 'error'
                   ? "bg-amber-600 border-amber-600 text-white text-rose-200"
-                  : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-450"
+                  : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
               )}
               aria-label="Voice Input"
               id="speech-trigger-button"
@@ -1665,7 +1665,7 @@ export default function AIAssistant() {
             initial={{ opacity: 0, y: -50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-8 left-1/2 -translate-x-1/2 z-[9999] bg-zinc-90 w-full max-w-sm bg-zinc-900 dark:bg-zinc-800 border border-zinc-800 dark:border-zinc-750 text-white rounded-[2rem] p-6 shadow-2xl flex items-center gap-5"
+            className="fixed top-8 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-sm bg-zinc-900 dark:bg-zinc-800 border border-zinc-800 dark:border-zinc-700 text-white rounded-[2rem] p-6 shadow-2xl flex items-center gap-5"
           >
             <div className="w-14 h-14 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-yellow-500/20">
               <Trophy size={28} className="animate-pulse" />
@@ -1711,7 +1711,7 @@ export default function AIAssistant() {
 
               {quizLoading && (
                 <div className="py-16 flex flex-col items-center justify-center text-center gap-4">
-                  <div className="w-16 h-16 bg-blue-100 dark:bg-blue-955 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-450 animate-spin">
+                  <div className="w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 animate-spin">
                     <Loader2 size={32} />
                   </div>
                   <div>
@@ -1723,14 +1723,14 @@ export default function AIAssistant() {
 
               {quizError && (
                 <div className="py-12 flex flex-col items-center justify-center text-center gap-4">
-                  <div className="w-12 h-12 bg-red-105 dark:bg-red-955 text-red-650 dark:text-red-400 rounded-full flex flex-row items-center justify-center font-black text-lg">!</div>
+                  <div className="w-12 h-12 bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 rounded-full flex flex-row items-center justify-center font-black text-lg">!</div>
                   <div>
                     <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 dark:text-white">Oops! Could not load the quiz</h3>
                     <p className="text-xs text-red-500 mt-1 max-w-xs leading-relaxed">{quizError}</p>
                   </div>
                   <button
                     onClick={handleOpenQuickQuiz}
-                    className="mt-2 px-6 py-3 bg-zinc-90 w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all"
+                    className="mt-2 px-6 py-3 w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all"
                   >
                     Try Again
                   </button>
@@ -1777,7 +1777,7 @@ export default function AIAssistant() {
                           const isSelected = selectedOption === idx;
                           const isCorrect = idx === quickQuiz.questions[currentQuestionIndex].correctAnswerIndex;
                           
-                          let optionStyle = "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-750 bg-transparent";
+                          let optionStyle = "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-transparent";
                           if (isSelected) {
                             optionStyle = "border-blue-500 bg-blue-50/10 text-blue-600 dark:text-blue-400";
                           }
@@ -1836,7 +1836,7 @@ export default function AIAssistant() {
                           <button
                             onClick={handleSubmitQuizAnswer}
                             disabled={selectedOption === null}
-                            className="w-full py-4 bg-zinc-90 w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.01] active:scale-95 disabled:opacity-20 transition-all cursor-pointer"
+                            className="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.01] active:scale-95 disabled:opacity-20 transition-all cursor-pointer"
                           >
                             Validate Selection
                           </button>
@@ -1882,7 +1882,7 @@ export default function AIAssistant() {
                               <div className="flex items-center gap-2 text-xs">
                                 <span className={cn(
                                   "px-2.5 py-1 rounded-md font-black text-[9px] uppercase tracking-wider",
-                                  wasCorrect ? "bg-green-150 text-green-700 dark:bg-green-950/45 dark:text-green-400" : "bg-red-155 text-red-700 dark:bg-red-950/45 dark:text-red-400"
+                                  wasCorrect ? "bg-green-100 text-green-700 dark:bg-green-950/45 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-950/45 dark:text-red-400"
                                 )}>
                                   {wasCorrect ? "Correct" : "Incorrect"}
                                 </span>
@@ -1897,7 +1897,7 @@ export default function AIAssistant() {
 
                       <button
                         onClick={() => setIsQuizOpen(false)}
-                        className="w-full py-4 bg-zinc-90 w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.01] active:scale-95 transition-all cursor-pointer"
+                        className="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.01] active:scale-95 transition-all cursor-pointer"
                       >
                         Dismiss Interface
                       </button>

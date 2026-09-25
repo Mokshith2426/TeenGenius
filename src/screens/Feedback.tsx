@@ -109,8 +109,8 @@ export default function Feedback() {
           <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase">
             Feedback & <span className="text-blue-600">Support</span>
           </h1>
-          <p className="text-zinc-550 dark:text-zinc-400 font-medium text-xs md:text-sm italic mt-1 leading-relaxed">
-            Co-designing the Ultimate Workspace. Submissions routed directly to developer at <b className="text-zinc-650 dark:text-zinc-250 italic">mokshith1512@gmail.com</b>
+          <p className="text-zinc-500 dark:text-zinc-400 font-medium text-xs md:text-sm italic mt-1 leading-relaxed">
+            Co-designing the Ultimate Workspace. Submissions routed directly to developer at <b className="text-zinc-600 dark:text-zinc-250 italic">mokshith1512@gmail.com</b>
           </p>
         </div>
       </header>
@@ -126,7 +126,7 @@ export default function Feedback() {
           >
             <form onSubmit={handleSubmit} className="space-y-8">
               {errorMsg && (
-                <div className="p-4 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-105 dark:border-red-900/35 rounded-2xl text-xs font-bold leading-normal">
+                <div className="p-4 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/35 rounded-2xl text-xs font-bold leading-normal">
                   {errorMsg}
                 </div>
               )}
@@ -148,7 +148,7 @@ export default function Feedback() {
                         className={cn(
                           "p-4 rounded-2xl border flex flex-col items-center justify-center text-center gap-2 cursor-pointer transition-all",
                           isSelected
-                            ? "border-blue-500 bg-blue-50/40 dark:bg-blue-955/20 text-blue-600 ring-2 ring-blue-500/10"
+                            ? "border-blue-500 bg-blue-50/40 dark:bg-blue-950/20 text-blue-600 ring-2 ring-blue-500/10"
                             : "border-zinc-100 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/10 text-zinc-400"
                         )}
                       >
@@ -183,7 +183,7 @@ export default function Feedback() {
                             "transition-all duration-150",
                             isFilled
                               ? "fill-amber-400 text-amber-400"
-                              : "text-zinc-200 dark:text-zinc-700 hover:text-amber-250"
+                              : "text-zinc-200 dark:text-zinc-700 hover:text-amber-200"
                           )}
                         />
                       </button>
@@ -240,7 +240,7 @@ export default function Feedback() {
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[3rem] p-12 text-center shadow-xl space-y-8"
           >
-            <div className="inline-flex p-5 bg-green-50 dark:bg-green-950/20 text-green-600 rounded-[2rem] border border-green-105 dark:border-green-900/40 relative">
+            <div className="inline-flex p-5 bg-green-50 dark:bg-green-950/20 text-green-600 rounded-[2rem] border border-green-100 dark:border-green-900/40 relative">
               <CheckCircle2 size={54} className="animate-bounce" />
             </div>
             
@@ -272,7 +272,7 @@ export default function Feedback() {
                 setRating(5);
                 setIsSubmitted(false);
               }}
-              className="px-8 py-3 bg-zinc-105 hover:bg-zinc-100 text-zinc-600 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest rounded-xl border border-zinc-200/50 dark:border-zinc-700 cursor-pointer"
+              className="px-8 py-3 bg-zinc-100 hover:bg-zinc-100 text-zinc-600 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest rounded-xl border border-zinc-200/50 dark:border-zinc-700 cursor-pointer"
             >
               Analyze Another Category
             </button>

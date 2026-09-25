@@ -64,14 +64,14 @@ const NOTE_STYLES = [
 
 const SUBJECT_COLORS: Record<string, string> = {
   'Mathematics': 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50',
-  'Science': 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-450 border-amber-200 dark:border-amber-900/50',
+  'Science': 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/50',
   'Physics': 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50',
   'Chemistry': 'bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-900/50',
   'Biology': 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50',
   'English': 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-900/50',
   'Social Science': 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-900/50',
   'Computer Science': 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/50',
-  'Economics': 'bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-450 border-rose-200 dark:border-rose-900/50',
+  'Economics': 'bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50',
   'Accountancy': 'bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-900/50',
   'Business Studies': 'bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/50',
   'Political Science': 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/50',
@@ -86,8 +86,8 @@ const getSubjectBadgeStyle = (sub: string) => {
 };
 
 const IMPORTANCE_CLASSES: Record<'High' | 'Medium' | 'Low', string> = {
-  'High': 'bg-red-50 dark:bg-red-950/40 text-red-655 dark:text-red-400 border-red-200 dark:border-red-900/50',
-  'Medium': 'bg-amber-50 dark:bg-amber-955/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/50',
+  'High': 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/50',
+  'Medium': 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/50',
   'Low': 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50',
 };
 
@@ -779,7 +779,7 @@ Format: Structured Markdown Note
               <select
                 value={noteStyle}
                 onChange={(e) => setNoteStyle(e.target.value)}
-                className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-805 focus:ring-2 focus:ring-indigo-550 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 dark:text-white outline-none font-bold transition-all cursor-pointer"
+                className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-805 focus:ring-2 focus:ring-indigo-500 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 dark:text-white outline-none font-bold transition-all cursor-pointer"
               >
                 {NOTE_STYLES.map(style => (
                   <option key={style.value} value={style.value}>{style.label}</option>
@@ -795,7 +795,7 @@ Format: Structured Markdown Note
               <select
                 value={summaryLength}
                 onChange={(e) => setSummaryLength(e.target.value)}
-                className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-805 focus:ring-2 focus:ring-indigo-550 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 dark:text-white outline-none font-bold transition-all cursor-pointer"
+                className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-805 focus:ring-2 focus:ring-indigo-500 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 dark:text-white outline-none font-bold transition-all cursor-pointer"
               >
                 <option value="Brief">Brief (Condensed) ⚡</option>
                 <option value="Standard">Standard (Comprehensive) 📚</option>
@@ -814,7 +814,7 @@ Format: Structured Markdown Note
                   setSubject(e.target.value);
                   setIsSubjectManuallySelected(true);
                 }}
-                className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-805 focus:ring-2 focus:ring-indigo-550 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 dark:text-white outline-none font-bold transition-all cursor-pointer"
+                className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-805 focus:ring-2 focus:ring-indigo-500 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 dark:text-white outline-none font-bold transition-all cursor-pointer"
               >
                 {PRESET_SUBJECTS.map(sub => (
                   <option key={sub} value={sub}>{sub}</option>
@@ -832,7 +832,7 @@ Format: Structured Markdown Note
                   value={customSubject}
                   onChange={(e) => setCustomSubject(e.target.value)}
                   placeholder="E.g., Sanskrit, Sociology..."
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-805 focus:ring-2 focus:ring-indigo-550 rounded-2xl px-3.5 py-2 text-xs text-zinc-900 dark:text-white outline-none font-semibold transition-all focus:ring-2"
+                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-805 focus:ring-2 focus:ring-indigo-500 rounded-2xl px-3.5 py-2 text-xs text-zinc-900 dark:text-white outline-none font-semibold transition-all focus:ring-2"
                 />
               </div>
             )}
@@ -849,7 +849,7 @@ Format: Structured Markdown Note
                   placeholder="Paste textbook passages, syllabus, prompt, or reference materials here..."
                   className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 rounded-2xl p-4 h-32 text-xs text-zinc-900 dark:text-white leading-relaxed placeholder:font-normal placeholder:italic outline-none resize-none transition-all"
                 />
-                <p className="text-[10px] text-zinc-400 dark:text-zinc-550 italic font-semibold flex items-center gap-1 mt-1 pl-1">
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 italic font-semibold flex items-center gap-1 mt-1 pl-1">
                   <span>✨ Subject-aware notes optimized and structured automatically</span>
                 </p>
               </div>
@@ -919,7 +919,7 @@ Format: Structured Markdown Note
             <button 
               onClick={handleGenerate}
               disabled={(!content.trim() && uploadedFiles.length === 0) || isLoading}
-              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-100 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-650 text-white font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
+              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-100 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-600 text-white font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -969,7 +969,7 @@ Format: Structured Markdown Note
                     "px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-1.5 transition-all cursor-pointer",
                     activeTab === 'active' 
                       ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm" 
-                      : "text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-350"
+                      : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-350"
                   )}
                 >
                   <Sparkles size={13} className={activeTab === 'active' ? "text-indigo-500" : ""} />
@@ -995,7 +995,7 @@ Format: Structured Markdown Note
                 <div className="relative flex gap-2 self-end">
                   <button 
                     onClick={copyToClipboard}
-                    className="p-2.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-750 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all text-zinc-650 dark:text-zinc-300 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer"
+                    className="p-2.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer"
                   >
                     {copied ? <Check size={14} className="text-emerald-500" /> : <Clipboard size={14} />}
                     {copied ? 'Copied' : 'Copy'}
@@ -1004,7 +1004,7 @@ Format: Structured Markdown Note
                   <div className="relative">
                     <button 
                       onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
-                      className="p-2.5 bg-indigo-600 border border-indigo-700 text-white rounded-xl hover:bg-indigo-505 transition-all flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer"
+                      className="p-2.5 bg-indigo-600 border border-indigo-700 text-white rounded-xl hover:bg-indigo-500 transition-all flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer"
                     >
                       <Download size={14} />
                       Export Document
@@ -1018,7 +1018,7 @@ Format: Structured Markdown Note
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 8 }}
-                            className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-2xl shadow-xl py-2 z-20 overflow-hidden font-extrabold text-[10px] uppercase tracking-wider text-zinc-750 dark:text-zinc-350"
+                            className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-2xl shadow-xl py-2 z-20 overflow-hidden font-extrabold text-[10px] uppercase tracking-wider text-zinc-700 dark:text-zinc-350"
                           >
                             <button
                               onClick={() => { exportAsPdf(); setExportDropdownOpen(false); }}
@@ -1070,7 +1070,7 @@ Format: Structured Markdown Note
                   {notes && (
                     <div className="mb-4 pb-3 border-b border-zinc-150 dark:border-zinc-805 flex items-center justify-between">
                       <span className="text-[10px] font-black uppercase text-zinc-450 tracking-wider">Generated Study Guide</span>
-                      <span className="text-[9px] px-2.5 py-1 font-black bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-450 rounded-full uppercase">
+                      <span className="text-[9px] px-2.5 py-1 font-black bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 rounded-full uppercase">
                         Subject: {savedNotes.find(n => n.id === activeNoteId)?.subject || (subject === 'Custom' ? (customSubject || 'Custom') : subject)}
                       </span>
                     </div>
@@ -1227,7 +1227,7 @@ Format: Structured Markdown Note
                         </div>
                         <div>
                           <p className="text-xs font-black uppercase tracking-wider text-zinc-800 dark:text-zinc-200">No notes found</p>
-                          <p className="text-[10px] text-zinc-455 dark:text-zinc-500 max-w-sm mt-1 mx-auto leading-relaxed font-semibold">
+                          <p className="text-[10px] text-zinc-450 dark:text-zinc-500 max-w-sm mt-1 mx-auto leading-relaxed font-semibold">
                             {savedNotes.length === 0
                               ? "You haven't saved any notes yet. Generate notes from your study material and save them here."
                               : "No saved notes match your search or filters."}
@@ -1242,7 +1242,7 @@ Format: Structured Markdown Note
                               setFilterSubject('All');
                               setFilterImportance('All');
                             }}
-                            className="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-700 dark:text-zinc-250 text-[10px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all"
+                            className="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-250 text-[10px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all"
                           >
                             Reset filters
                           </button>

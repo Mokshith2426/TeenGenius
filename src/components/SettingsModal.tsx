@@ -232,7 +232,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
                 <button 
                   onClick={onClose}
-                  className="md:hidden p-2 text-zinc-400 hover:text-zinc-650 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-all"
+                  className="md:hidden p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-all"
                 >
                   <X size={18} />
                 </button>
@@ -267,7 +267,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     onClose();
                     logout();
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-3 text-red-500 hover:bg-red-500/5 hover:text-red-650 transition-all rounded-2xl text-xs font-black uppercase tracking-widest"
+                  className="w-full flex items-center gap-2 px-4 py-3 text-red-500 hover:bg-red-500/5 hover:text-red-600 transition-all rounded-2xl text-xs font-black uppercase tracking-widest"
                 >
                   <LogOut size={15} />
                   Log Out
@@ -294,7 +294,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                           </div>
                           <button
                             onClick={toggleDarkMode}
-                            className="p-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-750 text-zinc-500 rounded-2xl transition-all cursor-pointer shadow-sm hover:scale-105"
+                            className="p-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-500 rounded-2xl transition-all cursor-pointer shadow-sm hover:scale-105"
                           >
                             {isDarkMode ? <Sun size={16} className="text-amber-500" /> : <Moon size={16} />}
                           </button>
@@ -543,7 +543,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">Help Center FAQ & Onboarding</h3>
                       
                       {/* Walkthrough Quick Launcher */}
-                      <div className="p-4 mb-4 bg-gradient-to-r from-blue-600/10 to-indigo-650/10 border border-blue-500/25 rounded-2.5xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="p-4 mb-4 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 border border-blue-500/25 rounded-2.5xl flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="space-y-0.5 text-center sm:text-left">
                           <p className="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider">Welcome Onboarding Tour</p>
                           <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold leading-relaxed">
@@ -711,7 +711,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <div className="mt-8 border-t border-zinc-100 dark:border-zinc-800 pt-5 flex justify-end">
                 <button
                   onClick={onClose}
-                  className="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-700 dark:text-zinc-200 text-[10px] font-black uppercase tracking-widest py-3 px-6 rounded-xl transition-all cursor-pointer"
+                  className="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-[10px] font-black uppercase tracking-widest py-3 px-6 rounded-xl transition-all cursor-pointer"
                 >
                   Close Settings
                 </button>

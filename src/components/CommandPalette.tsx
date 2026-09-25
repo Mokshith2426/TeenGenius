@@ -235,7 +235,7 @@ export default function CommandPalette({
                 spellCheck={false}
               />
               <div className="flex items-center gap-2">
-                <span className="hidden sm:inline bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-700/80 rounded px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-550 select-none">ESC</span>
+                <span className="hidden sm:inline bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-700/80 rounded px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 select-none">ESC</span>
                 <button 
                   onClick={onClose}
                   className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors cursor-pointer"

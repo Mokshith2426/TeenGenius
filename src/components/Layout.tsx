@@ -351,7 +351,7 @@ export default function Layout() {
             setIsSidebarCollapsed(nextState);
             localStorage.setItem('teengenius_sidebar_collapsed', String(nextState));
           }}
-          className="absolute -right-3.5 top-[26px] w-7 h-7 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 hover:bg-zinc-50 dark:hover:bg-zinc-750 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-full flex items-center justify-center cursor-pointer shadow-sm z-50 transition-all active:scale-90"
+          className="absolute -right-3.5 top-[26px] w-7 h-7 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-full flex items-center justify-center cursor-pointer shadow-sm z-50 transition-all active:scale-90"
           title={isSidebarCollapsed ? "Expand Sidebar Workspace" : "Collapse Sidebar Workspace"}
         >
           {isSidebarCollapsed ? <ChevronRight size={13} strokeWidth={2.4} /> : <ChevronLeft size={13} strokeWidth={2.4} />}
@@ -384,7 +384,7 @@ export default function Layout() {
                 {!isSidebarCollapsed && <span className="text-zinc-500 dark:text-zinc-450">Search Platform</span>}
               </div>
               {!isSidebarCollapsed && (
-                <kbd className="text-[8.5px] font-black uppercase tracking-wider bg-zinc-200/60 dark:bg-zinc-700 px-1.5 py-0.5 rounded text-zinc-500 dark:text-zinc-404 border border-zinc-200 dark:border-zinc-650 leading-none">⌘K</kbd>
+                <kbd className="text-[8.5px] font-black uppercase tracking-wider bg-zinc-200/60 dark:bg-zinc-700 px-1.5 py-0.5 rounded text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-600 leading-none">⌘K</kbd>
               )}
               
               {/* Tooltip for collapsed size */}
@@ -436,7 +436,7 @@ export default function Layout() {
                                 "text-[8.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full leading-none shrink-0 scale-90 origin-right transition-transform group-hover:scale-95",
                                 item.badge === 'AI' ? "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-400" :
                                 item.badge === 'Solver' ? "bg-blue-100 text-blue-600 dark:bg-blue-950/65 dark:text-blue-400" :
-                                "bg-rose-150 text-rose-700 dark:bg-rose-950/65 dark:text-rose-400"
+                                "bg-rose-100 text-rose-700 dark:bg-rose-950/65 dark:text-rose-400"
                               )}>
                                 {item.badge}
                               </span>
@@ -493,7 +493,7 @@ export default function Layout() {
                   )} />
                   <span className={cn(
                     "text-[10px] font-black uppercase tracking-wider select-none",
-                    isGuest ? "text-amber-650 dark:text-amber-550" : "text-emerald-600 dark:text-emerald-450"
+                    isGuest ? "text-amber-600 dark:text-amber-500" : "text-emerald-600 dark:text-emerald-400"
                   )}>
                     {isGuest ? "Guest Access" : "Online"}
                   </span>
@@ -596,7 +596,7 @@ export default function Layout() {
               </button>
               <button 
                 onClick={() => setShowInstallBanner(false)}
-                className="p-1 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 cursor-pointer"
+                className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
               >
                 <X size={13} />
               </button>
@@ -625,7 +625,7 @@ export default function Layout() {
                 await logout();
                 navigate('/login');
               }}
-              className="py-2.5 px-5 bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-600 hover:to-indigo-750 text-white rounded-xl font-black text-[10px] uppercase tracking-widest cursor-pointer shadow-md hover:scale-[1.03] active:scale-95 transition-all shrink-0"
+              className="py-2.5 px-5 bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-600 hover:to-indigo-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest cursor-pointer shadow-md hover:scale-[1.03] active:scale-95 transition-all shrink-0"
             >
               Sign In with Google
             </button>
@@ -654,7 +654,7 @@ export default function Layout() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="bg-emerald-500/10 dark:bg-emerald-500/5 border-b border-emerald-500/20 text-emerald-650 dark:text-emerald-400 text-xs font-bold px-6 py-2.5 flex items-center justify-center gap-2.5 shrink-0 z-50 select-none"
+              className="bg-emerald-500/10 dark:bg-emerald-500/5 border-b border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold px-6 py-2.5 flex items-center justify-center gap-2.5 shrink-0 z-50 select-none"
               id="online-success-banner"
             >
               <Check size={14} className="shrink-0 text-emerald-500" />
@@ -699,8 +699,8 @@ export default function Layout() {
                         <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Authorized Student Workspace</p>
                       </div>
                       <div className="text-center md:text-right">
-                        <p className="text-[8px] font-black uppercase tracking-[0.25em] text-zinc-450 dark:text-zinc-550 mb-0.5">A safe space for students</p>
-                        <p className="text-[7.5px] font-black text-zinc-400 dark:text-zinc-650 uppercase tracking-widest leading-none">
+                        <p className="text-[8px] font-black uppercase tracking-[0.25em] text-zinc-450 dark:text-zinc-500 mb-0.5">A safe space for students</p>
+                        <p className="text-[7.5px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-widest leading-none">
                           TeenGenius App • Built for learning together
                         </p>
                       </div>
@@ -797,7 +797,7 @@ export default function Layout() {
                 
                 <div className="flex items-center justify-between mb-5 px-1">
                   <div>
-                    <h3 className="text-[9px] font-black uppercase tracking-[0.25em] text-zinc-450 dark:text-zinc-555 italic leading-none">Quick Access</h3>
+                    <h3 className="text-[9px] font-black uppercase tracking-[0.25em] text-zinc-450 dark:text-zinc-600 italic leading-none">Quick Access</h3>
                     <h4 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mt-1 leading-none">More Features</h4>
                   </div>
                   <button 
@@ -821,7 +821,7 @@ export default function Layout() {
                           "flex flex-col items-center justify-center p-2 rounded-2xl border text-center transition-all cursor-pointer aspect-square gap-1.5",
                           isActive
                             ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/10 scale-[1.02]"
-                            : "bg-zinc-50 dark:bg-zinc-900 border-zinc-100 dark:border-zinc-850/50 text-zinc-550 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800/80"
+                            : "bg-zinc-50 dark:bg-zinc-900 border-zinc-100 dark:border-zinc-850/50 text-zinc-500 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800/80"
                         )}
                       >
                         <item.icon size={19} className={cn("transition-transform", isActive && "scale-105")} />
@@ -838,7 +838,7 @@ export default function Layout() {
                       setIsMoreOpen(false);
                       setTimeout(() => setIsSettingsOpen(true), 150);
                     }}
-                    className="flex justify-center items-center gap-1.5 py-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 rounded-xl text-[9px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-404 cursor-pointer"
+                    className="flex justify-center items-center gap-1.5 py-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 rounded-xl text-[9px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 cursor-pointer"
                   >
                     <Settings size={12} />
                     Settings
@@ -893,11 +893,11 @@ export default function Layout() {
                 Unlock Full Access 🚀
               </h3>
               
-              <p className="text-[10px] font-black uppercase tracking-widest text-amber-640 dark:text-amber-450 mb-4 bg-amber-50 dark:bg-amber-955/25 px-3 py-1 rounded-full w-fit mx-auto">
+              <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-4 bg-amber-50 dark:bg-amber-950/25 px-3 py-1 rounded-full w-fit mx-auto">
                 Restricted Action: {guestPromptAction || "Advanced Feature"}
               </p>
               
-              <p className="text-sm text-zinc-550 dark:text-zinc-400 font-semibold leading-relaxed mb-8">
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 font-semibold leading-relaxed mb-8">
                 Create a free account to save your progress and participate in the TeenGenius community.
               </p>
               

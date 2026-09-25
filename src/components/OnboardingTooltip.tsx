@@ -137,7 +137,7 @@ export default function OnboardingTooltip({ onClose, onComplete }: OnboardingToo
             &ldquo;{step.subtitle}&rdquo;
           </h4>
 
-          <p className="text-xs text-zinc-650 dark:text-zinc-400 leading-relaxed font-semibold">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-semibold">
             {step.description}
           </p>
 
@@ -267,7 +267,7 @@ export default function OnboardingTooltip({ onClose, onComplete }: OnboardingToo
           disabled={currentStep === 0}
           className={cn(
             "px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1 transition-all active:scale-95 disabled:opacity-30 disabled:pointer-events-none cursor-pointer",
-            currentStep === 0 ? "text-zinc-300 dark:text-zinc-700" : "text-zinc-650 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-850"
+            currentStep === 0 ? "text-zinc-300 dark:text-zinc-700" : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-850"
           )}
           id="btn-onboarding-prev"
         >

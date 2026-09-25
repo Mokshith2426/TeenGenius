@@ -747,7 +747,7 @@ export default function Home() {
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                 {tasks.length === 0 ? (
                   <div className="py-10 px-4 text-center space-y-3">
-                    <p className="text-xs font-bold text-zinc-455 dark:text-zinc-500 italic max-w-md mx-auto">
+                    <p className="text-xs font-bold text-zinc-450 dark:text-zinc-500 italic max-w-md mx-auto">
                       No tasks for today yet — add your first one above.
                     </p>
                     <p className="text-[10px] text-zinc-450 dark:text-zinc-500 font-semibold leading-relaxed max-w-sm mx-auto">
@@ -761,8 +761,8 @@ export default function Home() {
                       className={cn(
                         "p-4 rounded-2xl border flex items-center justify-between transition-all gap-4 text-xs font-bold",
                         item.completed
-                          ? "bg-zinc-50/50 dark:bg-zinc-955/20 border-zinc-150 text-zinc-400 line-through dark:border-zinc-850/60"
-                          : "bg-zinc-50 dark:bg-zinc-955 border-zinc-150/40 dark:border-zinc-850 text-zinc-700 dark:text-zinc-200"
+                          ? "bg-zinc-50/50 dark:bg-zinc-950/20 border-zinc-150 text-zinc-400 line-through dark:border-zinc-850/60"
+                          : "bg-zinc-50 dark:bg-zinc-950 border-zinc-150/40 dark:border-zinc-850 text-zinc-700 dark:text-zinc-200"
                       )}
                     >
                       <label className="flex items-center gap-3.5 cursor-pointer flex-1 select-none">
@@ -790,7 +790,7 @@ export default function Home() {
           </div>
 
           {/* Today's Goals Metrics & Study Status Card (Primary Emphasis - 1 column) */}
-          <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-600 to-indigo-750 text-white rounded-[2.5rem] space-y-6 shadow-sm flex flex-col justify-between min-h-[320px]">
+          <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[2.5rem] space-y-6 shadow-sm flex flex-col justify-between min-h-[320px]">
             <div className="space-y-4">
               <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white/60 block leading-none">Today's Progress</span>
               <h3 className="text-xl font-black uppercase tracking-tight">Daily Study Goal</h3>
@@ -877,7 +877,7 @@ export default function Home() {
                 whileHover={{ y: -4, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => navigate(tool.path)}
-                className="p-6 sm:p-7 bg-white dark:bg-zinc-900 border border-zinc-155 dark:border-zinc-850 rounded-[2rem] hover:border-blue-500 dark:hover:border-indigo-650/40 cursor-pointer shadow-xs hover:shadow-md transition-all group flex flex-col justify-between min-h-[220px]"
+                className="p-6 sm:p-7 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-850 rounded-[2rem] hover:border-blue-500 dark:hover:border-indigo-600/40 cursor-pointer shadow-xs hover:shadow-md transition-all group flex flex-col justify-between min-h-[220px]"
               >
                 <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${tool.color} group-hover:scale-110 transition-transform shadow-xs`}>
                   <Icon size={18} strokeWidth={2.4} />

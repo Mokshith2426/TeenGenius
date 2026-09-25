@@ -35,7 +35,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
       description: "TeenGenius is designed to help students learn faster, revise smarter, and perform exceptionally in school and exams. Organize your notes, practice quizzes, and complete assignments seamlessly.",
       icon: Sparkles,
       iconBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-      gradient: "from-blue-650 via-indigo-600 to-cyan-500"
+      gradient: "from-blue-600 via-indigo-600 to-cyan-500"
     },
     {
       title: "AI Study Assistant",
@@ -53,7 +53,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
       description: "Everything you need to conquer your curriculum is at your fingertips. Instantly compile notes into summaries, generate revision notes, practice with smart AI quizzes, and track your learning milestones dynamically.",
       icon: GraduationCap,
       iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-      gradient: "from-purple-500 via-pink-600 to-indigo-505"
+      gradient: "from-purple-500 via-pink-600 to-indigo-500"
     },
     {
       title: "Smarter Personalized Learning",
@@ -62,7 +62,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
       description: "Your dashboard evaluates your progress dynamically to optimize schedules and calendars around your weak spots. Set your daily studying targets, maintain active streaks, and watch your school performance soar.",
       icon: Target,
       iconBg: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
-      gradient: "from-rose-500 via-orange-650 to-amber-500"
+      gradient: "from-rose-500 via-orange-600 to-amber-500"
     },
     {
       title: "Ready to Rocket?",
@@ -70,7 +70,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
       tagline: "Get started with interactive suggestions",
       description: "Select one of the interactive student prompts below to immediately initiate a learning session with our TeenGenius AI Companion, or complete the walkthrough to head straight to your dashboard.",
       icon: BookOpen,
-      iconBg: "bg-indigo-505/10 text-indigo-600 dark:text-indigo-400",
+      iconBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
       gradient: "from-indigo-600 via-blue-600 to-cyan-500"
     }
   ];
@@ -156,7 +156,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
             </div>
             <button
               onClick={handleComplete}
-              className="text-xs font-black uppercase tracking-wider text-zinc-450 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-350 transition-colors px-3 py-1 bg-zinc-55 dark:bg-zinc-850 hover:bg-zinc-100 rounded-lg"
+              className="text-xs font-black uppercase tracking-wider text-zinc-450 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-350 transition-colors px-3 py-1 bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 rounded-lg"
             >
               Skip
             </button>
@@ -182,14 +182,14 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
                     <h2 className={cn("text-2xl sm:text-3xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r", currentStepData.gradient)}>
                       {currentStepData.title}
                     </h2>
-                    <p className="text-xs sm:text-sm font-extrabold text-zinc-650 dark:text-zinc-300 italic">
+                    <p className="text-xs sm:text-sm font-extrabold text-zinc-600 dark:text-zinc-300 italic">
                       &ldquo;{currentStepData.tagline}&rdquo;
                     </p>
                   </div>
                 </div>
 
                 {/* Body Details description text */}
-                <p className="text-sm text-zinc-560 dark:text-zinc-400 font-semibold leading-relaxed">
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 font-semibold leading-relaxed">
                   {currentStepData.description}
                 </p>
 
@@ -213,7 +213,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
 
                 {currentStep === 1 && (
                   <div className="p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-100 dark:border-zinc-800 rounded-2xl flex items-start gap-3.5 shadow-inner">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center shrink-0 text-emerald-650 dark:text-emerald-400">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
                       <Bot size={18} />
                     </div>
                     <div>
@@ -234,7 +234,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
                       <span className="text-[10px] font-black uppercase text-zinc-700 dark:text-zinc-300">Revision Quizzes</span>
                     </div>
                     <div className="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-2xl flex items-center gap-2.5">
-                      <div className="w-7 h-7 bg-emerald-505/10 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 bg-emerald-500/10 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
                         <Calendar size={15} />
                       </div>
                       <span className="text-[10px] font-black uppercase text-zinc-700 dark:text-zinc-300">Study Planner</span>
@@ -295,7 +295,7 @@ export default function MainWalkthrough({ isOpen, onClose }: MainWalkthroughProp
                 "py-3 px-5 border rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all outline-none",
                 currentStep === 0 
                   ? "border-zinc-150 dark:border-zinc-800 text-zinc-300 dark:text-zinc-700 bg-transparent pointer-events-none select-none" 
-                  : "border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 text-zinc-650 dark:text-zinc-300 dark:hover:bg-zinc-850 cursor-pointer active:scale-95"
+                  : "border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-850 cursor-pointer active:scale-95"
               )}
             >
               <ChevronLeft size={14} /> Back

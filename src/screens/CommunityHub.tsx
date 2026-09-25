@@ -791,7 +791,7 @@ export default function CommunityHub() {
             <span>{feedback.message}</span>
             <button
               onClick={() => setFeedback(null)}
-              className="text-zinc-400 hover:text-zinc-650 font-black px-2 cursor-pointer"
+              className="text-zinc-400 hover:text-zinc-600 font-black px-2 cursor-pointer"
             >
               <X size={14} />
             </button>
@@ -802,7 +802,7 @@ export default function CommunityHub() {
       {/* Header Intro */}
       <div className="space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-950/30 rounded-full border border-blue-200/50 dark:border-blue-900/30">
-          <ShieldCheck size={13} className="text-blue-650 dark:text-blue-400 animate-pulse" />
+          <ShieldCheck size={13} className="text-blue-600 dark:text-blue-400 animate-pulse" />
           <span className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">Verifiably Encrypted Teen Hub</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-zinc-900 dark:text-white leading-none">
@@ -833,13 +833,13 @@ export default function CommunityHub() {
               "flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer relative",
               activeTab === tab.id 
                 ? "bg-white dark:bg-zinc-850 text-zinc-900 dark:text-white shadow-sm" 
-                : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-300"
+                : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
             )}
           >
             <tab.icon size={14} className="shrink-0" />
             <span className="truncate">{tab.label}</span>
             {!!tab.badge && (
-              <span className="ml-1 w-4 h-4 bg-red-550 dark:bg-red-650 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-bounce">
+              <span className="ml-1 w-4 h-4 bg-red-500 dark:bg-red-600 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-bounce">
                 {tab.badge}
               </span>
             )}
@@ -931,7 +931,7 @@ export default function CommunityHub() {
               <h3 className="text-xs font-black uppercase tracking-wider text-zinc-400">Your Academics Network ({friends.length})</h3>
               {loadingFriends ? (
                 <div className="py-12 text-center">
-                  <div className="w-8 h-8 border-3 border-blue-550 border-t-transparent rounded-full animate-spin mx-auto" />
+                  <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
                   <p className="text-xs text-zinc-450 mt-3 font-semibold">Tuning radio connection...</p>
                 </div>
               ) : friends.length === 0 ? (
@@ -946,7 +946,7 @@ export default function CommunityHub() {
                     <div key={friend.uid} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 p-5 rounded-2xl flex items-center justify-between gap-4 shadow-sm hover:border-zinc-200 transition-all">
                       <div className="flex items-center gap-3.5 min-w-0">
                         <div className="relative shrink-0">
-                          <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-extrabold text-zinc-650 dark:text-zinc-300 text-lg uppercase shadow-inner">
+                          <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-extrabold text-zinc-600 dark:text-zinc-300 text-lg uppercase shadow-inner">
                             {friend.displayName?.[0] || '?'}
                           </div>
                           <span className={cn(
@@ -968,7 +968,7 @@ export default function CommunityHub() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => triggerPrivateChat(friend)}
-                          className="bg-blue-50 hover:bg-blue-100 dark:bg-zinc-850 dark:hover:bg-zinc-800 text-blue-650 dark:text-zinc-300 p-2.5 rounded-xl transition-all cursor-pointer"
+                          className="bg-blue-50 hover:bg-blue-100 dark:bg-zinc-850 dark:hover:bg-zinc-800 text-blue-600 dark:text-zinc-300 p-2.5 rounded-xl transition-all cursor-pointer"
                           title="Open Secure DM"
                         >
                           <MessageSquare size={14} />
@@ -1054,7 +1054,7 @@ export default function CommunityHub() {
                       </div>
                       <button
                         onClick={() => declineFriendRequest(req.id)}
-                        className="text-zinc-400 hover:text-red-550 hover:bg-red-50/20 p-2 rounded-lg transition-all cursor-pointer"
+                        className="text-zinc-400 hover:text-red-500 hover:bg-red-50/20 p-2 rounded-lg transition-all cursor-pointer"
                         title="Cancel Outgoing Invitation"
                       >
                         <X size={14} />
@@ -1160,7 +1160,7 @@ export default function CommunityHub() {
                   <div className="w-14 h-14 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <GraduationCap size={24} className="text-zinc-400" />
                   </div>
-                  <h4 className="text-xs font-black uppercase text-zinc-650 mb-1">No Active Study Circles</h4>
+                  <h4 className="text-xs font-black uppercase text-zinc-600 mb-1">No Active Study Circles</h4>
                   <p className="text-[11px] text-zinc-400 max-w-xs mx-auto">Create a guild or apply an invite code above to begin real-time workspace collaboration.</p>
                 </div>
               ) : (

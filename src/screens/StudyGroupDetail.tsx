@@ -802,7 +802,7 @@ export default function StudyGroupDetail() {
               <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[2.5rem] p-8 md:p-10 min-h-[620px] flex flex-col shadow-sm gap-6 animate-fadeIn">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <span className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 bg-violet-50 dark:bg-violet-955/20 text-violet-600 rounded-full">Collaborative Draft</span>
+                    <span className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 bg-violet-50 dark:bg-violet-950/20 text-violet-600 rounded-full">Collaborative Draft</span>
                     <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">Workspace Code & Notes Editor</h2>
                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 italic">Synchronized multi-editor workspace companion</p>
                   </div>
@@ -826,7 +826,7 @@ export default function StudyGroupDetail() {
                 <div className="p-4 bg-violet-500/5 border border-violet-500/10 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs font-medium">
                   <div className="space-y-1">
                     <p className="font-extrabold uppercase text-[9px] tracking-widest text-violet-600">✨ Realtime AI Copilot Assisted actions</p>
-                    <p className="text-zinc-550 dark:text-zinc-400">Optimize scripts, complete notes, or format drafts instantly using our specialized AI compiler.</p>
+                    <p className="text-zinc-500 dark:text-zinc-400">Optimize scripts, complete notes, or format drafts instantly using our specialized AI compiler.</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -839,7 +839,7 @@ export default function StudyGroupDetail() {
                     <button
                       onClick={() => handleAIEditorAssist('complete')}
                       disabled={editorLoading}
-                      className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-850 dark:bg-white dark:hover:bg-zinc-55 text-white dark:text-zinc-900 disabled:opacity-50 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all shadow-sm cursor-pointer"
+                      className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-850 dark:bg-white dark:hover:bg-zinc-50 text-white dark:text-zinc-900 disabled:opacity-50 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all shadow-sm cursor-pointer"
                     >
                       {editorLoading ? "Processing..." : "📝 Complete text"}
                     </button>
@@ -883,7 +883,7 @@ export default function StudyGroupDetail() {
               <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[2.5rem] p-6 md:p-10 min-h-[600px] flex flex-col shadow-sm gap-6 animate-fadeIn">
                 <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div>
-                    <span className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 bg-amber-50 dark:bg-amber-955/20 text-amber-600 rounded-full">Workspace Board</span>
+                    <span className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 bg-amber-50 dark:bg-amber-950/20 text-amber-600 rounded-full">Workspace Board</span>
                     <h2 className="text-xl font-bold tracking-tight mb-1 uppercase text-zinc-900 dark:text-white">Workspace Priority Board</h2>
                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Keep track of tasks with your friends by urgency metrics</p>
                   </div>
@@ -1020,9 +1020,9 @@ export default function StudyGroupDetail() {
                                     title="Click to cycle priority"
                                     className={cn(
                                       "px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md border cursor-pointer select-none transition-all hover:scale-105 active:scale-95 whitespace-nowrap",
-                                      prio === 'urgent' && "bg-red-50 text-red-650 border-red-200 dark:bg-red-955/20 dark:text-red-400",
-                                      prio === 'high' && "bg-amber-50 text-amber-650 border-amber-200 dark:bg-amber-955/20 dark:text-amber-400",
-                                      prio === 'medium' && "bg-blue-50 text-blue-600 border-blue-250 dark:bg-blue-955/20 dark:text-blue-400",
+                                      prio === 'urgent' && "bg-red-50 text-red-600 border-red-200 dark:bg-red-950/20 dark:text-red-400",
+                                      prio === 'high' && "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-950/20 dark:text-amber-400",
+                                      prio === 'medium' && "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-950/20 dark:text-blue-400",
                                       prio === 'low' && "bg-zinc-50 text-zinc-500 border-zinc-250 dark:bg-zinc-800 dark:text-zinc-400"
                                     )}
                                   >
@@ -1032,7 +1032,7 @@ export default function StudyGroupDetail() {
                                 {task.notes && (
                                   <p className={cn(
                                     "text-xs italic font-semibold leading-relaxed block",
-                                    task.completed ? "text-zinc-400" : "text-zinc-550 dark:text-zinc-400"
+                                    task.completed ? "text-zinc-400" : "text-zinc-500 dark:text-zinc-400"
                                   )}>
                                     {task.notes}
                                   </p>
@@ -1044,7 +1044,7 @@ export default function StudyGroupDetail() {
                               <select
                                 value={task.assigneeId || ''}
                                 onChange={(e) => handleReassignTask(task.id, e.target.value)}
-                                className="bg-zinc-50 dark:bg-zinc-800 border bg-white dark:bg-zinc-800 text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20 text-zinc-550 dark:text-zinc-400"
+                                className="bg-zinc-50 dark:bg-zinc-800 border bg-white dark:bg-zinc-800 text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20 text-zinc-500 dark:text-zinc-400"
                               >
                                 <option value="">Unassigned</option>
                                 <option value={user?.uid}>Me</option>
@@ -1093,7 +1093,7 @@ export default function StudyGroupDetail() {
                 </header>
 
                 {quizError && (
-                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-955/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-2xl text-xs font-bold leading-relaxed flex items-center gap-3">
+                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-2xl text-xs font-bold leading-relaxed flex items-center gap-3">
                     <Info size={16} />
                     <span>{quizError}</span>
                   </div>
@@ -1149,7 +1149,7 @@ export default function StudyGroupDetail() {
                                 }}
                                 className="flex items-center gap-3 p-4 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-2xl text-left hover:border-blue-500 dark:hover:border-blue-500 shadow-sm transition-all group cursor-pointer"
                               >
-                                <div className="p-2 bg-blue-50 dark:bg-blue-955/40 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors flex-shrink-0">
+                                <div className="p-2 bg-blue-50 dark:bg-blue-950/40 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors flex-shrink-0">
                                   <FileText size={16} />
                                 </div>
                                 <div className="min-w-0 flex-1">
@@ -1228,7 +1228,7 @@ export default function StudyGroupDetail() {
                                     ? "bg-blue-600 border-blue-600 text-white ring-4 ring-blue-500/20 scale-110"
                                     : isAnswered
                                       ? "bg-green-500 border-green-500 text-white"
-                                      : "bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border-zinc-250 dark:border-zinc-750"
+                                      : "bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border-zinc-250 dark:border-zinc-700"
                                 )}
                               >
                                 {qIdx + 1}
@@ -1262,9 +1262,9 @@ export default function StudyGroupDetail() {
                               : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-zinc-350 dark:hover:border-zinc-700 text-zinc-800 dark:text-zinc-200";
                           } else {
                             if (isCorrect) {
-                              btnStyle = "bg-green-50 dark:bg-green-955/30 border-green-500 text-green-900 dark:text-green-300 ring-2 ring-green-500/10";
+                              btnStyle = "bg-green-50 dark:bg-green-950/30 border-green-500 text-green-900 dark:text-green-300 ring-2 ring-green-500/10";
                             } else if (isSelected) {
-                              btnStyle = "bg-red-50 dark:bg-red-955/30 border-red-500 text-red-900 dark:text-red-300 ring-2 ring-red-500/10";
+                              btnStyle = "bg-red-50 dark:bg-red-950/30 border-red-500 text-red-900 dark:text-red-300 ring-2 ring-red-500/10";
                             } else {
                               btnStyle = "bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 opacity-60";
                             }
@@ -1285,7 +1285,7 @@ export default function StudyGroupDetail() {
                                   "w-8 h-8 rounded-full text-xs font-black flex items-center justify-center border-2 flex-shrink-0 transition-all",
                                   isSelected 
                                     ? "bg-blue-600 text-white border-blue-600 shadow-sm" 
-                                    : "bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border-zinc-250 dark:border-zinc-750"
+                                    : "bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border-zinc-250 dark:border-zinc-700"
                                 )}>
                                   {String.fromCharCode(65 + idx)}
                                 </span>
@@ -1333,7 +1333,7 @@ export default function StudyGroupDetail() {
                         <button
                           onClick={handleSubmitAnswer}
                           disabled={selectedOption === null}
-                          className="w-full py-5 bg-zinc-900 hover:bg-zinc-850 dark:bg-white dark:hover:bg-zinc-105 text-white dark:text-zinc-900 font-black text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer"
+                          className="w-full py-5 bg-zinc-900 hover:bg-zinc-850 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 font-black text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer"
                         >
                           Confirm Selection
                         </button>
@@ -1366,7 +1366,7 @@ export default function StudyGroupDetail() {
                       {/* Reward Badge Card */}
                       <div className="p-8 text-center bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800 rounded-[2.5rem] mb-8 relative overflow-hidden">
                         <div className="absolute inset-0 bg-blue-500/5 dark:bg-blue-400/5 blur-3xl scale-125" />
-                        <div className="inline-flex p-5 bg-yellow-50 dark:bg-yellow-950/30 text-yellow-600 rounded-[2rem] border border-yellow-105/40 dark:border-yellow-900/30 mb-4 animate-bounce relative z-10">
+                        <div className="inline-flex p-5 bg-yellow-50 dark:bg-yellow-950/30 text-yellow-600 rounded-[2rem] border border-yellow-100/40 dark:border-yellow-900/30 mb-4 animate-bounce relative z-10">
                           <Trophy size={48} />
                         </div>
                         <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white mb-1 relative z-10">
@@ -1412,7 +1412,7 @@ export default function StudyGroupDetail() {
                               className="p-5 border border-zinc-100 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 space-y-3 shadow-sm"
                             >
                               <div className="flex gap-2 items-start justify-between">
-                                <span className="text-[10px] font-black font-mono text-zinc-300 dark:text-zinc-650 uppercase mt-0.5 whitespace-nowrap">
+                                <span className="text-[10px] font-black font-mono text-zinc-300 dark:text-zinc-600 uppercase mt-0.5 whitespace-nowrap">
                                   Q{i + 1}
                                 </span>
                                 <h5 className="flex-1 font-bold text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed pr-2">
@@ -1420,9 +1420,9 @@ export default function StudyGroupDetail() {
                                 </h5>
                                 <span className={cn(
                                   "px-2.5 py-1 text-[8px] font-black uppercase tracking-widest rounded-md",
-                                  wasChoiceCorrect 
-                                    ? "bg-green-50 dark:bg-green-955/20 text-green-600 border border-green-150/40" 
-                                    : "bg-red-50 dark:bg-red-955/20 text-red-600 border border-red-150/40"
+                                  wasChoiceCorrect
+                                    ? "bg-green-50 dark:bg-green-950/20 text-green-600 border border-green-100/40"
+                                    : "bg-red-50 dark:bg-red-950/20 text-red-600 border border-red-100/40"
                                 )}>
                                   {wasChoiceCorrect ? "Correct" : "Incorrect"}
                                 </span>
@@ -1474,7 +1474,7 @@ export default function StudyGroupDetail() {
               <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[2.5rem] p-6 md:p-10 min-h-[600px] flex flex-col shadow-sm gap-8 animate-fadeIn">
                 <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div>
-                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 dark:bg-amber-955/40 px-3 py-1.5 rounded-full mb-3 inline-block">
+                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 rounded-full mb-3 inline-block">
                       Collaborative Forum
                     </span>
                     <h2 className="text-xl md:text-2xl font-black tracking-tight uppercase text-zinc-900 dark:text-white flex items-center gap-2">
@@ -1541,9 +1541,9 @@ export default function StudyGroupDetail() {
                             <div className="flex items-center gap-2 flex-wrap">
                               <h3 className="text-base font-black uppercase tracking-tight text-zinc-900 dark:text-white">{doubt.title}</h3>
                               {doubt.isSolved ? (
-                                <span className="bg-green-100 dark:bg-green-955/20 text-green-650 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200/30">Resolved</span>
+                                <span className="bg-green-100 dark:bg-green-950/20 text-green-600 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200/30">Resolved</span>
                               ) : (
-                                <span className="bg-amber-100 dark:bg-amber-955/20 text-amber-600 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border border-amber-200/30">Active Doubt</span>
+                                <span className="bg-amber-100 dark:bg-amber-950/20 text-amber-600 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border border-amber-200/30">Active Doubt</span>
                               )}
                             </div>
                             <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-1">Raised by {doubt.authorName} • {doubt.createdAt ? new Date(doubt.createdAt.seconds * 1000).toLocaleDateString() : 'Just now'}</p>
@@ -1564,7 +1564,7 @@ export default function StudyGroupDetail() {
                               {doubt.answers.map((answer: any) => {
                                 const isAccepted = doubt.acceptedAnswerId === answer.id;
                                 return (
-                                  <div key={answer.id} className={cn("p-4 rounded-2xl space-y-2.5 transition-all text-xs border shadow-sm", isAccepted ? "bg-green-50/50 dark:bg-green-955/10 border-green-200" : "bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-850")}>
+                                  <div key={answer.id} className={cn("p-4 rounded-2xl space-y-2.5 transition-all text-xs border shadow-sm", isAccepted ? "bg-green-50/50 dark:bg-green-950/10 border-green-200" : "bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-850")}>
                                     <div className="flex justify-between items-center">
                                       <span className="font-black uppercase text-[9px] tracking-widest text-zinc-400">{answer.authorName} answered:</span>
                                       {isAccepted && (
@@ -1621,7 +1621,7 @@ export default function StudyGroupDetail() {
               <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[2.5rem] p-6 md:p-10 min-h-[600px] flex flex-col shadow-sm gap-8">
                 <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div>
-                    <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 dark:bg-rose-955/20 px-3 py-1.5 rounded-full mb-3 inline-block">
+                    <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 dark:bg-rose-950/20 px-3 py-1.5 rounded-full mb-3 inline-block">
                       Learning Syllabus
                     </span>
                     <h2 className="text-xl md:text-2xl font-black tracking-tight uppercase text-zinc-900 dark:text-white flex items-center gap-2">
@@ -1688,9 +1688,9 @@ export default function StudyGroupDetail() {
                             <div className="flex justify-between items-start gap-4">
                               <h3 className="text-sm font-black uppercase tracking-tight text-zinc-900 dark:text-white text-wrap pr-4">{m.title}</h3>
                               {isCompleted ? (
-                                <span className="bg-green-105 text-green-750 dark:bg-green-955/20 dark:text-green-400 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-150 whitespace-nowrap">Completed</span>
+                                <span className="bg-green-100 text-green-700 dark:bg-green-950/20 dark:text-green-400 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-100 whitespace-nowrap">Completed</span>
                               ) : (
-                                <span className="bg-blue-50 text-blue-600 dark:bg-blue-955/20 dark:text-blue-400 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border border-blue-150 animate-pulse whitespace-nowrap">In Progress</span>
+                                <span className="bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border border-blue-100 animate-pulse whitespace-nowrap">In Progress</span>
                               )}
                             </div>
                             <p className="text-xs italic text-zinc-500 font-medium leading-relaxed">"{m.description || 'No instructions specified.'}"</p>
@@ -1896,7 +1896,7 @@ export default function StudyGroupDetail() {
             initial={{ opacity: 0, y: -50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-8 left-1/2 -translate-x-1/2 z-[9999] bg-zinc-90 w-full max-w-sm bg-zinc-900 dark:bg-zinc-800 border border-zinc-800 dark:border-zinc-750 text-white rounded-[2rem] p-6 shadow-2xl flex items-center gap-5"
+            className="fixed top-8 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-sm bg-zinc-900 dark:bg-zinc-800 border border-zinc-800 dark:border-zinc-700 text-white rounded-[2rem] p-6 shadow-2xl flex items-center gap-5"
           >
             <div className="w-14 h-14 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-yellow-500/20">
               <Trophy size={28} className="animate-pulse" />

@@ -1,8 +1,23 @@
 # TeenGenius — Continuation Log
 
-**Last updated:** 2026-09-25 (Phase 10: Focus Zone Polish & Mobile Timer Fix)
+**Last updated:** 2026-09-25 (Phase 11: Design-token colour repair)
 **Branch:** main
 **Status:** Build ✅ | TypeScript lint ✅ | Production server smoke test ✅
+
+---
+
+## PHASE 11 — DESIGN-TOKEN COLOUR REPAIR (this session)
+
+**Theme:** a full-source audit found **216 colour utilities** using shade values that do not exist in this project's Tailwind palette, so Tailwind emitted **no CSS at all** for them. These were mostly custom zinc shades (such as `zinc-650`, `zinc-805`, `zinc-850`) mistakenly applied to other colour families, and a few malformed duplicates such as `bg-zinc-90`. Repaired the full set rather than only the two examples previously logged.
+
+- **Grounding:** the project defines Tailwind's standard 50–950 palette plus **zinc-only** custom shades `150, 250, 350, 450, 805, 850, 905` in `src/index.css`. Extended families keep the standard palette; zinc uses both. The audit now reports **0 invalid colour utilities**, down from 216.
+- **Repair scope:** **21 tracked source files**, all mechanical class-token replacements (no layout, logic, copy, route, data, or dependency changes). Examples: `text-rose-650` → `text-rose-600`, `bg-teal-55/10` → `bg-teal-500/10`, and `dark:bg-rose-955/*` → `dark:bg-rose-950/*`.
+- **Malformed duplicate removed:** five elements contained a dead `bg-zinc-90` immediately before a valid `bg-zinc-900`; the dead token was removed rather than rounded, preserving the already-effective background.
+- **Sibling branches kept consistent:** the two error-banner tint branches in `AIAssistant` now use matching `red-100` / `green-100` steps.
+- **Safety checks:** every modified line is a 1:1 replacement; a structural same-property/state conflict comparison against `HEAD` found **0 new conflicts**; the five dead `bg-zinc-90` sites are now clean.
+- **Documentation cleanup:** removed the stale "Timetable Maker" bullet from `android-app/README.md`; this was the sole remaining reference to a retired feature (the continuation log's historical note excluded).
+- **Not retained:** the temporary repair script was deleted before commit; `_scan5.txt` and `filelist.txt` remain untracked as before.
+- **Validated:** `npm run lint` → 0, `npm run build` → 0, production smoke `/` 200 + `/api/version` 200 with empty stderr; CSS emission rechecked after the final build.
 
 ---
 
