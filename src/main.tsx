@@ -7,7 +7,7 @@ import 'katex/dist/katex.min.css';
 // Register PWA service worker for offline operations and performance
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`)
       .then((reg) => {
         console.log('Service Worker registered successfully:', reg.scope);
         // Poll for a newer service worker version on page load

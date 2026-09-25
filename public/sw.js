@@ -1,8 +1,11 @@
 const CACHE_NAME = 'teengenius-pwa-v3';
+// Derive the deployment base from the service worker's own URL so the same file
+// works at '/' (Netlify) and '/TeenGenius/' (GitHub Pages) without a build step.
+const BASE_PATH = new URL('./', self.location).pathname;
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  BASE_PATH,
+  BASE_PATH + 'index.html',
+  BASE_PATH + 'manifest.json'
 ];
 
 // Tell all open clients when a new service worker takes over
@@ -75,7 +78,9 @@ self.addEventListener('fetch', (event) => {
           // If offline or network query fails, serve from the offline cache pool
           return caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) return cachedResponse;
-            return caches.match('/index.html');
+            // Base-aware fallback so a deep link still boots the SPA when hosted
+            // under a subpath (GitHub Pages) as well as at the domain root.
+            return caches.match(BASE_PATH + 'index.html');
           });
         })
     );

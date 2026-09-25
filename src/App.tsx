@@ -33,6 +33,26 @@ const WhiteboardScreen = lazy(() => import('./screens/WhiteboardScreen'));
 const PracticeExperience = lazy(() => import('./screens/PracticeExperience'));
 const ExamPrep = lazy(() => import('./screens/ExamPrep'));
 
+// GitHub Pages SPA fallback. Pages cannot rewrite unknown paths to index.html the way
+// Netlify's `/* -> /index.html` redirect does, so it serves `404.html` for them. The
+// build's 404.html hands the originally requested path back through a query string;
+// this runs once, before the Router mounts, and puts the real path back into the URL
+// so the Router boots the requested route instead of the landing page.
+// On Netlify and local dev no such query is present, so this is a no-op.
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const target = params.get('__tg_path');
+  if (!target || !target.startsWith('/')) return;
+  params.delete('__tg_path');
+  const search = params.toString();
+  // `target` is relative to the deployment base (e.g. '/app/profile'), so re-apply
+  // the base that BrowserRouter is mounted with.
+  const base = import.meta.env.BASE_URL.replace(/\/*$/, '/');
+  const restored = base + target.replace(/^\//, '') + (search ? `?${search}` : '');
+  window.history.replaceState(window.history.state, '', restored);
+})();
+
+
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) return <SplashScreen />;
@@ -60,6 +80,10 @@ function DeploymentVersionChecker() {
   // 1. Check version state helper
   const checkVersion = React.useCallback(async (initial = false) => {
     try {
+      // This checker polls the host's own /api/version endpoint (the Netlify function or the
+      // bundled Node server). Static hosts such as GitHub Pages have no such endpoint, so the
+      // poll is skipped there instead of issuing a failing request every five minutes.
+      if (import.meta.env.BASE_URL !== '/') return;
       const res = await fetch('/api/version', { cache: 'no-store' });
       if (!res.ok) return;
       const data = await res.json();
@@ -202,7 +226,7 @@ export default function App() {
   if (showLaunch) return <SplashScreen />;
 
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <ErrorBoundary>
         <AuthProvider>
           <MusicProvider>

@@ -4,7 +4,17 @@ import path from 'path';
 import {defineConfig, loadEnv} from 'vite';
 
 export default defineConfig(({mode}) => {
+  // Base path is deployment-aware so the SAME source tree can ship to two hosts:
+  //   - Netlify (teengenius.site) and local dev  -> '/'            (unchanged)
+  //   - GitHub Pages (mokshith2426.github.io)   -> '/TeenGenius/'
+  // Vite exposes the resolved value to the app as import.meta.env.BASE_URL, which
+  // the React Router basename, manifest, and service worker all key off.
+  const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+  const pagesBase = (process.env.GITHUB_PAGES_BASE || '/TeenGenius/').replace(/\/*$/, '/');
+
   return {
+    // Netlify keeps serving from the domain root; only Actions builds get a subpath.
+    base: isGitHubPages ? pagesBase : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
