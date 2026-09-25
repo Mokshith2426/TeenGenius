@@ -6,6 +6,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { isGroqConfigured } from '../../ai-provider';
+import { URL_FETCH_CONFIG } from '../config/constants';
 
 // ============================================================================
 // TYPES
@@ -105,6 +106,45 @@ export const requestBurstGuard = (req: AuthenticatedRequest, res: Response, next
   next();
 };
 
+// --- OUTBOUND URL FETCH COOLDOWN ---
+// The URL summarizer makes the server fetch a third-party page on the student's
+// behalf. That is more expensive (and more abusable) than a pure AI call, so it
+// gets its own, slower per-client cooldown in addition to the burst guard.
+
+const urlFetchHits = new Map<string, number>();
+let lastUrlFetchSweep = Date.now();
+
+/**
+ * Per-client cooldown for server-side URL fetching.
+ */
+export const urlFetchGuard = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+  const now = Date.now();
+
+  if (now - lastUrlFetchSweep > 60000) {
+    for (const [k, ts] of urlFetchHits) {
+      if (now - ts > URL_FETCH_CONFIG.EXTRACT_BURST_WINDOW_MS * 4) urlFetchHits.delete(k);
+    }
+    lastUrlFetchSweep = now;
+  }
+
+  const key = `url::${clientBurstKey(req)}`;
+  const last = urlFetchHits.get(key);
+  if (last !== undefined && now - last < URL_FETCH_CONFIG.EXTRACT_BURST_WINDOW_MS) {
+    const retryAfterSeconds = Math.max(
+      1,
+      Math.ceil((URL_FETCH_CONFIG.EXTRACT_BURST_WINDOW_MS - (now - last)) / 1000),
+    );
+    res.setHeader("Retry-After", String(retryAfterSeconds));
+    res.status(429).json({
+      error: "Just a moment — please wait a few seconds before summarising another link.",
+      code: "URL_FETCH_THROTTLED",
+    });
+    return;
+  }
+  urlFetchHits.set(key, now);
+  next();
+};
+
 // ============================================================================
 // ERROR HANDLING MIDDLEWARE
 // ============================================================================
@@ -128,7 +168,7 @@ export const aiErrorHandler = (
   let retryAfterSeconds: number | undefined;
 
   // Check if it's already a classified AI error
-  if (error.code && typeof error.code === "string" && error.code.startsWith("AI_")) {
+  if (error.code && typeof error.code === "string" && (error.code.startsWith("AI_") || error.code.startsWith("URL_") || error.code === "YOUTUBE_NO_TRANSCRIPT")) {
     status = error.status || 503;
     code = error.code;
     message = error.message || "An error occurred.";

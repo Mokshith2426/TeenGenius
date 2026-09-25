@@ -7,14 +7,6 @@
         { "fieldPath": "userId", "order": "ASCENDING" },
         { "fieldPath": "lastUpdatedAt", "order": "DESCENDING" }
       ]
-    },
-    {
-      "collectionGroup": "chats",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "memberIds", "arrayConfig": "CONTAINS" },
-        { "fieldPath": "lastUpdatedAt", "order": "DESCENDING" }
-      ]
     }
   ],
   "fieldOverrides": []

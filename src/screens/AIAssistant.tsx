@@ -8,7 +8,6 @@ import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp,
 import { useAuth } from '../context/AuthContext';
 import { formatTime } from '../lib/dateUtils';
 import { safeFetch, getApiUrl } from '../lib/api';
-import { awardGamificationPoints } from '../lib/gamification';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 
 import Logo from '../components/Logo';
@@ -52,7 +51,6 @@ export default function AIAssistant() {
   const [isDragging, setIsDragging] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [streamingText, setStreamingText] = useState<string | null>(null);
-  const [gamificationAlert, setGamificationAlert] = useState<{ xp: number; badges: string[] } | null>(null);
 
   // Immersive tutor-mode: the student picks a learning action, types a topic,
   // and the action instruction wraps their topic when the message is sent.
@@ -273,28 +271,10 @@ export default function AIAssistant() {
       setIsAnswerSubmitted(false);
     } else {
       setQuizCompleted(true);
-      
-      // Award gamification points for completing the evaluation module
-      if (user?.uid) {
-        try {
-          const res = await awardGamificationPoints(user.uid, 'FINISH_AI_QUIZ');
-          if (res.xpAwarded > 0) {
-            triggerAlert(res.xpAwarded, res.newBadgesEarned);
-          }
-        } catch (err) {
-          console.warn("Failed to award quiz completion points:", err);
-        }
-      }
     }
   };
 
-  const triggerAlert = (xp: number, badges: string[]) => {
-    setGamificationAlert({ xp, badges });
-    setTimeout(() => {
-      setGamificationAlert(null);
-    }, 4000);
-  };
-  
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -832,15 +812,6 @@ export default function AIAssistant() {
       
       setMessages(prev => [...prev, { ...assistantMessage, id: 'assistant_' + Date.now(), timestamp: new Date() }]);
 
-      // Award points for using AI Tutor node
-      if (user?.uid) {
-        awardGamificationPoints(user.uid, 'USE_AI_TUTOR').then((res) => {
-          if (res.xpAwarded > 0) {
-            triggerAlert(res.xpAwarded, res.newBadgesEarned);
-          }
-        }).catch(err => console.warn("Failed to award AI tutor points:", err));
-      }
-      
       // Persist to Firestore in the background
       if (sessionId && !sessionId.startsWith('local_')) {
         addDoc(collection(db, 'aiChats', sessionId, 'messages'), {
@@ -1657,34 +1628,6 @@ export default function AIAssistant() {
           AI can make mistakes — double-check important answers against your textbook.
         </p>
       </div>
-
-      {/* Dynamic Pop-up Celebration Badge Alert overlay */}
-      <AnimatePresence>
-        {gamificationAlert && (
-          <motion.div
-            initial={{ opacity: 0, y: -50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-8 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-sm bg-zinc-900 dark:bg-zinc-800 border border-zinc-800 dark:border-zinc-700 text-white rounded-[2rem] p-6 shadow-2xl flex items-center gap-5"
-          >
-            <div className="w-14 h-14 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-yellow-500/20">
-              <Trophy size={28} className="animate-pulse" />
-            </div>
-            <div>
-              <span className="text-[9px] font-black uppercase tracking-widest text-yellow-400">Learning Milestone Unlocked!</span>
-              <h3 className="text-base font-black uppercase tracking-tight text-white mt-0.5 animate-pulse">Personal Growth!</h3>
-              <p className="text-xs font-bold text-zinc-350 mt-1">
-                You earned <span className="text-blue-400 font-black">+{gamificationAlert.xp} credits</span> for consulting the AI Tutor.
-              </p>
-              {gamificationAlert.badges?.length > 0 && (
-                <div className="mt-2 text-[8px] font-black uppercase tracking-widest text-green-400 bg-green-950/45 px-2.5 py-1 rounded-md border border-green-800/40 w-fit">
-                  🏆 Badge Earned: {gamificationAlert.badges.join(', ')}!
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Quick Quiz Modal Overlay */}
       <AnimatePresence>

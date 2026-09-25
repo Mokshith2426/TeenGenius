@@ -3,7 +3,7 @@
   "name": "TeenGenius",
   "short_name": "TeenGenius",
   "scope": "./",
-  "description": "AI study companion for students: tutoring, notes, planning, focus timer, and study groups.",
+  "description": "A focused student study companion: learn topics, turn YouTube videos, articles, files or text into short revision notes, practise with quizzes, and plan your study.",
   "start_url": "./",
   "display": "standalone",
   "launch_handler": { "client_mode": "focus-existing" },
@@ -37,14 +37,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "TeenGenius Peer-to-Peer Study Hub Desktop Workspace"
+      "label": "TeenGenius study companion on desktop"
     },
     {
       "src": "./screenshot-mobile.png",
       "sizes": "640x1136",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "TeenGenius Focus Zone and AI Tutoring on mobile"
+      "label": "TeenGenius Create Notes and AI Tutor on mobile"
     }
   ]
 }

@@ -23,28 +23,21 @@ export default function MarkdownRenderer({ content, onLinkClick, className = '' 
     const textContent = String(children || '').toLowerCase().trim();
     const hrefLower = String(href || '').toLowerCase();
 
-    // Internal navigation patterns
+    // A few friendly shorthands so the tutor's answers can deep-link into the
+    // app. Only retained destinations qualify.
     if (
-      textContent.includes('focus zone') || 
-      textContent.includes('focus room') || 
-      hrefLower.includes('focus')
-    ) {
-      navigate('/app/focus');
-      return true;
-    } else if (
+      textContent.includes('create notes') ||
       textContent.includes('notes lab') ||
-      textContent.includes('notes synthesizer') || 
       textContent.includes('notes generator') ||
       hrefLower.includes('notes')
     ) {
       navigate('/app/notes');
       return true;
-    } else if (
-      textContent.includes('roadmap') || 
-      textContent.includes('roadmap architect') ||
-      hrefLower.includes('roadmap')
-    ) {
-      navigate('/app/roadmap');
+    } else if (textContent.includes('learn hub') || hrefLower.includes('/learn')) {
+      navigate('/app/learn');
+      return true;
+    } else if (textContent.includes('practice') || hrefLower.includes('/practice')) {
+      navigate('/app/practice');
       return true;
     } else if (onLinkClick) {
       onLinkClick(href);

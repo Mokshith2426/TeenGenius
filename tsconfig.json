@@ -29,6 +29,7 @@
     "app.ts",
     "ai-provider.ts",
     "env.ts",
+    "scripts/**/*.ts",
     "server/types/**/*.d.ts"
   ]
 }

@@ -40,10 +40,6 @@ export default function OnboardingFlow() {
     } catch { /* local-first — never block onboarding on a sync error */ }
     setOnboardingComplete();
     setDone(true);
-    // Hand off to the app tour only when setup wasn't skipped and it hasn't run yet.
-    if (!skipped && localStorage.getItem('TEENGENIUS_MAIN_WALKTHROUGH_COMPLETED_v2') !== 'true') {
-      setTimeout(() => window.dispatchEvent(new CustomEvent('trigger-walkthrough')), 350);
-    }
   };
 
   const ctaCls = 'w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-[11px] uppercase tracking-widest rounded-2xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] cursor-pointer';

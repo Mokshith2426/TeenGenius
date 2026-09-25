@@ -1,4 +1,4 @@
-const CACHE_NAME = 'teengenius-pwa-v3';
+const CACHE_NAME = 'teengenius-pwa-v4';
 // Derive the deployment base from the service worker's own URL so the same file
 // works at '/' (Netlify) and '/TeenGenius/' (GitHub Pages) without a build step.
 const BASE_PATH = new URL('./', self.location).pathname;

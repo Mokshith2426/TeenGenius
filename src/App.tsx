@@ -1,37 +1,27 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { MusicProvider } from './context/MusicContext';
 import Layout from './components/Layout';
 import SplashScreen from './components/SplashScreen';
 import ErrorBoundary from './components/ErrorBoundary';
 import RouteLoading from './components/RouteLoading';
 import { startSessionTracker } from './lib/analytics';
 
-// Lazy load screen components for elite bundle optimizations and page transition speed
+// Lazy load screen components for elite bundle optimizations and page transition speed.
+// The MVP keeps a deliberately small set of destinations: Home, Learn, Create
+// Notes, Practice, Plan and the AI Tutor (plus account and legal pages).
 const Home = lazy(() => import('./screens/Home'));
-const ChatList = lazy(() => import('./screens/ChatList'));
-const ChatRoom = lazy(() => import('./screens/ChatRoom'));
-const StudyGroups = lazy(() => import('./screens/StudyGroups'));
-const StudyGroupDetail = lazy(() => import('./screens/StudyGroupDetail'));
+const LearnHub = lazy(() => import('./screens/LearnHub'));
+const CreateNotes = lazy(() => import('./screens/CreateNotes'));
+const PracticeExperience = lazy(() => import('./screens/PracticeExperience'));
+const PlannerHub = lazy(() => import('./screens/PlannerHub'));
+const ExamPrep = lazy(() => import('./screens/ExamPrep'));
 const AIAssistant = lazy(() => import('./screens/AIAssistant'));
 const Profile = lazy(() => import('./screens/Profile'));
-  const NotesGenerator = lazy(() => import('./screens/NotesGenerator'));
-  const Friends = lazy(() => import('./screens/Friends'));
-  const FocusRoom = lazy(() => import('./screens/FocusRoom'));
 const Login = lazy(() => import('./screens/Login'));
 const Landing = lazy(() => import('./screens/Landing'));
-const Feedback = lazy(() => import('./screens/Feedback'));
 const PrivacyPolicy = lazy(() => import('./screens/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./screens/TermsOfService'));
-
-// Brand-new hub routers
-const LearnHub = lazy(() => import('./screens/LearnHub'));
-const CommunityHub = lazy(() => import('./screens/CommunityHub'));
-const PlannerHub = lazy(() => import('./screens/PlannerHub'));
-const WhiteboardScreen = lazy(() => import('./screens/WhiteboardScreen'));
-const PracticeExperience = lazy(() => import('./screens/PracticeExperience'));
-const ExamPrep = lazy(() => import('./screens/ExamPrep'));
 
 // GitHub Pages SPA fallback. Pages cannot rewrite unknown paths to index.html the way
 // Netlify's `/* -> /index.html` redirect does, so it serves `404.html` for them. The
@@ -229,48 +219,34 @@ export default function App() {
     <Router basename={import.meta.env.BASE_URL}>
       <ErrorBoundary>
         <AuthProvider>
-          <MusicProvider>
-            <DeploymentVersionChecker />
-            <Suspense fallback={<RouteLoading />}>
-              <Routes>
-                <Route path="/" element={<LandingPageWrapper />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/app" element={<PrivateRoute><Layout /></PrivateRoute>}>
-                  <Route index element={<Home />} />
-                  <Route path="chats" element={<ChatList />} />
-                  <Route path="chats/:chatId" element={<ChatRoom />} />
-                  <Route path="study-groups" element={<StudyGroups />} />
-                  <Route path="study-groups/:groupId" element={<StudyGroupDetail />} />
-                  <Route path="ai-assistant" element={<AIAssistant />} />
-                  <Route path="notes" element={<NotesGenerator />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="learn" element={<LearnHub />} />
-                  <Route path="study/:subjectId" element={<LearnHub />} />
-                  <Route path="study/:subjectId/:topicId" element={<LearnHub />} />
-                  <Route path="practice" element={<PracticeExperience />} />
-                  <Route path="exam" element={<ExamPrep />} />
-                  <Route path="exam/:examId" element={<ExamPrep />} />
-                  <Route path="explore" element={<Navigate to="/app/learn" replace />} />
-                  <Route path="tools" element={<Navigate to="/app/learn" replace />} />
-                  <Route path="community" element={<CommunityHub />} />
-                  <Route path="planner" element={<PlannerHub />} />
-                  <Route path="whiteboard" element={<WhiteboardScreen />} />
-                  <Route path="friends" element={<Navigate to="/app/profile?tab=friends" replace />} />
-                  <Route path="focus" element={<FocusRoom />} />
-                  <Route path="roadmap" element={<Navigate to="/app/learn" replace />} />
-                  {/* Removed features — keep old links working */}
-                  <Route path="timetable" element={<Navigate to="/app/planner" replace />} />
-                  <Route path="homework-solver" element={<Navigate to="/app/ai-assistant" replace />} />
-                  <Route path="memory-lab" element={<Navigate to="/app/learn" replace />} />
-                  <Route path="feedback" element={<Feedback />} />
-                  <Route path="safety" element={<Navigate to="/app" replace />} />
-                </Route>
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </MusicProvider>
+          <DeploymentVersionChecker />
+          <Suspense fallback={<RouteLoading />}>
+            <Routes>
+              <Route path="/" element={<LandingPageWrapper />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/app" element={<PrivateRoute><Layout /></PrivateRoute>}>
+                <Route index element={<Home />} />
+                <Route path="learn" element={<LearnHub />} />
+                <Route path="study/:subjectId" element={<LearnHub />} />
+                <Route path="study/:subjectId/:topicId" element={<LearnHub />} />
+                <Route path="notes" element={<CreateNotes />} />
+                <Route path="create-notes" element={<Navigate to="/app/notes" replace />} />
+                <Route path="practice" element={<PracticeExperience />} />
+                <Route path="exam" element={<ExamPrep />} />
+                <Route path="exam/:examId" element={<ExamPrep />} />
+                <Route path="planner" element={<PlannerHub />} />
+                <Route path="ai-assistant" element={<AIAssistant />} />
+                <Route path="profile" element={<Profile />} />
+                {/* Previously-shipped surfaces (chats, classrooms, whiteboard, focus
+                    zone, roadmaps, feedback, homework solver, memory lab) are gone.
+                    This catch-all only stops old bookmarks from 404ing. */}
+                <Route path="*" element={<Navigate to="/app" replace />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </AuthProvider>
       </ErrorBoundary>
     </Router>

@@ -64,11 +64,11 @@ export default function TermsOfService() {
               3. Staying Respectful
             </h2>
             <div className="space-y-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
-              <p>When you use the Focus Zone or Classrooms with other students, you agree to:</p>
+              <p>When you use the AI tutor and the notes tools, you agree to:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Never post anything offensive, hurtful, or inappropriate.</li>
-                <li>Respect other students' progress and their focus time.</li>
-                <li>Follow your own school's rules on classroom and assignment conduct.</li>
+                <li>Use TeenGenius to understand material, not to submit AI output as your own work.</li>
+                <li>Only paste links and material you have the right to use.</li>
+                <li>Follow your own school's rules on assignment conduct.</li>
               </ul>
             </div>
           </section>

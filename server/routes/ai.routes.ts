@@ -8,10 +8,11 @@
 import { Router } from 'express';
 import { AIController } from '../controllers/ai.controller';
 import { upload } from '../middleware/upload.middleware';
-import { 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard 
+import {
+  validateInput,
+  checkAiKey,
+  requestBurstGuard,
+  urlFetchGuard
 } from '../middleware/ai.middleware';
 
 const router = Router();
@@ -46,15 +47,16 @@ router.post('/notes',
 );
 
 /**
- * @route   POST /api/ai/roadmap
- * @desc    Generate learning roadmap
+ * @route   POST /api/ai/notes/from-url
+ * @desc    Turn a YouTube / article URL into short study notes
  * @access  Public (with API key check)
  */
-router.post('/roadmap', 
-  validateInput, 
-  checkAiKey, 
-  requestBurstGuard, 
-  AIController.roadmap
+router.post('/notes/from-url',
+  validateInput,
+  checkAiKey,
+  requestBurstGuard,
+  urlFetchGuard,
+  AIController.notesFromUrl
 );
 
 /**

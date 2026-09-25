@@ -20,11 +20,11 @@ import {
   type ProviderErrorCode,
 } from '../../ai-provider';
 import { detectSubject, type Subject } from '../../src/lib/subjectDetection';
+import { extractSource, type ExtractedSource } from './source-extractor.service';
 import {
   NOTES_GENERATOR_PROMPT,
   QUIZ_GENERATOR_PROMPT,
   QUICK_QUIZ_PROMPT,
-  ROADMAP_PROMPT,
   EDITOR_ASSIST_PROMPT,
 } from '../../src/lib/ai-prompts';
 
@@ -60,8 +60,24 @@ export interface NotesParams {
   files?: Array<{ name: string; data: string; mimeType: string }>;
 }
 
-export interface RoadmapParams {
-  topic: string;
+export interface NotesFromUrlParams {
+  url: string;
+  focus: string;
+  noteStyle: string;
+  summaryLength: string;
+  subject: string;
+}
+
+export interface NotesFromUrlResult {
+  notes: string;
+  source: {
+    type: string;
+    label: string;
+    title: string;
+    url: string;
+    chars: number;
+    language?: string;
+  };
 }
 
 export interface QuizParams {
@@ -224,12 +240,16 @@ export class AIService {
 
   /**
    * Notes Generator
+   *
+   * The extracted source text is wrapped in an explicit "SOURCE MATERIAL"
+   * block so the model can never confuse raw scraped/transcribed text with
+   * student instructions (prompt-injection hardening for the URL flow).
    */
   public async generateNotes(params: NotesParams, req?: any): Promise<{ notes: string }> {
     const fileInfo = params.files && params.files.length > 0
       ? `\n\nAttached files (${params.files.length}): ${params.files.map(f => `${f.name} (${f.mimeType})`).join(', ')}. Use these file names and types as context for the notes.`
       : '';
-    
+
     const formattedPrompt = NOTES_GENERATOR_PROMPT({
       content: params.content || '',
       focus: params.focus || '',
@@ -252,52 +272,44 @@ export class AIService {
   }
 
   /**
-   * Roadmap Generator
+   * URL -> extracted text -> short notes.
+   *
+   * The source is fetched and parsed server-side (see source-extractor.service)
+   * and ONLY the extracted text reaches the model. The raw URL is never sent to
+   * the LLM, because a text model cannot open a page or watch a video.
    */
-  public async generateRoadmap(params: RoadmapParams, req?: any): Promise<{ roadmap: any[] }> {
-    const prompt = ROADMAP_PROMPT(params.topic);
+  public async generateNotesFromUrl(
+    params: NotesFromUrlParams,
+    req?: any
+  ): Promise<NotesFromUrlResult> {
+    // 1) Validate + fetch + extract (throws a student-readable error on failure).
+    const source = await extractSource(params.url);
 
-    const roadmapText = await this.generateText(
+    // 2) Reuse the exact same notes pipeline as text/file input.
+    const notesText = await this.generateNotes(
       {
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        maxOutputTokens: 2048,
+        content: source.text,
+        focus: params.focus || '',
+        noteStyle: params.noteStyle || 'Short Notes',
+        summaryLength: params.summaryLength || 'Standard',
+        subject: params.subject || 'Auto-Detect',
       },
-      "/api/ai/roadmap",
       req
     );
 
-    try {
-      let cleanedText = roadmapText || "[]";
-      cleanedText = cleanedText.replace(/```json|```/g, "").trim();
-      
-      let parsed: any = null;
-      try {
-        parsed = JSON.parse(cleanedText);
-      } catch {
-        const firstBrace = cleanedText.indexOf('[');
-        const lastBrace = cleanedText.lastIndexOf(']');
-        if (firstBrace !== -1 && lastBrace > firstBrace) {
-          parsed = JSON.parse(cleanedText.substring(firstBrace, lastBrace + 1));
-        } else {
-          const firstObj = cleanedText.indexOf('{');
-          const lastObj = cleanedText.lastIndexOf('}');
-          if (firstObj !== -1 && lastObj > firstObj) {
-            parsed = JSON.parse(cleanedText.substring(firstObj, lastObj + 1));
-          } else {
-            throw new Error("No JSON object found in response");
-          }
-        }
-      }
-      
-      const roadmap = (parsed && Array.isArray(parsed.roadmap)) ? parsed.roadmap : (Array.isArray(parsed) ? parsed : []);
-      return { roadmap };
-    } catch (e: any) {
-      console.error("Roadmap Parse Error:", e, roadmapText);
-      const err = new Error(`Failed to parse roadmap response: ${e.message}`);
-      (err as any).code = "AI_PARSE_ERROR";
-      throw err;
-    }
+    // The extracted body text is intentionally NOT returned to the browser —
+    // only metadata the UI needs to caption the notes.
+    return {
+      notes: notesText.notes,
+      source: {
+        type: source.type,
+        label: source.label,
+        title: source.title,
+        url: source.url,
+        chars: source.chars,
+        language: source.language,
+      },
+    };
   }
 
   /**

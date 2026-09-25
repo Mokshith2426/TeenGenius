@@ -129,13 +129,25 @@ export class AIController {
   }
 
   /**
-   * Roadmap Generator
+   * Notes from a URL (YouTube transcript or article text).
+   * Fetching + extraction happen server-side; the browser never scrapes.
    */
-  public static async roadmap(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  public static async notesFromUrl(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { topic } = req.body;
+      const { url, focus, noteStyle, summaryLength, subject } = req.body;
 
-      const result = await aiService.generateRoadmap({ topic }, req);
+      if (!url || typeof url !== 'string' || !url.trim()) {
+        res.status(400).json({ error: "A link is required", code: "URL_INVALID" });
+        return;
+      }
+
+      const result = await aiService.generateNotesFromUrl({
+        url: url.trim(),
+        focus: focus || '',
+        noteStyle: noteStyle || 'Short Notes',
+        summaryLength: summaryLength || 'Standard',
+        subject: subject || 'Auto-Detect',
+      }, req);
 
       res.json(result);
     } catch (error: any) {

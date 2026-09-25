@@ -268,13 +268,13 @@ export default function Login() {
                 <div className="space-y-3">
                   <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white leading-tight">
                     {onboardStep === 0 && "Everything You Need to Learn"}
-                    {onboardStep === 1 && "Stay Organized"}
-                    {onboardStep === 2 && "Learn Together"}
+                    {onboardStep === 1 && "Turn Anything Into Notes"}
+                    {onboardStep === 2 && "Practise and Plan"}
                   </h2>
                   <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 font-semibold leading-relaxed max-w-sm">
-                    {onboardStep === 0 && "Homework, AI, Notes and Revision—all in one place."}
-                    {onboardStep === 1 && "Assignments, calendars, reminders and real progress tracking."}
-                    {onboardStep === 2 && "Classrooms, teacher announcements, Study Buddies and collaborative learning."}
+                    {onboardStep === 0 && "Learn Hub, AI tutor, notes and practice — all in one place."}
+                    {onboardStep === 1 && "Paste a YouTube video, an article or your own text and get short revision notes."}
+                    {onboardStep === 2 && "Quick quizzes, study tasks and exam countdowns that keep you on track."}
                   </p>
                 </div>
               </div>

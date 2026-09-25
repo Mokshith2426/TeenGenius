@@ -542,39 +542,17 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     <div>
                       <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">Help Center FAQ & Onboarding</h3>
                       
-                      {/* Walkthrough Quick Launcher */}
-                      <div className="p-4 mb-4 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 border border-blue-500/25 rounded-2.5xl flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="space-y-0.5 text-center sm:text-left">
-                          <p className="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider">Welcome Onboarding Tour</p>
-                          <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold leading-relaxed">
-                            Relaunch our custom interactive guide to understand study rooms, notes labs, and AI timers.
+                      <div className='space-y-3 '>
+                        <div className='p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800 rounded-2.5xl'>
+                          <p className='text-xs font-black uppercase text-zinc-800 dark:text-white tracking-wider mb-1'>How do I turn a link into notes?</p>
+                          <p className='text-[10px] text-zinc-450 dark:text-zinc-400 leading-relaxed font-semibold'>
+                            Open Create Notes, choose the Link tab, and paste a YouTube or article link. TeenGenius reads the transcript or article text and writes short notes for you.
                           </p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            onClose();
-                            setTimeout(() => {
-                              window.dispatchEvent(new CustomEvent('trigger-walkthrough'));
-                            }, 50);
-                          }}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-black text-[9px] uppercase tracking-widest rounded-xl transition-all active:scale-95 shadow-md shadow-blue-500/15 shrink-0 cursor-pointer"
-                        >
-                          Replay Tutorial 🚀
-                        </button>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800 rounded-2.5xl">
-                          <p className="text-xs font-black uppercase text-zinc-800 dark:text-white tracking-wider mb-1">How do Classrooms work?</p>
-                          <p className="text-[10px] text-zinc-450 dark:text-zinc-400 leading-relaxed font-semibold">
-                            Classrooms are private group spaces for your class. Chat with classmates, share notes and resources, and take quizzes together.
-                          </p>
-                        </div>
-                        <div className="p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800 rounded-2.5xl">
-                          <p className="text-xs font-black uppercase text-zinc-800 dark:text-white tracking-wider mb-1">Is my data private?</p>
-                          <p className="text-[10px] text-zinc-450 dark:text-zinc-400 leading-relaxed font-semibold">
-                            Yes. Your chats, notes, and study data stay in your account and are never sold or shared.
+                        <div className='p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800 rounded-2.5xl'>
+                          <p className='text-xs font-black uppercase text-zinc-800 dark:text-white tracking-wider mb-1'>Is my data private?</p>
+                          <p className='text-[10px] text-zinc-450 dark:text-zinc-400 leading-relaxed font-semibold'>
+                            Yes. Your notes, plans and study data stay in your account and are never sold or shared.
                           </p>
                         </div>
                       </div>

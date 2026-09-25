@@ -80,73 +80,73 @@ export default function Landing() {
 
   const features = [
     {
-      icon: MessageSquare,
-      title: "Ask Study Questions",
-      desc: "Get instant, direct answers on any school subject. Perfect when you are stuck or studying late at night.",
-      badge: "24/7 Active Chat",
+      icon: Sparkles,
+      title: "Create Notes from Anything",
+      desc: "Paste a YouTube link, an article, a photo of your notes or plain text — get short, exam-ready revision notes in seconds.",
+      badge: "Link · File · Text",
       color: "from-blue-500/10 to-indigo-500/10 text-blue-600 dark:text-blue-400"
     },
     {
       icon: BookOpen,
-      title: "Step-by-Step Solutions",
-      desc: "Step-by-step breakdowns for tricky equations and complex tasks, written so you actually understand them.",
-      badge: "Easy Explanations",
+      title: "Learn Hub",
+      desc: "Pick a subject and a topic, then work through it in quick, deep or exam mode with explanations that build on each other.",
+      badge: "Step-by-step",
       color: "from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400"
     },
     {
-      icon: Sparkles,
-      title: "Concept Explanations",
-      desc: "Paste long textbook paragraphs to turn them into clear, simple revision summaries.",
-      badge: "Fast Summarizer",
+      icon: MessageSquare,
+      title: "Ask the AI Tutor",
+      desc: "Stuck on a concept? Get a plain-English explanation, a worked example, and a quick check on what you understood.",
+      badge: "Instant help",
       color: "from-purple-500/10 to-pink-500/10 text-purple-600 dark:text-purple-400"
     },
     {
-      icon: Compass,
-      title: "Career Exploration",
-      desc: "Discover amazing future jobs, find out what core subjects you need, and follow a direct path to reach your goals.",
-      badge: "Future Pathways",
-      color: "from-cyan-500/10 to-sky-500/10 text-cyan-600 dark:text-cyan-400"
-    },
-    {
       icon: Zap,
-      title: "Skill Learning",
-      desc: "Start learning vital real-world skills like basic programming, graphic design, content writing, and personal finance.",
-      badge: "Hands-on Skills",
+      title: "Quick Practice",
+      desc: "Turn any topic into a short quiz, see your score instantly, and retry the questions you got wrong.",
+      badge: "Instant feedback",
       color: "from-rose-500/10 to-red-500/10 text-rose-600 dark:text-rose-400"
     },
     {
+      icon: Compass,
+      title: "Plan Your Week",
+      desc: "Add homework, assignments and exams with due dates. TeenGenius shows what is due today and what is coming up.",
+      badge: "Tasks & exams",
+      color: "from-cyan-500/10 to-sky-500/10 text-cyan-600 dark:text-cyan-400"
+    },
+    {
       icon: Clock,
-      title: "AI-Powered Guidance",
-      desc: "Stay organized with smart test prep plans, personalized focus goals, and helpful study schedules built around you.",
-      badge: "Exam Ready",
-      color: "from-orange-500/10 to-amber-500/10 text-orange-600 dark:text-amber-400"
+      title: "Revision That Sticks",
+      desc: "Notes end with key terms, high-value facts and a quick revision block — designed to be read the night before a test.",
+      badge: "Exam ready",
+      color: "from-orange-500/10 to-amber-500/10 text-orange-600 dark:text-orange-400"
     }
   ];
 
   const examplePrompts = [
     { text: "Explain Photosynthesis with real-world analogies", tag: "Biology" },
     { text: "Help me solve this math problem: 3x + 5 = 20", tag: "Math" },
-    { text: "Teach me Python basics for building a simple game", tag: "Coding" },
-    { text: "Suggest a creative science project for high school", tag: "Science" },
-    { text: "Help me prepare for my upcoming history exams", tag: "Study Prep" }
+    { text: "Summarise the NCERT chapter on Light — Reflection and Refraction", tag: "Physics" },
+    { text: "Give me 5 questions on the French Revolution", tag: "History" },
+    { text: "Help me plan what to revise before my maths test", tag: "Study Prep" }
   ];
 
   const faqs = [
     {
       q: "What is TeenGenius?",
-      a: "TeenGenius is your friendly, secure, AI-powered study buddy built strictly for students. It explains homework, makes clear review summaries, recommends career directions, and helps you learn valuable digital skills."
+      a: "TeenGenius is a focused study companion for students aged 13–17. It helps you learn a topic, turn videos, articles and notes into short revision notes, practise with quick quizzes, and plan the work you have due."
     },
     {
-      q: "Is it easy enough for middle and high schoolers?",
-      a: "Yes! The platform is designed specifically for students aged 13–17. We use clear layouts, big clickable buttons, and explain difficult concepts simply without confusing technology jargon."
+      q: "How do I turn a video into notes?",
+      a: "Open Create Notes, tap Link, and paste a YouTube link. TeenGenius reads the video's public transcript and writes short notes from it. If a video has no captions available, it tells you and you can paste the transcript yourself."
     },
     {
       q: "Is my personal study data private?",
-      a: "Absolutely. All your chats, questions, notes, and study logs are privately stored in your secure account. We don't share user data with outside companies or advertising systems."
+      a: "Absolutely. Your questions, notes and study plans are stored in your own account. We don't share your data with outside companies or advertising systems."
     },
     {
       q: "Does TeenGenius cost anything?",
-      a: "No! All core study tools, prompt chats, skills, quizzes, and career exploration roadmaps are 100% free with absolutely zero commercial ads or pop-up distractions."
+      a: "No. The core study tools are free, with no commercial ads and no distracting pop-ups."
     }
   ];
 
@@ -210,7 +210,7 @@ export default function Landing() {
 
             {/* Sub-Headline */}
             <p id="hero-subline" className="text-sm sm:text-lg text-zinc-600 dark:text-zinc-300 max-w-2xl mx-auto font-medium leading-relaxed">
-              Get direct step-by-step explanations, turn long study chapters into quick bullet notes, explore ideal future careers, and solve assignment bugs with an AI helper that actually explains things clearly.
+              Get direct step-by-step explanations, turn a YouTube video or an article into short revision notes, practise with quick quizzes, and plan the work you actually have due.
             </p>
 
             {/* Call To Action Buttons */}
@@ -266,8 +266,8 @@ export default function Landing() {
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-normal">Clear, understandable answers</p>
               </div>
               <div className="space-y-1">
-                <p className="font-extrabold text-xs uppercase tracking-widest text-zinc-800 dark:text-zinc-200">Career & Skills</p>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-normal">Learn digital skills for your future</p>
+                <p className="font-extrabold text-xs uppercase tracking-widest text-zinc-800 dark:text-zinc-200">Link to Notes</p>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-normal">YouTube and articles become short notes</p>
               </div>
             </div>
           </motion.div>
@@ -289,7 +289,7 @@ export default function Landing() {
                 Think of TeenGenius as your highly knowledgeable study helper. Whether you are struggling to understand a complex math equation, want a quick summary of a long history chapter, or want to pick up real-world skills like graphic design or coding, we are here for you.
               </p>
               <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-300 font-medium leading-relaxed">
-                We remove complex technology jargon and present explanations with real-world examples, interactive tests, and simple roadmap cards so that learning feels motivating and satisfying.
+                We remove complex technology jargon and present explanations with real-world examples, short revision notes and quick practice checks so that learning feels motivating and satisfying.
               </p>
               
               <div className="pt-4">
@@ -328,8 +328,8 @@ export default function Landing() {
                 <div className="flex gap-3.5">
                   <div className="w-6 h-6 rounded-md bg-rose-100 dark:bg-rose-950/40 flex items-center justify-center shrink-0 mt-0.5 text-xs">🎯</div>
                   <div>
-                    <h4 className="text-xs font-black uppercase tracking-wide text-zinc-850 dark:text-zinc-200">Personal Roadmaps</h4>
-                    <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">Map your high school choices direct to college fields and modern digital careers.</p>
+                    <h4 className="text-xs font-black uppercase tracking-wide text-zinc-850 dark:text-zinc-200">Short Revision Notes</h4>
+                    <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">Every note ends with key terms, high-value facts and a quick revision block you can read the night before a test.</p>
                   </div>
                 </div>
               </div>
