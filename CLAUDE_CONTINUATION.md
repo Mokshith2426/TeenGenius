@@ -1,8 +1,22 @@
 # TeenGenius — Continuation Log
 
-**Last updated:** 2026-09-25 (Phase 8: Auth & Navigation De-jargon)
+**Last updated:** 2026-09-25 (Phase 9: Settings & Profile De-jargon)
 **Branch:** main
 **Status:** Build ✅ | TypeScript lint ✅ | Production server smoke test ✅
+
+---
+
+## PHASE 9 — SETTINGS & PROFILE DE-JARGON + LEGAL PAGES (this session)
+
+**Theme:** finished the app-wide voice cleanup on the remaining "network operator" surfaces, and rewrote the two legal pages that students actually reach from the login footer (linked in Phase 8). Copy/label pass + a few dead Tailwind classes; no logic, data, routing, or auth changes.
+
+- **SettingsModal**: header "Student Preferences" → **Preferences**; sidebar footer "Exit Session" → **Log Out**; "Profile Credentials" → **Profile**; "Relaunch Walkthrough" → **Replay Tutorial**; "Communications & Language" → **Notifications & Language**; "App Typography Scaling" → **Text Size**; "Save Profile details" → **Save Changes**; "Current Security Key" → **Current Password**; FAQ "How do Study Circles work?" (with "secure node rooms…curate modules…sandbox quizzes") → **"How do Classrooms work?"** with plain wording; "Is my workspace information hidden?" → **"Is my data private?"**; the privacy/ToS info block rewritten plainly (was "database clusters", "feedback transmissions", "API shortcuts for system scraping").
+- **PrivacyPolicy**: rewritten in plain student language — headings now "Our Commitment to Students / What We Collect / How We Protect Your Data / AI Chats and Questions / Deleting Your Data"; removed "offshore sandboxed educational companion" and "third-party public networks for marketing indexing". Header pill "Active Safeguards" → **Your Data**.
+- **TermsOfService**: rewritten — "Acceptance of Terms / What the App Is For / Staying Respectful / AI Answers Can Be Wrong / Your Content"; removed "absolute consent", "pledge strictly", "verify ultimate exactness", "TeenGenius Inc.".
+- **Profile**: menu labels de-jargoned ("Student Account Credentials / Inspect Secure Account Info" → **Account Info / See account details**, "Instant Doubts Notifications" → **Doubts Notifications**, "Visual Interface Mode" → **Appearance**, "System Walkthrough & Help" → **Help & Tutorial**, "Student Performance Analytics / Institutional usage report" → **Activity & Stats / How you use the app**, "Institution Privacy & Security" → **Privacy & Security**); Account-Info modal ("Secure Study Portal Identity" → **Signed in as**, "Authorization Client" → **Sign-in Method**, "Encryption Standard / AES-256 SSL Secure" → **Connection / Secure (HTTPS)**, "Student Identifier" → **Account ID**, "Close Info" → **Close**); Analytics modal ("Institutional Usage Telemetry" → **Your Usage Stats**, "DAU / WAU" → **Active / Weekly**, "System Logins" → **Total Logins**, "Average Depth" → **Average Session**, "queries" → "uses"); badges/social copy ("Earn premium academy badges to showcase your diligence" → plain streak wording, "Start Your Study Network!" → **Add your first classmate**, "Wants to join your academy circle" → "Sent you a friend request.", "Link Peers (Earn Catalyst)" → **Find Friends**, "Focus Room (Earn Catalyst)" → **Focus Room**).
+- **Dead CSS fixed** (classes that generated nothing): `text-rose-705`, `text-indigo-440`, `text-rose-450`, `text-emerald-405`, `text-red-650`, `bg-teal-55/10`, `bg-red-955/10`, and on the policy pages `text-blue-550`, `text-indigo-550`, `text-emerald-555`, `text-rose-550`, `text-pink-550`, `text-zinc-650`. Replaced with real shades so icons/links/buttons render in the intended colour.
+- **Housekeeping**: dropped the unused `motion` import from both policy pages (they render plain `<div>`s).
+- Validated: `npm run lint` → 0, `npm run build` → 0, prod smoke `/` 200, `/api/version` 200, `/privacy` 200, `/terms` 200; new strings verified present in `dist/assets/*.js` and 9 old jargon strings verified gone.
 
 ---
 

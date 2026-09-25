@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
 import { BookOpen, ArrowLeft, ShieldCheck, Scale, FileText } from 'lucide-react';
 
 export default function TermsOfService() {
@@ -41,45 +40,45 @@ export default function TermsOfService() {
           
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <BookOpen size={18} className="text-purple-550" />
-              1. Acceptance of Terms
+              <BookOpen size={18} className="text-purple-500" />
+              1. Accepting These Terms
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              By accessing, registering for, or using TeenGenius (the "Platform"), you signify your absolute consent to abide fully with these terms, academic integrity requirements, and safety principles. If you are under Class 10 or equivalent (under 13-16 years depending on territory), you certify your parents or respective academic coordinators have reviewed these terms with you.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+              By using TeenGenius, you agree to these terms, our academic integrity rules, and our safety guidelines. If you are under Class 10 (or under 13–16, depending on where you live), you confirm that a parent, guardian, or teacher has reviewed these terms with you.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <ShieldCheck size={18} className="text-emerald-550" />
-              2. Permitted Educational Use
+              <ShieldCheck size={18} className="text-emerald-500" />
+              2. What the App Is For
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              TeenGenius is offered strictly to assist, accelerate, and optimize your learning, notes management, test preparation, and focus circles. Students are expected to use the generated study guides and doubt solutions responsibly.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+              TeenGenius is here to help you learn, take notes, prepare for tests, and stay focused. Use the study guides and answers it generates responsibly, and check them before you submit them as your own work.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <FileText size={18} className="text-pink-550" />
-              3. Platform Integrity and Code of Conduct
+              <FileText size={18} className="text-pink-500" />
+              3. Staying Respectful
             </h2>
-            <div className="space-y-3 text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 font-medium leading-relaxed">
-              <p>When studying in our collaborative Focus Rooms or circles, you pledge strictly to:</p>
+            <div className="space-y-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
+              <p>When you study in Focus Rooms or Classrooms with other students, you agree to:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Never share defamatory, offensive, or inappropriate contents.</li>
-                <li>Respect the academic progress and focus boundaries of other students.</li>
-                <li>Maintain compliance with the integrity and classroom guidelines of your school or institution.</li>
+                <li>Never post anything offensive, hurtful, or inappropriate.</li>
+                <li>Respect other students' progress and their focus time.</li>
+                <li>Follow your own school's rules on classroom and assignment conduct.</li>
               </ul>
             </div>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight">
-              4. Disclaimer of AI Outputs
+              4. AI Answers Can Be Wrong
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              TeenGenius utilizes advanced learning models compiled in our AI stack. While highly accurate, study answers and math solutions should be double-checked against your official textbook guidelines to verify ultimate exactness before exam submissions.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+              TeenGenius uses AI to generate study answers. AI is helpful but not perfect, so always double-check answers against your textbook or your teacher's notes before you hand anything in.
             </p>
           </section>
 
@@ -87,8 +86,8 @@ export default function TermsOfService() {
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight">
               5. Intellectual Property
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              The Platform elements (UI, designs, logos, interactive timers, notes generators) remain the exclusive ownership of TeenGenius Inc. Your personal uploaded text and logs remain your own property.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+              The app's design, logo, and features belong to TeenGenius. Anything you write, upload, or create stays yours.
             </p>
           </section>
 

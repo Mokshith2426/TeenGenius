@@ -228,7 +228,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <div className="flex items-center justify-between md:mb-8">
                 <div>
                   <h2 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">Settings</h2>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Student Preferences</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Preferences</p>
                 </div>
                 <button 
                   onClick={onClose}
@@ -270,7 +270,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   className="w-full flex items-center gap-2 px-4 py-3 text-red-500 hover:bg-red-500/5 hover:text-red-650 transition-all rounded-2xl text-xs font-black uppercase tracking-widest"
                 >
                   <LogOut size={15} />
-                  Exit Session
+                  Log Out
                 </button>
               </div>
             </div>
@@ -323,7 +323,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                         {/* Font Size setting */}
                         <div className="p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800 rounded-3xl space-y-2 col-span-1 md:col-span-2">
-                          <p className="text-xs font-black uppercase text-zinc-900 dark:text-white tracking-tight">App Typography Scaling</p>
+                          <p className="text-xs font-black uppercase text-zinc-900 dark:text-white tracking-tight">Text Size</p>
                           <div className="grid grid-cols-3 gap-2">
                             {['small', 'medium', 'large'].map((size) => (
                               <button
@@ -345,7 +345,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">Communications & Language</h3>
+                      <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">Notifications & Language</h3>
                       
                       <div className="space-y-4">
                         {/* Language Selection Infobox */}
@@ -413,7 +413,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 {activeTab === 'account' && (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">Profile Credentials</h3>
+                      <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">Profile</h3>
                       
                       <form onSubmit={handleSaveProfile} className="space-y-4">
                         <div className="flex flex-col sm:flex-row gap-4">
@@ -449,7 +449,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             disabled={isSavingProfile}
                             className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest py-3 px-6 rounded-xl shadow transition-all active:scale-95 disabled:opacity-50"
                           >
-                            {isSavingProfile ? 'Saving...' : 'Save Profile details'}
+                            {isSavingProfile ? 'Saving...' : 'Save Changes'}
                           </button>
                           {profileSuccess && (
                             <span className="text-[10px] text-emerald-500 font-bold flex items-center gap-1.5">
@@ -466,7 +466,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       <form onSubmit={handleChangePassword} className="space-y-4">
                         <div className="space-y-3">
                           <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Current Security Key</label>
+                            <label className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Current Password</label>
                             <input
                               type="password"
                               value={currentPassword}
@@ -527,10 +527,10 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                           onClose();
                           logout();
                         }}
-                        className="w-full flex items-center justify-center gap-2 py-4 bg-red-500/10 hover:bg-red-500/20 text-red-650 transition-all rounded-2xl text-[10px] font-black uppercase tracking-widest"
+                        className="w-full flex items-center justify-center gap-2 py-4 bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all rounded-2xl text-[10px] font-black uppercase tracking-widest"
                       >
                         <LogOut size={14} />
-                        Exit Session
+                        Log Out
                       </button>
                     </div>
                   </div>
@@ -560,21 +560,21 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                           }}
                           className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-black text-[9px] uppercase tracking-widest rounded-xl transition-all active:scale-95 shadow-md shadow-blue-500/15 shrink-0 cursor-pointer"
                         >
-                          Relaunch Walkthrough 🚀
+                          Replay Tutorial 🚀
                         </button>
                       </div>
 
                       <div className="space-y-3">
                         <div className="p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800 rounded-2.5xl">
-                          <p className="text-xs font-black uppercase text-zinc-800 dark:text-white tracking-wider mb-1">How do Study Circles work?</p>
+                          <p className="text-xs font-black uppercase text-zinc-800 dark:text-white tracking-wider mb-1">How do Classrooms work?</p>
                           <p className="text-[10px] text-zinc-450 dark:text-zinc-400 leading-relaxed font-semibold">
-                            Study Circles coordinate secure node rooms where group students can chat, curate modules, share class roadmap benchmarks, and generate group sandbox quizzes instantly.
+                            Classrooms are private group spaces for your class. Chat with classmates, share notes and resources, and take quizzes together.
                           </p>
                         </div>
                         <div className="p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800 rounded-2.5xl">
-                          <p className="text-xs font-black uppercase text-zinc-800 dark:text-white tracking-wider mb-1">Is my workspace information hidden?</p>
+                          <p className="text-xs font-black uppercase text-zinc-800 dark:text-white tracking-wider mb-1">Is my data private?</p>
                           <p className="text-[10px] text-zinc-450 dark:text-zinc-400 leading-relaxed font-semibold">
-                            Yes. TeenGenius is built around absolute student protection and local client persistence with no diagnostic leaks.
+                            Yes. Your chats, notes, and study data stay in your account and are never sold or shared.
                           </p>
                         </div>
                       </div>
@@ -686,9 +686,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       <div className="flex border-b border-zinc-100 dark:border-zinc-850 pb-2">
                         <FileText size={16} className="text-zinc-400 mr-2 shrink-0 animate-bounce" />
                         <div>
-                          <p className="text-xs font-black uppercase text-zinc-900 dark:text-white">Student Shield Privacy Policy</p>
+                          <p className="text-xs font-black uppercase text-zinc-900 dark:text-white">Privacy Policy</p>
                           <p className="text-[10px] text-zinc-450 dark:text-zinc-400 leading-relaxed font-semibold mt-1">
-                            TeenGenius values your absolute privacy. Student logs, roadmap indexes, chatbot prompts, and study goals generated in active study rooms are stored securely inside private environment database clusters and are never aggregated or indexed.
+                            Your privacy matters. Your notes, chat messages, goals, and study progress are stored in your private account and are never sold, shared, or used to build advertising profiles.
                           </p>
                         </div>
                       </div>
@@ -696,9 +696,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       <div className="flex border-b border-zinc-100 dark:border-zinc-850 pb-2">
                         <Shield size={16} className="text-zinc-400 mr-2 shrink-0" />
                         <div>
-                          <p className="text-xs font-black uppercase text-zinc-900 dark:text-white">Workspace Terms of Service</p>
+                          <p className="text-xs font-black uppercase text-zinc-900 dark:text-white">Terms of Service</p>
                           <p className="text-[10px] text-zinc-450 dark:text-zinc-400 leading-relaxed font-semibold mt-1">
-                            By joining TeenGenius peer networks, you agree to collaborative guidelines, honest study aid practices, constructive feedback transmissions, and respectful communication models. Usage of API shortcuts for system scraping is fully restricted.
+                            By using TeenGenius, you agree to use the app for honest studying and to keep conversations respectful. You agree not to scrape, resell, or misuse the app or its AI features.
                           </p>
                         </div>
                       </div>

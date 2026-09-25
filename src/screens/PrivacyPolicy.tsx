@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
 import { Shield, ArrowLeft, Lock, Eye, FileText, CheckCircle } from 'lucide-react';
 
 export default function PrivacyPolicy() {
@@ -30,7 +29,7 @@ export default function PrivacyPolicy() {
               <Shield size={28} />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-450">Active Safeguards</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">Your Data</p>
               <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">Privacy Policy</h1>
             </div>
           </div>
@@ -42,55 +41,55 @@ export default function PrivacyPolicy() {
           
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <Lock size={18} className="text-blue-550" />
-              1. Our Student Privacy Commitment
+              <Lock size={18} className="text-blue-500" />
+              1. Our Commitment to Students
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              At TeenGenius, we prioritize student safety and privacy above all else. This privacy charter details how we gather, utilize, protect, and isolate your personal information, study documents, and platform logs. We comply fully with COPPA (Children’s Online Privacy Protection Act) and GDPR core protections as an offshore sandboxed educational companion.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+              TeenGenius is built for students, so protecting your privacy matters to us. This page explains what we collect, what we do with it, and how we keep it safe. We follow the student-privacy rules set out by COPPA (Children's Online Privacy Protection Act) and GDPR.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <Eye size={18} className="text-indigo-550" />
-              2. Data We Safely Gather
+              <Eye size={18} className="text-indigo-500" />
+              2. What We Collect
             </h2>
-            <div className="space-y-3 text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 font-medium leading-relaxed">
-              <p>We restrict data collection exclusively to variables that improve your experience:</p>
+            <div className="space-y-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
+              <p>We only collect what the app needs to work for you:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong className="text-zinc-800 dark:text-zinc-200">Account Identity:</strong> Display name and email addresses verified safely via Google Sign-In. We never store personal passwords.</li>
-                <li><strong className="text-zinc-800 dark:text-zinc-200">Academic Assets:</strong> Practice quizzes, study notes, and plans created by you.</li>
-                <li><strong className="text-zinc-800 dark:text-zinc-200">Interaction Telemetry:</strong> Unbiased duration stats, focus minutes completed, and feature popularities aggregated anonymised on Firestore.</li>
+                <li><strong className="text-zinc-800 dark:text-zinc-200">Your Account:</strong> the display name and email address Google verifies when you sign in. We never see or store your password.</li>
+                <li><strong className="text-zinc-800 dark:text-zinc-200">Your Study Content:</strong> the quizzes, notes, plans, and chats you create in the app.</li>
+                <li><strong className="text-zinc-800 dark:text-zinc-200">Usage Stats:</strong> study duration, focus minutes, and which features get used — counted in aggregate and anonymised. These stats never include the content of your notes or chats.</li>
               </ul>
             </div>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <CheckCircle size={18} className="text-emerald-555" />
-              3. Data Security and Isolation
+              <CheckCircle size={18} className="text-emerald-500" />
+              3. How We Protect Your Data
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              Your profile documents and doubt queries are hosted inside database collections compiled with strict safety rules. Data entries are strictly bound to your private account and cannot be queried by unauthorized external nodes.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+              Your profile, notes, and questions are stored in secure databases with strict access rules. Your data is tied to your account only, so other users cannot open or search it.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <FileText size={18} className="text-rose-550" />
-              4. AI Process and Chat Queries
+              <FileText size={18} className="text-rose-500" />
+              4. AI Chats and Questions
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-                            All interactions routed through our AI Tutor are secured using server-side AI endpoints. Chat conversations are not sent to third-party public networks for marketing indexing.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+              AI replies are requested through TeenGenius's own server. Your chats are never sold, and they are never used to build advertising profiles.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight">
-              5. Profile Deletion and Rights
+              5. Deleting Your Data
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
-              Under our absolute lifecycle guarantee, students have the total right to clear study schedules or request system deletion from the platform. Contact teengenius@council.aistudio.com for quick assistance.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+              You can clear your study plans and notes at any time from inside the app. You can also ask us to delete your account and everything in it — email teengenius@council.aistudio.com and we will help you.
             </p>
           </section>
 

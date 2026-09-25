@@ -502,7 +502,7 @@ export default function Profile() {
     {
       id: "peer_networker",
       title: "Peer Catalyst",
-      desc: "Unlocked when you have linked classmates and joined your study network.",
+      desc: "Unlocked when you add classmates to study with.",
       icon: Users,
       color: "from-emerald-500/10 to-teal-500/10 text-emerald-550 border-emerald-550/25",
       isUnlocked: friends.length > 0,
@@ -511,7 +511,7 @@ export default function Profile() {
     {
       id: "ai_learner",
       title: "AI Co-Scholar",
-      desc: "Granted for studying collaboratively with the TeenGenius secure AI assistant.",
+      desc: "Unlocked after your first AI study session.",
       icon: Sparkles,
       color: "from-purple-500/10 to-pink-500/10 text-purple-500 border-purple-500/25",
       isUnlocked: true,
@@ -521,12 +521,12 @@ export default function Profile() {
 
   const menuItems = [
     { icon: User, label: 'Change Account Nickname', color: 'bg-zinc-100 text-zinc-900 dark:bg-zinc-805 dark:text-white', action: () => setIsEditingName(true) },
-    { icon: Shield, label: 'Student Account Credentials', sub: 'Inspect Secure Account Info', color: 'bg-teal-50 text-teal-600 dark:bg-teal-950/20 dark:text-teal-400', action: () => setIsAccountInfoOpen(true) },
-    { icon: Bell, label: 'Instant Doubts Notifications', sub: 'Active', color: 'bg-orange-50 text-orange-600 dark:bg-orange-950/20 dark:text-orange-400', action: () => alert("Notification settings synchronized!") },
-    { icon: Moon, label: 'Visual Interface Mode', sub: isDarkMode ? 'Dark Screen' : 'Light Screen', color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/20 dark:text-indigo-400', action: toggleDarkMode },
-    { icon: HelpCircle, label: 'System Walkthrough & Help', sub: 'Restart Tutorial', color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-440', action: () => window.dispatchEvent(new CustomEvent('trigger-walkthrough')) },
-    { icon: Activity, label: 'Student Performance Analytics', sub: 'Institutional usage report', color: 'bg-rose-100 text-rose-705 dark:bg-rose-950/40 dark:text-rose-450', action: async () => { setStats(getLocalStats()); setIsAnalyticsOpen(true); const live = await fetchRealtimeStats(); setStats(live); } },
-    { icon: Shield, label: 'Institution Privacy & Security', color: 'bg-green-50 text-green-600 dark:bg-green-950/20 dark:text-green-400', action: () => alert("Student privacy guidelines are audited and maintained securely by TeenGenius security layers.") },
+    { icon: Shield, label: 'Account Information', sub: 'Email, ID, and sign-in details', color: 'bg-teal-50 text-teal-600 dark:bg-teal-950/20 dark:text-teal-400', action: () => setIsAccountInfoOpen(true) },
+    { icon: Bell, label: 'Notifications', sub: 'Study reminders', color: 'bg-orange-50 text-orange-600 dark:bg-orange-950/20 dark:text-orange-400', action: () => alert("Notifications are on for study reminders and classroom updates.") },
+    { icon: Moon, label: 'Appearance', sub: isDarkMode ? 'Dark mode' : 'Light mode', color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/20 dark:text-indigo-400', action: toggleDarkMode },
+    { icon: HelpCircle, label: 'Help & Tutorial', sub: 'Replay the app tour', color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400', action: () => window.dispatchEvent(new CustomEvent('trigger-walkthrough')) },
+    { icon: Activity, label: 'Activity & Stats', sub: 'How you use the app', color: 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400', action: async () => { setStats(getLocalStats()); setIsAnalyticsOpen(true); const live = await fetchRealtimeStats(); setStats(live); } },
+    { icon: Shield, label: 'Privacy & Security', color: 'bg-green-50 text-green-600 dark:bg-green-950/20 dark:text-green-400', action: () => alert("Your data stays in your own account and is never sold or shared.") },
   ];
 
   return (
@@ -726,9 +726,9 @@ export default function Profile() {
                       </div>
                       
                       <div className="space-y-1.5 max-w-sm mx-auto">
-                        <h4 className="text-sm font-black uppercase tracking-wider text-zinc-850 dark:text-zinc-200">Start Your Study Network!</h4>
+                        <h4 className="text-sm font-black uppercase tracking-wider text-zinc-850 dark:text-zinc-200">Add your first classmate</h4>
                         <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-semibold">
-                          Connecting with classmates unlocks the <strong className="text-indigo-600 dark:text-amber-400">Peer Catalyst Badge</strong> and awards you <strong className="text-emerald-600">+150 XP</strong> for collaborative group study!
+                          Studying together helps. Adding classmates unlocks the <strong className="text-indigo-600 dark:text-amber-400">Peer Catalyst</strong> badge and earns you <strong className="text-emerald-600">+150 XP</strong>.
                         </p>
                       </div>
 
@@ -814,7 +814,7 @@ export default function Profile() {
                           <div key={req.id} className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-2.5xl p-4 flex items-center justify-between gap-3">
                             <div>
                               <h4 className="text-xs font-black uppercase tracking-wide text-zinc-900 dark:text-white">{req.fromName}</h4>
-                              <p className="text-[9.5px] text-zinc-450 dark:text-zinc-500">Wants to join your academy circle.</p>
+                              <p className="text-[9.5px] text-zinc-450 dark:text-zinc-500">Wants to be your study buddy.</p>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0">
                               <button
@@ -932,7 +932,7 @@ export default function Profile() {
             <div className="space-y-6">
               <div className="px-1 text-center sm:text-left space-y-1.5">
                 <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 italic">Academic Achievements &amp; Badges</h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-semibold">Earn digital credentials by maintaining study routines and collaborating in classroom networks.</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-semibold">Earn badges by keeping your study streak going and studying with classmates.</p>
               </div>
 
               {/* Cheerful Gamification Master Guidance widget */}
@@ -942,14 +942,14 @@ export default function Profile() {
                   <span className="text-[10px] font-black uppercase tracking-widest leading-none">Level Up Study Rewards</span>
                 </div>
                 <p className="text-[11px] text-zinc-650 dark:text-zinc-300 font-semibold leading-relaxed">
-                  Earn premium academy badges to showcase your diligence! Unlocking all milestones awards you the <strong className="text-blue-500">Ultimate Scholar</strong> title and <strong className="text-emerald-600 dark:text-emerald-405">+500 XP</strong> mega-bonus!
+                  Keep your streak going to collect badges. Complete every milestone to earn the <strong className="text-blue-500">Ultimate Scholar</strong> title and a <strong className="text-emerald-600 dark:text-emerald-400">+500 XP</strong> bonus!
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   <button onClick={() => navigate('/app/focus')} className="px-3.5 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-black text-[9px] uppercase tracking-wider border border-zinc-200/50 dark:border-zinc-800 rounded-xl transition-all cursor-pointer active:scale-95">
-                    ⏱️ Focus Room (Earn Catalyst)
+                    ⏱️ Focus Room (+XP)
                   </button>
                   <button onClick={() => { setActiveSubTab('friends'); setFriendsActiveTab('search'); }} className="px-3.5 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-black text-[9px] uppercase tracking-wider border border-zinc-200/50 dark:border-zinc-800 rounded-xl transition-all cursor-pointer active:scale-95">
-                    👥 Link Peers (Earn Catalyst)
+                    👥 Find Classmates (+XP)
                   </button>
                 </div>
               </div>
@@ -1103,7 +1103,7 @@ export default function Profile() {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
                     </span>
-                    Institutional Usage Telemetry
+                    Your Usage Stats
                   </div>
                   <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">Platform Analytics</h2>
                 </div>
@@ -1118,19 +1118,19 @@ export default function Profile() {
               <div className="p-6 space-y-5 overflow-y-auto max-h-[60vh] scrollbar-hide">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="p-3.5 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-xl">
-                    <span className="text-[8px] font-black uppercase text-zinc-400 block mb-0.5">DAU / WAU</span>
+                    <span className="text-[8px] font-black uppercase text-zinc-400 block mb-0.5">Daily / Weekly Users</span>
                     <p className="text-base font-black text-zinc-900 dark:text-white">{stats.dauCount} <span className="text-[10px] text-zinc-400 font-semibold">/ {stats.wauCount}</span></p>
                   </div>
                   <div className="p-3.5 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-xl">
-                    <span className="text-[8px] font-black uppercase text-zinc-400 block mb-0.5">System Logins</span>
+                    <span className="text-[8px] font-black uppercase text-zinc-400 block mb-0.5">Logins</span>
                     <p className="text-base font-black text-green-500">+{stats.newUsersCount + stats.returningUsersCount}</p>
                   </div>
                   <div className="p-3.5 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-xl">
-                    <span className="text-[8px] font-black uppercase text-zinc-400 block mb-0.5">Active Sessions</span>
+                    <span className="text-[8px] font-black uppercase text-zinc-400 block mb-0.5">Study Sessions</span>
                     <p className="text-base font-black text-blue-500">{stats.sessionsCount}</p>
                   </div>
                   <div className="p-3.5 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-xl">
-                    <span className="text-[8px] font-black uppercase text-zinc-400 block mb-0.5">Average Depth</span>
+                    <span className="text-[8px] font-black uppercase text-zinc-400 block mb-0.5">Avg. Session</span>
                     <p className="text-base font-black text-orange-500">{Math.round((stats.averageSessionDuration || 340) / 60)}m</p>
                   </div>
                 </div>
@@ -1149,7 +1149,7 @@ export default function Profile() {
                 </div>
 
                 <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Features usage analysis</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Features used</span>
                   <div className="grid gap-2.5">
                     {Object.entries(stats.featureUsage || {}).map(([feature, hits]) => {
                       const maxVal = Math.max(...Object.values(stats.featureUsage));
@@ -1158,7 +1158,7 @@ export default function Profile() {
                         <div key={feature} className="p-3 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl">
                           <div className="flex items-center justify-between text-xs font-bold text-zinc-805">
                             <span>{feature}</span>
-                            <span>{hits} queries</span>
+                            <span>{hits} uses</span>
                           </div>
                           <div className="w-full h-1 bg-zinc-100 dark:bg-zinc-950 rounded-full overflow-hidden mt-2">
                             <div className="h-full bg-rose-500 rounded-full" style={{ width: `${percent}%` }} />
@@ -1196,7 +1196,7 @@ export default function Profile() {
                 <div>
                   <div className="text-[8.5px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 flex items-center gap-1 mb-0.5">
                     <Shield size={11} className="text-teal-500" />
-                    Secure Study Portal Identity
+                    Signed in as
                   </div>
                   <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">Account Info</h2>
                 </div>
@@ -1209,7 +1209,7 @@ export default function Profile() {
               </header>
 
               <div className="p-6 space-y-6 text-left">
-                {/* Visual student profile credentials badge */}
+                {/* Student identity card */}
                 <div className="p-5 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-2.5xl flex items-center gap-4">
                   <div className="w-12 h-12 bg-teal-600/10 text-teal-600 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 border border-teal-500/10">
                     {user?.displayName?.[0] || 'S'}
@@ -1219,7 +1219,7 @@ export default function Profile() {
                       {user?.displayName || 'Active Student'}
                     </h4>
                     <p className="text-[10px] text-zinc-450 font-bold uppercase tracking-widest leading-none">
-                      {isGuest ? 'Guest Learner Access' : 'Verified Google Sign-In'}
+                      {isGuest ? 'Guest mode' : 'Signed in with Google'}
                     </p>
                   </div>
                 </div>
@@ -1231,21 +1231,21 @@ export default function Profile() {
                   </div>
 
                   <div className="flex justify-between items-center text-xs pb-2.5 border-b border-zinc-100 dark:border-zinc-850">
-                    <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Student Identifier</span>
+                    <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Student ID</span>
                     <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400 select-all shrink-0 max-w-[150px] truncate" title={user?.uid}>{user?.uid || 'GENIUS_GUEST_MODE_ID'}</span>
                   </div>
 
                   <div className="flex justify-between items-center text-xs pb-2.5 border-b border-zinc-100 dark:border-zinc-850">
-                    <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Authorization Client</span>
-                    <span className="font-black text-[9px] uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-55/10 dark:bg-teal-950/20 px-2.5 py-1 rounded-md">
-                      {isGuest ? 'Anonymous mode' : 'Google Identity Client'}
+                    <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Sign-In Method</span>
+                    <span className="font-black text-[9px] uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-500/10 dark:bg-teal-950/20 px-2.5 py-1 rounded-md">
+                      {isGuest ? 'Guest mode' : 'Google'}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Encryption Standard</span>
+                    <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Connection Security</span>
                     <span className="font-extrabold text-emerald-600 dark:text-emerald-400 uppercase text-[9px] tracking-wider bg-emerald-50 dark:bg-emerald-950/20 px-2.5 py-1 rounded-md">
-                      AES-256 SSL Secure
+                      Encrypted (AES-256)
                     </span>
                   </div>
                 </div>
@@ -1263,7 +1263,7 @@ export default function Profile() {
                   onClick={() => setIsAccountInfoOpen(false)}
                   className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm active:scale-95"
                 >
-                  Close Info
+                  Close
                 </button>
               </div>
             </motion.div>

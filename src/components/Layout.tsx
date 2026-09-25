@@ -848,10 +848,10 @@ export default function Layout() {
                       setIsMoreOpen(false);
                       logout();
                     }}
-                    className="flex justify-center items-center gap-1.5 py-3 bg-red-50/50 dark:bg-red-955/10 border border-red-100 dark:border-red-900/10 rounded-xl text-[9px] font-black uppercase tracking-wider text-red-500 cursor-pointer"
+                    className="flex justify-center items-center gap-1.5 py-3 bg-red-50/50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/10 rounded-xl text-[9px] font-black uppercase tracking-wider text-red-500 cursor-pointer"
                   >
                     <LogOut size={12} />
-                    Exit Session
+                    Log Out
                   </button>
                 </div>
               </motion.div>
