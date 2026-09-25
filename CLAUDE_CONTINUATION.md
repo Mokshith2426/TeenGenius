@@ -1,12 +1,26 @@
 # TeenGenius — Continuation Log
 
-**Last updated:** 2026-09-25 (Phase 5: Navigation Discoverability)
+**Last updated:** 2026-09-25 (Phase 6: Dashboard Copy Pass)
 **Branch:** main
 **Status:** Build ✅ | TypeScript lint ✅ | Production server smoke test ✅
 
 ---
 
-## PHASE 5 — NAVIGATION DISCOVERABILITY (this session)
+## PHASE 6 — DASHBOARD COPY PASS (this session)
+
+**Theme:** the Home dashboard should read like a study app, not a brochure. Copy/label pass only — zero logic, layout, or data changes (`src/screens/Home.tsx`, 26 lines changed).
+
+- Section pills shortened: "Interactive Custom Planner & Active Assignments" → **Today's Plan**; "Reminders & Class Announcements" → **Coming Up**; "Core Academic Workspace Portals" → **Study Tools**.
+- Task card unified on "task" wording: **Daily Checklist / Today's Tasks**, button **Add Task** (was "Add Goal"), tooltip "Remove task"; empty state rewritten as two plain lines (honest: tasks are saved on this device — no more "school profile / growth badges" claims).
+- Blue goal card: **Today's Progress / Daily Study Goal**; progress copy now states the real remaining minutes (`Xm more to hit your Ym goal`); "Accumulated" → **Today**; "Streak Live: 5 days" → **Streak · 5 days**.
+- Timer card: "Live Session Clock" → **Study Timer**; dropped the "growth credits" line for plain guidance.
+- Section 3 button "All Platforms" → **Open Learn Hub** (matches its destination).
+- Also normalized two mis-indented `<p>` blocks in the section headers.
+- Validated: `npm run lint` → 0, `npm run build` → 0, prod smoke `/` 200 + `/api/version` 200, new strings confirmed present in `dist/assets/Home-*.js`.
+
+---
+
+## PHASE 5 — NAVIGATION DISCOVERABILITY (previous session)
 
 **Theme:** every core screen is now one tap away.
 

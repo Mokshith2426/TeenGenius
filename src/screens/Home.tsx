@@ -181,10 +181,10 @@ function StudyTimer({ onSessionSave }: { onSessionSave?: () => void }) {
       <div className="space-y-1.5 text-center sm:text-left flex-1">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-[10px] font-black uppercase tracking-widest leading-none">
           <Flame size={11} className="animate-pulse" />
-          <span>Live Session Clock</span>
+          <span>Study Timer</span>
         </div>
         <p className="text-zinc-400 text-xs font-semibold">
-          {isActive ? "Study session currently running is counting..." : "Earn growth credits by starting the timer while studying."}
+          {isActive ? "Session in progress — keep going!" : "Start a session to track today's study time."}
         </p>
       </div>
       <button 
@@ -703,12 +703,12 @@ export default function Home() {
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black uppercase tracking-widest rounded-full">
             <CheckCircle2 size={11} />
-            <span>Interactive Custom Planner & Active Assignments</span>
+            <span>Today's Plan</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">What should I do today?</h2>
-                  <p className="text-xs text-zinc-500 font-medium">
-                    Review your custom objectives and make sure your study targets are completed before the day ends.
-                  </p>
+          <p className="text-xs text-zinc-500 font-medium">
+            Your tasks for today — check them off as you go.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -717,8 +717,8 @@ export default function Home() {
             <div className="space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-0.5">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 block">Personal Objectives</span>
-                  <h3 className="text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white">Active Agenda & Checklists</h3>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 block">Daily Checklist</span>
+                  <h3 className="text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white">Today's Tasks</h3>
                 </div>
                 
                 <form 
@@ -739,7 +739,7 @@ export default function Home() {
                     type="submit"
                     className="px-5 py-3 bg-zinc-905 dark:bg-white dark:text-zinc-900 text-white hover:bg-zinc-805 hover:scale-[1.02] active:scale-95 rounded-2xl cursor-pointer text-xs font-black uppercase tracking-widest shrink-0 transition-all shadow-sm"
                   >
-                    Add Goal
+                    Add Task
                   </button>
                 </form>
               </div>
@@ -748,10 +748,10 @@ export default function Home() {
                 {tasks.length === 0 ? (
                   <div className="py-10 px-4 text-center space-y-3">
                     <p className="text-xs font-bold text-zinc-455 dark:text-zinc-500 italic max-w-md mx-auto">
-                      "No personal targets listed for today. Write your first study goal above to keep track of your focus targets!"
+                      No tasks for today yet — add your first one above.
                     </p>
                     <p className="text-[10px] text-zinc-450 dark:text-zinc-500 font-semibold leading-relaxed max-w-sm mx-auto">
-                      Your items are cached securely in your school profile. Adding targets automatically helps you earn growth badges.
+                      Tasks are saved on this device, so they'll be here when you come back.
                     </p>
                   </div>
                 ) : (
@@ -778,7 +778,7 @@ export default function Home() {
                       <button 
                         onClick={() => deleteTask(item.id)}
                         className="p-1 text-zinc-400 hover:text-red-500 transition-colors cursor-pointer shrink-0"
-                        title="Remove objective"
+                        title="Remove task"
                       >
                         <Trash2 size={15} />
                       </button>
@@ -792,19 +792,19 @@ export default function Home() {
           {/* Today's Goals Metrics & Study Status Card (Primary Emphasis - 1 column) */}
           <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-600 to-indigo-750 text-white rounded-[2.5rem] space-y-6 shadow-sm flex flex-col justify-between min-h-[320px]">
             <div className="space-y-4">
-              <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white/60 block leading-none">Daily Study Progress</span>
-              <h3 className="text-xl font-black uppercase tracking-tight">Today's Focus Goal</h3>
+              <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white/60 block leading-none">Today's Progress</span>
+              <h3 className="text-xl font-black uppercase tracking-tight">Daily Study Goal</h3>
               <p className="text-xs text-white/80 leading-relaxed font-medium">
-                {todayMinutes >= (dailyTarget * 60) 
-                  ? "Outstanding! You have reached your active study goals and earned full daily badges." 
-                  : `You logged ${Math.round(todayMinutes)} minutes of study time today. Complete your active sessions to fulfill your target.`
+                {todayMinutes >= (dailyTarget * 60)
+                  ? "Target hit — great work! Come back tomorrow to keep your streak going."
+                  : `You've studied ${Math.round(todayMinutes)} minutes today — ${Math.max(0, Math.round(dailyTarget * 60) - Math.round(todayMinutes))}m more to hit your ${Math.round(dailyTarget * 60)}m goal.`
                 }
               </p>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between items-end text-xs font-mono font-bold select-none text-white/90">
-                <span>Accumulated</span>
+                <span>Today</span>
                 <span>{Math.round(todayMinutes)}m / {Math.round(dailyTarget * 60)}m</span>
               </div>
               <div className="h-2.5 bg-white/20 rounded-full overflow-hidden select-none">
@@ -818,7 +818,7 @@ export default function Home() {
             <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs select-none">
               <div className="flex items-center gap-2">
                 <Flame size={14} className="text-amber-400 animate-pulse" />
-                <span className="font-bold">Streak Live: {stats[1]?.value || '0 days'}</span>
+                <span className="font-bold">Streak · {stats[1]?.value || '0 days'}</span>
               </div>
               <Link 
                 to="/app/focus" 
@@ -836,11 +836,11 @@ export default function Home() {
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest rounded-full">
             <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
-            <span>Reminders & Class Announcements</span>
+            <span>Coming Up</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">What is coming up next?</h2>
           <p className="text-xs text-zinc-500 font-medium">
-            Stay on top of active school room agendas, upcoming quizzes, announcements, and peer updates.
+            Announcements and activity from your classes and study circles.
           </p>
         </div>
         
@@ -853,18 +853,18 @@ export default function Home() {
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-full">
               <Sparkles size={11} strokeWidth={2.5} />
-              <span>Core Academic Workspace Portals</span>
+              <span>Study Tools</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">Where can I continue studying?</h2>
-                  <p className="text-xs text-zinc-500 font-medium">
-                    Boot up secure, no-judgment AI tools to solve formulas, draft notes, or practice deep concentration rituals.
-                  </p>
+            <p className="text-xs text-zinc-500 font-medium">
+              Ask the AI tutor, generate revision notes, or run a focus session.
+            </p>
           </div>
           <Link 
             to="/app/learn" 
             className="self-start sm:self-center px-5 py-3 bg-zinc-905 dark:bg-white text-white dark:text-zinc-900 text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all cursor-pointer shadow-sm font-bold active:scale-95 text-center"
           >
-            All Platforms
+            Open Learn Hub
           </Link>
         </div>
 
