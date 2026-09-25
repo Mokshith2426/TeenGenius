@@ -762,23 +762,26 @@ export default function Home() {
                         "p-4 rounded-2xl border flex items-center justify-between transition-all gap-4 text-xs font-bold",
                         item.completed
                           ? "bg-zinc-50/50 dark:bg-zinc-950/20 border-zinc-150 text-zinc-400 line-through dark:border-zinc-850/60"
-                          : "bg-zinc-50 dark:bg-zinc-950 border-zinc-150/40 dark:border-zinc-850 text-zinc-700 dark:text-zinc-200"
+                          : "bg-zinc-50 dark:bg-zinc-950 border-zinc-150/40 dark:border-zinc-850 text-zinc-700 dark:text-zinc-200 hover:border-blue-300 dark:hover:border-blue-800"
                       )}
                     >
-                      <label className="flex items-center gap-3.5 cursor-pointer flex-1 select-none">
+                      <label className="flex items-center gap-3.5 cursor-pointer flex-1 min-w-0 select-none">
                         <input
                           type="checkbox"
                           checked={item.completed}
                           onChange={() => toggleTask(item.id)}
-                          className="w-4.5 h-4.5 rounded-lg text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
+                          aria-label={`Mark "${item.text}" as ${item.completed ? 'not done' : 'done'}`}
+                          className="w-4.5 h-4.5 rounded-lg text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
                         />
-                        <span className="leading-relaxed">{item.text}</span>
+                        <span className="leading-relaxed min-w-0 break-words">{item.text}</span>
                       </label>
                       
                       <button 
+                        type="button"
                         onClick={() => deleteTask(item.id)}
-                        className="p-1 text-zinc-400 hover:text-red-500 transition-colors cursor-pointer shrink-0"
+                        className="p-2 -mr-1 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer shrink-0 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none"
                         title="Remove task"
+                        aria-label={`Remove task "${item.text}"`}
                       >
                         <Trash2 size={15} />
                       </button>

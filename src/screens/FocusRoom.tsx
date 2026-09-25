@@ -641,23 +641,25 @@ export default function FocusRoom() {
           {/* Controls */}
           <div className="flex items-center gap-5">
             <button
+              type="button"
               onClick={reset}
-              className="p-4 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-full transition-all cursor-pointer"
+              className="p-4 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-full transition-all active:scale-90 cursor-pointer focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:outline-none"
               aria-label="Reset timer"
             >
               <RotateCcw size={24} />
             </button>
 
             <motion.button
+              type="button"
               whileTap={{ scale: 0.95 }}
               onClick={timer.isRunning ? pause : startResume}
               className={cn(
-                "w-24 h-24 rounded-full flex items-center justify-center shadow-2xl transition-all cursor-pointer",
+                "w-24 h-24 rounded-full flex items-center justify-center shadow-2xl transition-all cursor-pointer focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:outline-none dark:focus-visible:ring-offset-zinc-900",
                 timer.mode === 'work'
-                  ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/30"
+                  ? "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-blue-500/30 focus-visible:ring-blue-500"
                   : timer.mode === 'shortBreak'
-                    ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-400/30"
-                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-violet-400/30"
+                    ? "bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white shadow-emerald-400/30 focus-visible:ring-emerald-500"
+                    : "bg-violet-500 hover:bg-violet-600 active:bg-violet-700 text-white shadow-violet-400/30 focus-visible:ring-violet-500"
               )}
               aria-label={timer.isRunning ? 'Pause' : 'Start'}
             >
@@ -667,8 +669,9 @@ export default function FocusRoom() {
             </motion.button>
 
             <button
+              type="button"
               onClick={skip}
-              className="p-4 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-full transition-all cursor-pointer"
+              className="p-4 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-full transition-all active:scale-90 cursor-pointer focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white focus-visible:outline-none"
               aria-label="Skip to next session"
             >
               <SkipForward size={24} />
@@ -717,14 +720,15 @@ export default function FocusRoom() {
               <input
                 type="text"
                 placeholder="What are you working on?"
+                aria-label="Add a focus task"
                 value={newTask}
                 onChange={e => setNewTask(e.target.value)}
-                className="flex-1 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm font-medium text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 outline-none transition-all"
+                className="flex-1 min-w-0 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm font-medium text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 outline-none transition-all"
               />
               <button
                 type="submit"
                 disabled={!newTask.trim()}
-                className="p-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl hover:scale-105 disabled:opacity-40 transition-all cursor-pointer"
+                className="p-3 shrink-0 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900 focus-visible:outline-none"
                 aria-label="Add task"
               >
                 <Plus size={18} />
@@ -740,27 +744,40 @@ export default function FocusRoom() {
                 <motion.div
                   key={t.id}
                   layout
-                  onClick={() => setTasks(p => p.map(x => x.id === t.id ? { ...x, completed: !x.completed } : x))}
                   className={cn(
-                    "flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all border select-none",
+                    "group flex items-center gap-3 p-4 rounded-2xl transition-all border",
                     t.completed
-                      ? "bg-zinc-50/50 dark:bg-zinc-800/20 border-transparent opacity-50"
-                      : "bg-white dark:bg-zinc-800/40 border-zinc-100 dark:border-zinc-800 hover:border-zinc-200"
+                      ? "bg-zinc-50/50 dark:bg-zinc-800/20 border-transparent opacity-60"
+                      : "bg-white dark:bg-zinc-800/40 border-zinc-100 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700"
                   )}
                 >
-                  <div className={cn(
-                    "w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all",
-                    t.completed ? "bg-blue-600 border-blue-600" : "border-zinc-300 dark:border-zinc-600"
-                  )}>
-                    {t.completed && <Check size={12} className="text-white" />}
-                  </div>
-                  <span className={cn("text-sm font-medium text-zinc-800 dark:text-zinc-200 flex-1", t.completed && "line-through text-zinc-400")}>
-                    {t.text}
-                  </span>
+                  <label className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={t.completed}
+                      onChange={() => setTasks(p => p.map(x => x.id === t.id ? { ...x, completed: !x.completed } : x))}
+                      aria-label={`Mark "${t.text}" as ${t.completed ? 'not done' : 'done'}`}
+                      className="peer sr-only"
+                    />
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all",
+                        "peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-focus-visible:ring-offset-2 dark:peer-focus-visible:ring-offset-zinc-900",
+                        t.completed ? "bg-blue-600 border-blue-600" : "border-zinc-300 dark:border-zinc-600"
+                      )}
+                    >
+                      {t.completed && <Check size={12} className="text-white" />}
+                    </span>
+                    <span className={cn("text-sm font-medium text-zinc-800 dark:text-zinc-200 min-w-0 break-words", t.completed && "line-through text-zinc-400")}>
+                      {t.text}
+                    </span>
+                  </label>
                   <button
-                    onClick={e => { e.stopPropagation(); setTasks(p => p.filter(x => x.id !== t.id)); }}
-                    className="p-1 text-zinc-300 dark:text-zinc-600 hover:text-zinc-500 transition-colors opacity-0 group-hover:opacity-100"
-                    aria-label="Remove task"
+                    type="button"
+                    onClick={() => setTasks(p => p.filter(x => x.id !== t.id))}
+                    className="p-2 -mr-1 shrink-0 rounded-lg text-zinc-300 dark:text-zinc-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none cursor-pointer"
+                    aria-label={`Remove task "${t.text}"`}
                   >
                     <X size={12} />
                   </button>
@@ -779,10 +796,12 @@ export default function FocusRoom() {
                 {(['ambient', 'radio'] as const).map(tab => (
                   <button
                     key={tab}
+                    type="button"
                     onClick={() => setActiveTab(tab)}
+                    aria-pressed={activeTab === tab}
                     className={cn(
-                      "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer",
-                      activeTab === tab ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm" : "text-zinc-400"
+                      "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none",
+                      activeTab === tab ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm active:scale-95" : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
                     )}
                   >
                     {tab === 'ambient' ? 'Ambient' : 'Radio'}
@@ -797,9 +816,11 @@ export default function FocusRoom() {
                   {AMBIENT_TRACKS.map(({ id, label, emoji, desc }) => (
                     <button
                       key={id}
+                      type="button"
                       onClick={() => toggleAmbient(id)}
+                      aria-pressed={activeAmbient === id}
                       className={cn(
-                        "p-3.5 rounded-2xl flex flex-col items-start gap-2 border transition-all cursor-pointer text-left",
+                        "p-3.5 rounded-2xl flex flex-col items-start gap-2 border transition-all cursor-pointer text-left focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900 focus-visible:outline-none active:scale-[0.98]",
                         activeAmbient === id
                           ? "bg-blue-600 border-blue-600 text-white animate-fade-in"
                           : "bg-zinc-50 dark:bg-zinc-800/50 border-zinc-100 dark:border-zinc-800 text-zinc-500 hover:border-blue-400/50 hover:text-blue-600"
@@ -875,12 +896,13 @@ export default function FocusRoom() {
 
                     <div className="flex items-center justify-between gap-4 pt-2 border-t border-zinc-100/50 dark:border-zinc-800/50">
                       <button
+                        type="button"
                         onClick={toggleAmbientPlay}
                         className={cn(
-                          "p-2 rounded-xl transition-all cursor-pointer",
+                          "p-2 rounded-xl transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none",
                           isAmbientPlaying
                             ? "bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
-                            : "bg-blue-600 text-white hover:bg-blue-700"
+                            : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
                         )}
                         aria-label={isAmbientPlaying ? "Pause ambient sound" : "Play ambient sound"}
                         title={isAmbientPlaying ? "Pause ambient sound" : "Play ambient sound"}
@@ -890,9 +912,10 @@ export default function FocusRoom() {
 
                       <div className="flex-1 flex items-center gap-2">
                         <button
+                          type="button"
                           onClick={toggleAmbientMute}
-                          className="text-zinc-400 hover:text-zinc-600 cursor-pointer focus:outline-none"
-                          aria-label={isAmbientMuted ? "Unmute" : "Mute"}
+                          className="text-zinc-400 hover:text-zinc-600 p-1 rounded-md cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+                          aria-label={isAmbientMuted ? "Unmute ambient sound" : "Mute ambient sound"}
                         >
                           {isAmbientMuted || ambientVol === 0 ? <VolumeX size={15} /> : <Volume2 size={15} />}
                         </button>
@@ -947,22 +970,24 @@ export default function FocusRoom() {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <button onClick={prevTrack} className="p-2 rounded-xl bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-zinc-500 hover:text-zinc-900 transition-all cursor-pointer" aria-label="Previous">
+                      <button type="button" onClick={prevTrack} className="p-2 rounded-xl bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-zinc-500 hover:text-zinc-900 active:scale-90 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none" aria-label="Previous track">
                         <SkipBack size={13} />
                       </button>
-                      <button onClick={togglePlay}
-                        className={cn("p-2.5 rounded-full transition-all cursor-pointer",
-                          isPlaying ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900" : "bg-blue-600 text-white hover:bg-blue-700")}
+                      <button type="button" onClick={togglePlay}
+                        className={cn("p-2.5 rounded-full transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none",
+                          isPlaying ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 active:scale-90" : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800")}
                         aria-label={isPlaying ? 'Pause' : 'Play'}
                       >
                         {status === 'loading' ? <Loader2 size={16} className="animate-spin" /> : isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
                       </button>
-                      <button onClick={nextTrack} className="p-2 rounded-xl bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-zinc-500 hover:text-zinc-900 transition-all cursor-pointer" aria-label="Next">
+                      <button type="button" onClick={nextTrack} className="p-2 rounded-xl bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-zinc-500 hover:text-zinc-900 active:scale-90 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none" aria-label="Next track">
                         <SkipForward size={13} />
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button onClick={toggleMuted} className="text-zinc-400 hover:text-zinc-600 cursor-pointer">
+                      <button type="button" onClick={toggleMuted}
+                        className="text-zinc-400 hover:text-zinc-600 p-1 rounded-md cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+                        aria-label={isMuted || volume === 0 ? "Unmute music" : "Mute music"}>
                         {isMuted || volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
                       </button>
                       <input type="range" min={0} max={1} step={0.05} value={isMuted ? 0 : volume}
