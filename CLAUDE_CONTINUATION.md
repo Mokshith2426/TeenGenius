@@ -1,12 +1,26 @@
 # TeenGenius — Continuation Log
 
-**Last updated:** 2026-09-25 (Phase 4: Focused Core Polish)
+**Last updated:** 2026-09-25 (Phase 5: Navigation Discoverability)
 **Branch:** main
 **Status:** Build ✅ | TypeScript lint ✅ | Production server smoke test ✅
 
 ---
 
-## PHASE 4 — FOCUSED CORE POLISH (this session)
+## PHASE 5 — NAVIGATION DISCOVERABILITY (this session)
+
+**Theme:** every core screen is now one tap away.
+
+- Added **Exam Prep** (`/app/exam`) and **Practice** (`/app/practice`) to all three navigation surfaces in `Layout.tsx`:
+  - desktop sidebar "📚 Learn & Plan" section (`dynamicNavSections`)
+  - mobile **More** bottom-sheet launcher grid (`navItems`, now 12 tiles = clean 3×4 grid)
+  - **Command Palette** ⌘K (receives the same `navItems`)
+- Icons: `GraduationCap` (Exam Prep, distinct from Planner's calendar), `ClipboardCheck` (Practice). Active-state detection reuses the existing `startsWith` logic — verified no path collisions (`/app/planner` vs `/app/practice`, `/app/exam` vs `/app/explore`).
+- Fixed stale launcher comment ("14 … options" → "Launcher grid for every core module").
+- Validated: `npm run lint` → 0, `npm run build` → 0, prod server smoke `/` 200 + `/api/version` 200.
+
+---
+
+## PHASE 4 — FOCUSED CORE POLISH (previous session)
 
 **Theme:** keep the feature declutter (Homework Solver / AI Timetable Maker / Memory Lab / Exam Lab stay removed) and make the existing core feel intentional.
 

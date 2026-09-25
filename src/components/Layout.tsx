@@ -5,7 +5,8 @@ import {
   Home, MessageSquare, Users, Sparkles, User, LogOut, Calendar, FileText, 
   UserPlus, Target, Brain, Map, Settings, Sun, Moon, 
   HeartHandshake, LayoutGrid, X, Search, Menu, ShieldAlert, ArrowRight, Check,
-  BookOpen, Compass, Headphones, Play, Pause, SkipForward, ChevronLeft, ChevronRight, WifiOff
+  BookOpen, Compass, Headphones, Play, Pause, SkipForward, ChevronLeft, ChevronRight, WifiOff,
+  GraduationCap, ClipboardCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useMusic } from '../context/MusicContext';
@@ -71,6 +72,8 @@ const navItems = [
   { icon: Home, label: 'Dashboard', path: '/app' },
   { icon: Brain, label: 'AI Assistant', path: '/app/ai-assistant', badge: 'AI' },
   { icon: FileText, label: 'Notes Lab', path: '/app/notes' },
+  { icon: GraduationCap, label: 'Exam Prep', path: '/app/exam' },
+  { icon: ClipboardCheck, label: 'Practice', path: '/app/practice' },
   { icon: Calendar, label: 'Planner Hub', path: '/app/planner' },
   { icon: Target, label: 'Focus Zone', path: '/app/focus' },
   { icon: BookOpen, label: 'Whiteboard', path: '/app/whiteboard' },
@@ -99,6 +102,8 @@ export default function Layout() {
         { icon: BookOpen, label: 'Learn Hub', path: '/app/learn' },
         { icon: Brain, label: 'AI Assistant', path: '/app/ai-assistant', badge: 'AI' },
         { icon: FileText, label: 'Notes Lab', path: '/app/notes' },
+        { icon: GraduationCap, label: 'Exam Prep', path: '/app/exam' },
+        { icon: ClipboardCheck, label: 'Practice', path: '/app/practice' },
         { icon: Calendar, label: 'Planner Hub', path: '/app/planner' },
         { icon: Target, label: 'Focus Zone', path: '/app/focus' },
         { icon: BookOpen, label: 'Whiteboard', path: '/app/whiteboard' },
@@ -803,7 +808,7 @@ export default function Layout() {
                   </button>
                 </div>
 
-                {/* 14 High density beautiful launcher options on grid */}
+                {/* Launcher grid for every core module */}
                 <div className="grid grid-cols-3 gap-2.5">
                   {navItems.map((item) => {
                     const isActive = location.pathname === item.path || (item.path !== '/app' && location.pathname.startsWith(item.path));
